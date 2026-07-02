@@ -9,7 +9,7 @@ import streamlit as st
 
 
 st.set_page_config(
-    page_title="NIAGADS AD Gene Detective Scavenger Hunt",
+    page_title="NIAGADS AD Gene Workshop Challenge",
     page_icon="🧬",
     layout="wide",
 )
@@ -26,14 +26,15 @@ RESOURCES = {
     "API": "https://api.niagads.org/",
 }
 
-CODENAME_PREFIXES = ["Amyloid", "Tau", "Synapse", "Hippocampus", "Microglia", "Genome", "Variant", "Atlas"]
-CODENAME_NOUNS = ["Sleuths", "Cartographers", "Scouts", "Analysts", "Navigators", "Curators", "Strategists", "Trackers"]
+AWARD_ICON = "🏆"
+TEAM_LABEL_PREFIXES = ["Amyloid", "Tau", "Synapse", "Hippocampus", "Microglia", "Genome", "Variant", "Atlas"]
+TEAM_LABEL_NOUNS = ["Review Group", "Working Group", "Analysis Team", "Data Team", "Study Group", "Workshop Team"]
 
 MISSIONS = [
     {
         "id": "advp",
-        "title": "Confirm the AD signal",
-        "badge": "Association Scout",
+        "title": "Review AD association evidence",
+        "skill": "Association review",
         "points": 3,
         "resources": ["ADVP"],
         "task": "Search the assigned gene in ADVP and determine whether it has Alzheimer’s disease association evidence.",
@@ -47,8 +48,8 @@ MISSIONS = [
     },
     {
         "id": "genomicsdb",
-        "title": "Map the genomic territory",
-        "badge": "Genome Navigator",
+        "title": "Review the genomic location",
+        "skill": "Genomic context",
         "points": 3,
         "resources": ["GenomicsDB"],
         "task": "Find the genomic location or region for the assigned gene.",
@@ -64,7 +65,7 @@ MISSIONS = [
     {
         "id": "varixam",
         "title": "Inventory ADSP variants",
-        "badge": "Variant Scout",
+        "skill": "Variant inventory",
         "points": 3,
         "resources": ["VarIXam"],
         "task": "Find ADSP variants overlapping the assigned gene footprint. Record one example variant or summarize the returned variant set.",
@@ -78,8 +79,8 @@ MISSIONS = [
     },
     {
         "id": "functional",
-        "title": "Track functional evidence",
-        "badge": "QTL Tracker",
+        "title": "Review functional evidence",
+        "skill": "Functional annotation",
         "points": 4,
         "resources": ["FILER", "xQTL Browser"],
         "task": "Find one regulatory, functional, or QTL-related evidence item for the assigned gene or nearby region.",
@@ -95,7 +96,7 @@ MISSIONS = [
     {
         "id": "topgenes",
         "title": "Check gene prioritization",
-        "badge": "Priority Analyst",
+        "skill": "Gene prioritization",
         "points": 3,
         "resources": ["TopGenes"],
         "task": "Look up the assigned gene and record its prioritization information if available.",
@@ -109,8 +110,8 @@ MISSIONS = [
     },
     {
         "id": "interpretation",
-        "title": "Build the evidence dossier",
-        "badge": "Evidence Curator",
+        "title": "Summarize the evidence",
+        "skill": "Evidence summary",
         "points": 4,
         "resources": [],
         "task": "Write a short synthesis of what the collected evidence suggests.",
@@ -125,11 +126,11 @@ MISSIONS = [
     },
     {
         "id": "api_bonus",
-        "title": "Automate the next hunt",
-        "badge": "API Strategist",
+        "title": "Plan future automation",
+        "skill": "API planning",
         "points": 2,
         "resources": ["API"],
-        "task": "Identify one step in the scavenger hunt that should eventually be automated through the NIAGADS API.",
+        "task": "Identify one step in the workshop challenge that should eventually be automated through the NIAGADS API.",
         "fields": [
             {"key": "Step to automate", "label": "Step to automate", "type": "text"},
             {"key": "Why automation would help", "label": "Why automation would help", "type": "textarea"},
@@ -144,7 +145,7 @@ MISSIONS = [
 def initialize_state():
     defaults = {
         "team_name": "",
-        "codename": "",
+        "team_label": "",
         "assigned_gene": "APOE",
         "timer_started_at": None,
         "answers": {},
@@ -166,23 +167,23 @@ def earned_points(mission):
     return max(mission["points"] - (1 if mission["id"] in st.session_state.hints_used else 0), 0)
 
 
-def build_dossier():
+def build_summary():
     completed = [mission for mission in MISSIONS if mission_complete(mission)]
     required = [mission for mission in MISSIONS if not mission["bonus"]]
     return {
         "team_name": st.session_state.team_name,
-        "team_codename": st.session_state.codename,
+        "team_label": st.session_state.team_label,
         "assigned_gene": st.session_state.assigned_gene,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "score": sum(earned_points(mission) for mission in MISSIONS),
-        "required_missions_completed": sum(mission_complete(mission) for mission in required),
-        "required_missions_total": len(required),
-        "badges_earned": [mission["badge"] for mission in completed],
+        "required_activities_completed": sum(mission_complete(mission) for mission in required),
+        "required_activities_total": len(required),
+        "skills_completed": [mission["skill"] for mission in completed],
         "hints_used": sorted(st.session_state.hints_used),
-        "missions": [
+        "activities": [
             {
                 "title": mission["title"],
-                "badge": mission["badge"],
+                "skill": mission["skill"],
                 "bonus": mission["bonus"],
                 "complete": mission_complete(mission),
                 "points_awarded": earned_points(mission),
@@ -193,25 +194,31 @@ def build_dossier():
     }
 
 
-def dossier_csv(dossier):
+def summary_csv(summary):
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow(["team_name", "team_codename", "assigned_gene", "mission", "badge", "field", "answer", "points_awarded"])
-    for mission in dossier["missions"]:
+    writer.writerow(["team_name", "team_label", "assigned_gene", "activity", "skill", "field", "answer", "points_awarded"])
+    for mission in summary["activities"]:
         answers = mission["answers"] or {"": ""}
         for field, answer in answers.items():
             writer.writerow([
-                dossier["team_name"], dossier["team_codename"], dossier["assigned_gene"],
-                mission["title"], mission["badge"], field, answer, mission["points_awarded"],
+                summary["team_name"], summary["team_label"], summary["assigned_gene"],
+                mission["title"], mission["skill"], field, answer, mission["points_awarded"],
             ])
     return output.getvalue()
 
 
-def render_badges(badges):
-    if not badges:
-        st.caption("No badges earned yet.")
+def render_skills(completed_missions):
+    if not completed_missions:
+        st.caption("No skills completed yet.")
         return
-    st.markdown(" ".join(f"<span class='badge-chip'>🏅 {badge}</span>" for badge in badges), unsafe_allow_html=True)
+    st.markdown(
+        " ".join(
+            f"<span class='skill-chip skill-earned'>{AWARD_ICON} {mission['skill']}</span>"
+            for mission in completed_missions
+        ),
+        unsafe_allow_html=True,
+    )
 
 
 initialize_state()
@@ -224,11 +231,13 @@ st.markdown(
     .mission-complete {border-left: 7px solid #2e7d32;}
     .mission-incomplete {border-left: 7px solid #7b8794;}
     .mission-bonus {border-left: 7px solid #6f42c1; background: #fbf9ff;}
-    .status-pill, .badge-chip {display: inline-block; border-radius: 999px; padding: 0.18rem 0.55rem; margin: 0.12rem; font-size: 0.85rem;}
+    .status-pill, .skill-chip {display: inline-block; border-radius: 999px; padding: 0.18rem 0.55rem; margin: 0.12rem; font-size: 0.85rem;}
     .status-complete {background: #e8f5e9; color: #1b5e20;}
     .status-incomplete {background: #eef2f7; color: #394b59;}
     .status-bonus {background: #f0e7ff; color: #4b2380;}
-    .badge-chip {background: #eef8ff; border: 1px solid #b6e0fe; color: #0b4f71;}
+    .skill-chip {border: 1px solid; }
+    .skill-earned {background: #e7f6ec; border-color: #94d3a2; color: #14532d;}
+    .skill-pending {background: #f6f8fa; border-color: #d0d7de; color: #57606a;}
     .small-note {color: #52606d; font-size: 0.92rem;}
     </style>
     """,
@@ -239,19 +248,19 @@ required_missions = [mission for mission in MISSIONS if not mission["bonus"]]
 completed_required = sum(mission_complete(mission) for mission in required_missions)
 progress = completed_required / len(required_missions)
 score = sum(earned_points(mission) for mission in MISSIONS)
-earned_badges = [mission["badge"] for mission in MISSIONS if mission_complete(mission)]
+completed_missions = [mission for mission in MISSIONS if mission_complete(mission)]
 
 with st.sidebar:
-    st.header("Mission Control")
-    st.text_input("Team name", key="team_name", placeholder="e.g., Dossier Team 4")
+    st.header("Workshop Progress")
+    st.text_input("Team name", key="team_name", placeholder="e.g., Table 4")
     col_a, col_b = st.columns(2)
     with col_a:
-        if st.button("Generate codename", use_container_width=True):
-            st.session_state.codename = f"{random.choice(CODENAME_PREFIXES)} {random.choice(CODENAME_NOUNS)}"
+        if st.button("Generate team label", use_container_width=True):
+            st.session_state.team_label = f"{random.choice(TEAM_LABEL_PREFIXES)} {random.choice(TEAM_LABEL_NOUNS)}"
     with col_b:
         if st.button("Assign gene", use_container_width=True):
             st.session_state.assigned_gene = random.choice(GENES)
-    st.text_input("Team codename", key="codename", placeholder="Generate or type one")
+    st.text_input("Team label", key="team_label", placeholder="Generate or type one")
     st.selectbox("Manual gene override", GENES, key="assigned_gene")
 
     if st.session_state.timer_started_at is None:
@@ -269,20 +278,20 @@ with st.sidebar:
 
     st.metric("Current score", f"{score} pts")
     st.progress(progress, text=f"Required progress: {completed_required}/{len(required_missions)}")
-    st.subheader("Badges earned")
-    render_badges(earned_badges)
+    st.subheader("Skills completed")
+    render_skills(completed_missions)
 
-st.title("NIAGADS Open Access Scavenger Hunt")
-st.subheader("AD Gene Detectives: Build an evidence dossier")
+st.title("NIAGADS Open Access Workshop Challenge")
+st.subheader("Build a gene evidence summary")
 st.markdown(
-    f"Your team is investigating **{st.session_state.assigned_gene}**. Complete the required missions in about 20 minutes; the API mission is optional bonus credit."
+    f"Your team is reviewing **{st.session_state.assigned_gene}**. Complete the required activities in about 20 minutes; the API activity is optional bonus credit."
 )
 
 col1, col2, col3 = st.columns(3)
 col1.metric("Assigned gene", st.session_state.assigned_gene)
-col2.metric("Required missions", f"{completed_required}/{len(required_missions)}")
+col2.metric("Required activities", f"{completed_required}/{len(required_missions)}")
 col3.metric("Score", f"{score} pts")
-render_badges(earned_badges)
+render_skills(completed_missions)
 
 st.divider()
 
@@ -296,7 +305,8 @@ for mission in MISSIONS:
     header_cols = st.columns([3, 1])
     with header_cols[0]:
         st.markdown(f"### {mission['title']}")
-        st.markdown(f"<span class='status-pill {pill_class}'>{status_text}</span> <span class='badge-chip'>🏅 {mission['badge']}</span>", unsafe_allow_html=True)
+        skill_class = "skill-earned" if complete else "skill-pending"
+        st.markdown(f"<span class='status-pill {pill_class}'>{status_text}</span> <span class='skill-chip {skill_class}'>{AWARD_ICON} {mission['skill']}</span>", unsafe_allow_html=True)
     with header_cols[1]:
         label = f"+{mission['points']} bonus pts" if mission["bonus"] else f"{mission['points']} pts"
         st.metric("Value", label)
@@ -333,26 +343,26 @@ for mission in MISSIONS:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-dossier = build_dossier()
+summary = build_summary()
 st.divider()
-st.header("Gene Evidence Dossier Preview")
-st.caption("This preview updates as your team fills in mission fields.")
-st.json(dossier, expanded=False)
+st.header("Gene Evidence Summary Preview")
+st.caption("This preview updates as your team fills in activity fields.")
+st.json(summary, expanded=False)
 
 download_cols = st.columns(2)
 with download_cols[0]:
     st.download_button(
-        "Download JSON dossier",
-        data=json.dumps(dossier, indent=2),
-        file_name=f"{st.session_state.assigned_gene}_evidence_dossier.json",
+        "Download JSON summary",
+        data=json.dumps(summary, indent=2),
+        file_name=f"{st.session_state.assigned_gene}_workshop_summary.json",
         mime="application/json",
         use_container_width=True,
     )
 with download_cols[1]:
     st.download_button(
-        "Download CSV dossier",
-        data=dossier_csv(dossier),
-        file_name=f"{st.session_state.assigned_gene}_evidence_dossier.csv",
+        "Download CSV summary",
+        data=summary_csv(summary),
+        file_name=f"{st.session_state.assigned_gene}_workshop_summary.csv",
         mime="text/csv",
         use_container_width=True,
     )
