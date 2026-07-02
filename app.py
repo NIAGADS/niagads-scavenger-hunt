@@ -49,7 +49,38 @@ MISSIONS = [
     {
         "id": "genomicsdb",
         "title": "Explore GWAS summary statistics in GenomicsDB",
-        "skill": "Summary statistics review",
+        "skill": "Record Linker",
+        "sub_skills": [
+            {
+                "skill": "Record Linker",
+                "fields": [
+                    "Ensembl ID",
+                    "Gene location",
+                    "GWAS table used",
+                    "Selected variant",
+                    "Dataset or track name",
+                    "Dataset record title",
+                    "Variant record ID",
+                ],
+            },
+            {
+                "skill": "Signal Mapper",
+                "fields": [
+                    "Dataset top region",
+                    "Dataset top result",
+                    "Locus zoom variant",
+                    "Locus zoom reason",
+                ],
+            },
+            {
+                "skill": "Genome Browser",
+                "fields": [
+                    "Genome browser dataset track",
+                    "Genome browser observation",
+                    "Region to carry forward",
+                ],
+            },
+        ],
         "points": 8,
         "resources": ["GenomicsDB"],
         "task": (
@@ -279,6 +310,27 @@ def mission_complete(mission):
     )
 
 
+def skill_complete(mission, skill):
+    answers = st.session_state.answers.get(mission["id"], {})
+    return all(str(answers.get(field_key, "")).strip() for field_key in skill["fields"])
+
+
+def mission_skills(mission):
+    if "sub_skills" in mission:
+        return mission["sub_skills"]
+    return [{"skill": mission["skill"], "fields": [field["key"] for field in mission["fields"] if field.get("type") != "section" and field.get("required", True)]}]
+
+
+def completed_skill_names(missions):
+    skills = []
+    for mission in missions:
+        if "sub_skills" in mission:
+            skills.extend(skill["skill"] for skill in mission["sub_skills"] if skill_complete(mission, skill))
+        elif mission_complete(mission):
+            skills.append(mission["skill"])
+    return skills
+
+
 def earned_points(mission):
     if not mission_complete(mission):
         return 0
@@ -286,7 +338,6 @@ def earned_points(mission):
 
 
 def build_summary():
-    completed = [mission for mission in MISSIONS if mission_complete(mission)]
     required = [mission for mission in MISSIONS if not mission["bonus"]]
     return {
         "team_name": st.session_state.team_name,
@@ -296,12 +347,13 @@ def build_summary():
         "score": sum(earned_points(mission) for mission in MISSIONS),
         "required_activities_completed": sum(mission_complete(mission) for mission in required),
         "required_activities_total": len(required),
-        "skills_completed": [mission["skill"] for mission in completed],
+        "skills_completed": completed_skill_names(MISSIONS),
         "hints_used": sorted(st.session_state.hints_used),
         "activities": [
             {
                 "title": mission["title"],
                 "skill": mission["skill"],
+                "skills": [skill["skill"] for skill in mission_skills(mission)],
                 "bonus": mission["bonus"],
                 "complete": mission_complete(mission),
                 "points_awarded": earned_points(mission),
@@ -326,14 +378,24 @@ def summary_csv(summary):
     return output.getvalue()
 
 
-def render_skills(completed_missions):
-    if not completed_missions:
+def render_completed_skills(skill_names):
+    if not skill_names:
         st.caption("No skills completed yet.")
         return
     st.markdown(
         " ".join(
-            f"<span class='skill-chip skill-earned'>{AWARD_ICON} {mission['skill']}</span>"
-            for mission in completed_missions
+            f"<span class='skill-chip skill-earned'>{AWARD_ICON} {skill}</span>"
+            for skill in skill_names
+        ),
+        unsafe_allow_html=True,
+    )
+
+
+def render_activity_skills(mission):
+    st.markdown(
+        " ".join(
+            f"<span class='skill-chip {'skill-earned' if skill_complete(mission, skill) else 'skill-pending'}'>{AWARD_ICON} {skill['skill']}</span>"
+            for skill in mission_skills(mission)
         ),
         unsafe_allow_html=True,
     )
@@ -370,7 +432,7 @@ required_missions = [mission for mission in MISSIONS if not mission["bonus"]]
 completed_required = sum(mission_complete(mission) for mission in required_missions)
 progress = completed_required / len(required_missions)
 score = sum(earned_points(mission) for mission in MISSIONS)
-completed_missions = [mission for mission in MISSIONS if mission_complete(mission)]
+completed_skills = completed_skill_names(MISSIONS)
 
 with st.sidebar:
     st.header("Workshop Progress")
@@ -401,7 +463,7 @@ with st.sidebar:
     st.metric("Current score", f"{score} pts")
     st.progress(progress, text=f"Required progress: {completed_required}/{len(required_missions)}")
     st.subheader("Skills completed")
-    render_skills(completed_missions)
+    render_completed_skills(completed_skills)
 
 st.title("NIAGADS Open Access Workshop Challenge")
 st.subheader("Build a gene evidence summary")
@@ -413,7 +475,7 @@ col1, col2, col3 = st.columns(3)
 col1.metric("Assigned gene", st.session_state.assigned_gene)
 col2.metric("Required activities", f"{completed_required}/{len(required_missions)}")
 col3.metric("Score", f"{score} pts")
-render_skills(completed_missions)
+render_completed_skills(completed_skills)
 
 st.divider()
 
@@ -427,8 +489,8 @@ for mission in MISSIONS:
     header_cols = st.columns([3, 1])
     with header_cols[0]:
         st.markdown(f"### {mission['title']}")
-        skill_class = "skill-earned" if complete else "skill-pending"
-        st.markdown(f"<span class='status-pill {pill_class}'>{status_text}</span> <span class='skill-chip {skill_class}'>{AWARD_ICON} {mission['skill']}</span>", unsafe_allow_html=True)
+        st.markdown(f"<span class='status-pill {pill_class}'>{status_text}</span>", unsafe_allow_html=True)
+        render_activity_skills(mission)
     with header_cols[1]:
         label = f"+{mission['points']} bonus pts" if mission["bonus"] else f"{mission['points']} pts"
         st.metric("Value", label)
