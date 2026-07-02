@@ -1,9 +1,18 @@
-Build a Streamlit app for a 20–30 minute NIAGADS Open Access scavenger hunt workshop.
+Build and refine a single-page Streamlit app for a 20-30 minute NIAGADS Open Access genomics workshop.
 
-Theme:
-Participants are “AD Gene Detectives” building an evidence dossier for one Alzheimer’s disease gene.
+The app should feel like a professional workshop challenge, not a roleplay scavenger hunt. Avoid detective/dossier language. Participants are genomics workshop attendees with varying skill levels who are reviewing open NIAGADS resources for one Alzheimer disease gene and building a concise gene evidence summary.
 
-Resources:
+## Current Tone and UI Direction
+
+- Use "workshop challenge", "activity", "skill", and "gene evidence summary" language.
+- Avoid "detective", "dossier", "mission control", "codename", and similar roleplay terms.
+- Keep points, progress, hints, completion states, and badge-style visual chips.
+- Badge chips use a trophy icon and distinguish earned vs pending by color.
+- Use a compact sidebar labeled "Workshop Progress" with team, team label, assigned gene, timer, score, progress, and completed skills.
+- Resource links should remain buttons.
+- Keep the app single-page, with no database, using only Streamlit `session_state`.
+
+## Resources
 
 - ADVP: <https://advp.niagads.org/>
 - GenomicsDB: <https://www.niagads.org/genomics>
@@ -13,165 +22,108 @@ Resources:
 - xQTL Browser: <https://xqtl.niagads.org/>
 - API: <https://api.niagads.org/>
 
-Important content constraint:
-VarIXam only provides lists of ADSP variants in a gene footprint. Do not describe it as variant interpretation. Frame it as “variant inventory.”
+## Genes
 
-Core requirements:
-
-- single-page Streamlit app
-- no database
-- use Streamlit session_state only
-- team name input
-- random team codename generator
-- random assigned gene button
-- manual gene override dropdown
-- visible 20-minute countdown timer or elapsed timer
-- progress bar
-- current score
-- mission cards
-- hint buttons
-- hint penalty
-- badges earned
-- final evidence dossier preview
-- downloadable JSON and CSV evidence dossier
-- README and requirements.txt for Streamlit Cloud deployment
-
-Genes:
 APOE, BIN1, TREM2, ABCA7, CLU, PICALM, CR1, SORL1, MS4A6A, CD33
 
-Game mechanics:
+## Activity Design Standard
 
-- Each mission has a badge, point value, resource link, task, answer fields, hint, and fallback question.
-- A mission is complete when all required fields are filled.
-- Hints subtract 1 point once per mission.
-- Bonus API mission gives bonus points but is not required for completion.
-- Show earned badges as visual chips near the top.
-- Show incomplete, complete, and bonus missions differently.
-- At the end, generate a “Gene Evidence Dossier” summarizing all answers.
+Each resource activity should teach a realistic discovery path through that resource, not ask for one isolated fact. Future section rewrites should follow the GenomicsDB pattern:
 
-Mission definitions:
+- Start from the actual page or search behavior participants will use.
+- Name the expected page context in the form of section headers, e.g. "Gene Record", "Dataset Record", "Variant Record", "Genome Browser".
+- Ask questions in the order participants encounter the evidence.
+- Make the activity feel like a story: "I started here, found this result, followed this link, learned this, and carried this forward."
+- Avoid implying that one resource continues or validates another resource unless the workflow truly does that.
+- Distinguish resources by what they are best for. For example, ADVP and GenomicsDB both show AD association-related evidence, but GenomicsDB is currently framed around NIAGADS GWAS summary statistics, linked records, datasets, and genome-browser exploration.
+- Hints should guide where to look, not give away answers.
+- Bonus questions may be optional by setting `required: False` and should not block activity completion.
 
-1. ADVP Mission
-Title: Confirm the AD signal
-Badge: Association Scout
-Resource: ADVP
-Points: 3
-Task: Search the assigned gene in ADVP and determine whether it has Alzheimer’s disease association evidence.
-Required fields:
+## Game Mechanics
 
-- AD association status
-- One association or evidence detail
-Fallback:
-- If no result is found, write what ADVP is designed to help users find.
-Hint:
-- Search by gene symbol and look for curated association/evidence records.
+- Each activity has a skill label, point value, resource link, task, answer fields, hint, and fallback.
+- An activity is complete when all required fields are filled.
+- Optional fields do not block completion.
+- Hints subtract 1 point once per activity.
+- Field-specific bonus hints may exist and should not use the regular hint penalty unless explicitly requested.
+- The API activity remains optional bonus credit.
+- The final preview and downloads should be a gene evidence summary in JSON and CSV.
 
-1. GenomicsDB Mission
-Title: Map the genomic territory
-Badge: Genome Navigator
-Resource: GenomicsDB
-Points: 3
-Task: Find the genomic location or region for the assigned gene.
-Required fields:
+## Current GenomicsDB Activity Model
 
-- Chromosome
-- Start coordinate
-- End coordinate
-Fallback:
-- If coordinates are hard to find, record the page/result where the gene appears.
-Hint:
-- Search the gene symbol and look for chromosome and coordinate range.
+GenomicsDB is the main within-site navigation activity and is worth more points than simpler lookup activities.
 
-1. VarIXam Mission
-Title: Inventory ADSP variants
-Badge: Variant Scout
-Resource: VarIXam
-Points: 3
-Task: Find ADSP variants overlapping the assigned gene footprint. Record one example variant or summarize the returned variant set.
-Required fields:
+Title: Explore GWAS summary statistics in GenomicsDB
+Skills: Record Linker, Signal Mapper, Genome Browser
+Points: 8
 
-- Example variant ID or coordinate
-- Variant density: none / few / many
-Fallback:
-- If too many variants are returned, write “many” and describe what kind of list VarIXam provides.
-Hint:
-- This is an inventory task, not interpretation. Any returned ADSP variant is acceptable.
+GenomicsDB is large enough to earn multiple badges within one activity:
 
-1. FILER/xQTL Mission
-Title: Track functional evidence
-Badge: QTL Tracker
-Resources: FILER and xQTL Browser
-Points: 4
-Task: Find one regulatory, functional, or QTL-related evidence item for the assigned gene or nearby region.
-Required fields:
+- Record Linker: connect the gene record table result to linked dataset and variant records.
+- Signal Mapper: use the dataset record, Manhattan plot, and locus zoom to choose a signal or peak to inspect.
+- Genome Browser: load the same dataset track in the genome browser and choose a region to carry forward.
 
-- Evidence type
-- Dataset, track, or result name
-- Which resource was used: FILER or xQTL Browser
-Fallback:
-- If no evidence is found, describe what kind of evidence FILER or xQTL Browser is intended to provide.
-Hint:
-- Use xQTL for QTL-style evidence. Use FILER for functional or regulatory track evidence.
+Discovery path:
 
-1. TopGenes Mission
-Title: Check gene prioritization
-Badge: Priority Analyst
-Resource: TopGenes
-Points: 3
-Task: Look up the assigned gene and record its prioritization information if available.
-Required fields:
+1. Search and Gene Record
+   - Participants open GenomicsDB and search for the assigned gene.
+   - They record the Ensembl ID, genomic location, and an overview-chart takeaway.
 
-- Rank, score, category, or “not found”
-- Brief note on what the prioritization suggests
-Fallback:
-- If no gene result is found, describe what TopGenes is designed to support.
-Hint:
-- Do not over-interpret. Capture how the resource ranks or categorizes the gene.
+2. Gene Record / NIAGADS GWAS
+   - Participants go to Trait associations -> NIAGADS GWAS.
+   - They choose either the Alzheimer disease or AD-related neuropathologies table.
+   - They select one significant summary-statistics variant and record relative position, p-value, linked dataset/track, and whether it is marked in the ADSP Variant column.
 
-1. Interpretation Mission
-Title: Build the evidence dossier
-Badge: Evidence Curator
-Resource: none
-Points: 4
-Task: Write a short synthesis of what the collected evidence suggests.
-Required fields:
+3. Dataset Record
+   - Participants open the linked dataset/track record.
+   - They record the dataset title.
+   - They use the dataset-level significant variants table or Manhattan plot to identify another strong region outside the assigned gene if possible.
+   - They toggle locus zoom view on the Manhattan plot and select a variant or peak to inspect next.
 
-- One-sentence interpretation
-- Most useful resource
-- One limitation or unanswered question
-Fallback:
-- None
-Hint:
-- Good answers combine association, genomic context, variant inventory, and functional/prioritization evidence.
+4. Variant Record
+   - Participants click the selected variant link and review the variant record header.
+   - They record variant ID, RefSNP ID if shown, alleles, and consequence or impacted gene/transcript.
+   - Optional bonus: if the variant is ADSP-flagged, describe what the ADSP Variant label indicates. The bonus hint should only tell them where to find the label, not provide the answer.
 
-1. API Bonus Mission
-Title: Automate the next hunt
-Badge: API Strategist
-Resource: API
-Points: 2 bonus
-Task: Identify one step in the scavenger hunt that should eventually be automated through the NIAGADS API.
-Required fields:
+5. Genome Browser
+   - Participants click View on Genome Browser.
+   - They find and load the same dataset track used earlier.
+   - They explore the track and identify a region or pattern worth inspecting in FILER.
 
-- Step to automate
-- Why automation would help
-Fallback:
-- Name one lookup that would be useful to retrieve programmatically.
-Hint:
-- Think repeated lookup, coordinate retrieval, variant inventory, evidence aggregation, or report generation.
+6. Carry Forward
+   - Participants record the final region to carry forward to the functional annotation activity.
 
-Visual design:
+Current GenomicsDB hint:
 
-- Use wide layout
-- Use clear mission cards
-- Use emoji sparingly for badges/progress
-- Use colored status indicators if possible
-- Avoid childish styling
-- Make it professional but game-like
-- Keep all resource links as buttons
-- Show a compact “Mission Control” sidebar with team, gene, timer, score, progress, and badges
+- Search for the gene, open the gene record, then go to Trait associations -> NIAGADS GWAS.
+- Choose one significant summary-statistics variant with a linked dataset or track.
+- Open the dataset record, use locus zoom to select a variant from the Manhattan plot, then use View on Genome Browser to load the same dataset track and choose a region for the functional annotation activity.
 
-Files to create:
+## Functional Annotation Follow-Up
 
-- app.py
-- requirements.txt
-- README.md
+The FILER/xQTL activity should use the region carried forward from GenomicsDB. It should not be a disconnected lookup for the assigned gene.
+
+Current direction:
+
+- Use the carried-forward region to look for one regulatory, functional, or QTL-related evidence item.
+- FILER is preferred for regulatory/functional tracks.
+- xQTL Browser is appropriate for QTL-style evidence.
+- Participants should record the region used, evidence type, dataset/track/result name, resource used, and a brief note about how the annotation may help interpret the region.
+
+## Content Constraints
+
+- VarIXam only provides lists of ADSP variants in a gene footprint.
+- Do not describe VarIXam as variant interpretation.
+- Frame VarIXam as variant inventory.
+- Do not imply that an ADSP Variant flag indicates AD-risk association. The label means the variant is present in ADSP samples and passed ADSP quality control checks, but participants should discover that from the GenomicsDB variant record when answering the bonus prompt.
+
+## Remaining Activities To Revisit
+
+ADVP, VarIXam, TopGenes, interpretation, and API still need future review so their language and workflows match the updated activity design standard. ADVP in particular should be revised later to clarify how its curated association evidence differs from GenomicsDB summary-statistics exploration.
+
+## Files
+
+- `app.py`
+- `requirements.txt`
+- `README.md`
+- `prompt.md`
