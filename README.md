@@ -29,6 +29,8 @@ VarIXam is framed as an **ADSP variant inventory** activity: participants record
 - Visible 20-minute countdown timer
 - Workshop Progress sidebar with timer, gene, score, progress, and completed skills
 - Activity sections with resource buttons, required answer fields, fallback prompts, hints, and hint penalties
+- Directed GenomicsDB activity that moves from a gene record to summary statistics, dataset record, variant record, genome browser, and follow-up region
+- Functional annotation activity that uses the region carried forward from GenomicsDB
 - Required and bonus activity styling
 - Final Gene Evidence Summary preview
 - Downloadable JSON and CSV summaries
@@ -52,6 +54,7 @@ streamlit run app.py
 ## Workshop facilitation notes
 
 - Suggested duration: 20 minutes of activity time plus 5–10 minutes for discussion.
+- The GenomicsDB activity is designed as the main within-site navigation exercise.
 - The API activity is bonus and is not required for completion.
 - Hints subtract 1 point once per activity.
 - An activity is complete when all required fields for that activity are filled.

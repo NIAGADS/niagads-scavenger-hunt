@@ -48,18 +48,112 @@ MISSIONS = [
     },
     {
         "id": "genomicsdb",
-        "title": "Review the genomic location",
-        "skill": "Genomic context",
-        "points": 3,
+        "title": "Explore GWAS summary statistics in GenomicsDB",
+        "skill": "Summary statistics review",
+        "points": 8,
         "resources": ["GenomicsDB"],
-        "task": "Find the genomic location or region for the assigned gene.",
+        "task": (
+            "Search for the assigned gene in GenomicsDB, then use the gene record to review significant NIAGADS "
+            "GWAS summary-statistics results in the gene footprint. Follow one table result to its dataset record, "
+            "use locus zoom to select a variant from the Manhattan plot, inspect that variant record, then load the "
+            "same dataset in the genome browser and choose a region to carry forward into the functional annotation "
+            "activity."
+        ),
         "fields": [
-            {"key": "Chromosome", "label": "Chromosome", "type": "text"},
-            {"key": "Start coordinate", "label": "Start coordinate", "type": "text"},
-            {"key": "End coordinate", "label": "End coordinate", "type": "text"},
+            {"type": "section", "label": "Search and Gene Record"},
+            {"key": "Ensembl ID", "label": "After searching for the assigned gene, what Ensembl ID is shown?", "type": "text"},
+            {"key": "Gene location", "label": "What genomic location is shown on the gene record?", "type": "text"},
+            {
+                "key": "Gene overview takeaway",
+                "label": "From the overview chart, which trait or biomarker category has the most significant variants near this gene?",
+                "type": "text",
+            },
+            {"type": "section", "label": "Gene Record / NIAGADS GWAS"},
+            {
+                "key": "GWAS table used",
+                "label": "Which NIAGADS GWAS table did you use?",
+                "type": "select",
+                "options": ["", "Alzheimer’s Disease", "AD-related neuropathologies"],
+            },
+            {"key": "Selected variant", "label": "Which significant summary-statistics variant did you choose from the table?", "type": "text"},
+            {
+                "key": "Relative position",
+                "label": "Where is that variant relative to the gene?",
+                "type": "select",
+                "options": ["", "upstream", "in gene", "downstream"],
+            },
+            {"key": "Variant p-value", "label": "What p-value is reported for that variant?", "type": "text"},
+            {"key": "Dataset or track name", "label": "What linked dataset or track contains this summary-statistics result?", "type": "text"},
+            {
+                "key": "ADSP variant",
+                "label": "Is the selected variant marked in the ADSP Variant column?",
+                "type": "select",
+                "options": ["", "yes", "no", "not shown"],
+            },
+            {"type": "section", "label": "Dataset Record"},
+            {"key": "Dataset record title", "label": "After opening the dataset link, what is the dataset record title?", "type": "text"},
+            {
+                "key": "Dataset top region",
+                "label": "From the dataset record, identify another strong association region outside the assigned gene if possible.",
+                "type": "text",
+            },
+            {"key": "Dataset top result", "label": "What top variant, p-value, or nearest result supports that region?", "type": "text"},
+            {
+                "key": "Locus zoom variant",
+                "label": "After toggling locus zoom view on the dataset Manhattan plot, which variant did you select?",
+                "type": "text",
+            },
+            {
+                "key": "Locus zoom reason",
+                "label": "Why did you choose that variant or peak to inspect next?",
+                "type": "textarea",
+            },
+            {"type": "section", "label": "Variant Record"},
+            {"key": "Variant record ID", "label": "After clicking the selected variant, what variant ID appears in the header?", "type": "text"},
+            {"key": "Variant RefSNP", "label": "What RefSNP ID is shown, if any?", "type": "text"},
+            {"key": "Variant alleles", "label": "What alleles are shown in the variant record header?", "type": "text"},
+            {
+                "key": "Variant consequence",
+                "label": "What consequence or impacted gene/transcript is listed in the header?",
+                "type": "text",
+            },
+            {
+                "key": "ADSP variant record label",
+                "label": "Bonus: If the variant is ADSP-flagged, what does the ADSP Variant label indicate?",
+                "type": "textarea",
+                "required": False,
+                "hint": (
+                    "Open the linked variant record and look for the ADSP Variant label in the overview."
+                ),
+            },
+            {"type": "section", "label": "Genome Browser"},
+            {
+                "key": "Genome browser dataset track",
+                "label": "Click View on Genome Browser. Which dataset track did you load?",
+                "type": "text",
+            },
+            {
+                "key": "Genome browser observation",
+                "label": "After exploring the loaded track, what region or pattern looks useful to inspect in FILER?",
+                "type": "textarea",
+            },
+            {"type": "section", "label": "Carry Forward"},
+            {
+                "key": "Region to carry forward",
+                "label": "What final region will you carry forward to the functional annotation activity?",
+                "type": "text",
+            },
         ],
-        "fallback": "If coordinates are hard to find, record the page/result where the gene appears.",
-        "hint": "Search the gene symbol and look for chromosome and coordinate range.",
+        "fallback": (
+            "If the dataset record is difficult to use, carry forward the original gene-region variant from "
+            "the gene table and note the dataset link you tried."
+        ),
+        "hint": (
+            "Search for the gene, open the gene record, then go to Trait associations → NIAGADS GWAS. Choose one "
+            "significant summary-statistics variant with a linked dataset or track. Open the dataset record, use "
+            "locus zoom to select a variant from the Manhattan plot, then use View on Genome Browser to load the "
+            "same dataset track and choose a region for the functional annotation activity."
+        ),
         "bonus": False,
     },
     {
@@ -79,18 +173,37 @@ MISSIONS = [
     },
     {
         "id": "functional",
-        "title": "Review functional evidence",
+        "title": "Review functional evidence for the carried-forward region",
         "skill": "Functional annotation",
         "points": 4,
         "resources": ["FILER", "xQTL Browser"],
-        "task": "Find one regulatory, functional, or QTL-related evidence item for the assigned gene or nearby region.",
+        "task": (
+            "Use the region carried forward from the GenomicsDB dataset record to look for one regulatory, "
+            "functional, or QTL-related evidence item in FILER or the xQTL Browser."
+        ),
         "fields": [
+            {
+                "key": "Region carried forward from GenomicsDB",
+                "label": "Region carried forward from GenomicsDB",
+                "type": "text",
+            },
             {"key": "Evidence type", "label": "Evidence type", "type": "text"},
             {"key": "Dataset, track, or result name", "label": "Dataset, track, or result name", "type": "text"},
             {"key": "Which resource was used", "label": "Which resource was used", "type": "select", "options": ["", "FILER", "xQTL Browser"]},
+            {
+                "key": "Functional annotation note",
+                "label": "Brief note on how this annotation may help interpret the region",
+                "type": "textarea",
+            },
         ],
-        "fallback": "If no evidence is found, describe what kind of evidence FILER or xQTL Browser is intended to provide.",
-        "hint": "Use xQTL for QTL-style evidence. Use FILER for functional or regulatory track evidence.",
+        "fallback": (
+            "If the carried-forward region is hard to use, inspect the original assigned gene region instead "
+            "and record which region you used."
+        ),
+        "hint": (
+            "Use FILER for regulatory tracks and xQTL Browser for QTL-style evidence. Start with the region "
+            "from GenomicsDB so this activity connects back to the dataset-level GWAS result."
+        ),
         "bonus": False,
     },
     {
@@ -150,6 +263,7 @@ def initialize_state():
         "timer_started_at": None,
         "answers": {},
         "hints_used": set(),
+        "field_hints_used": set(),
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -158,7 +272,11 @@ def initialize_state():
 
 def mission_complete(mission):
     answers = st.session_state.answers.get(mission["id"], {})
-    return all(str(answers.get(field["key"], "")).strip() for field in mission["fields"])
+    return all(
+        str(answers.get(field["key"], "")).strip()
+        for field in mission["fields"]
+        if field.get("required", True) and field.get("type") != "section"
+    )
 
 
 def earned_points(mission):
@@ -219,6 +337,10 @@ def render_skills(completed_missions):
         ),
         unsafe_allow_html=True,
     )
+
+
+def resource_url(resource):
+    return RESOURCES[resource]
 
 
 initialize_state()
@@ -318,7 +440,7 @@ for mission in MISSIONS:
     if mission["resources"]:
         link_cols = st.columns(max(len(mission["resources"]), 1))
         for idx, resource in enumerate(mission["resources"]):
-            link_cols[idx].link_button(f"Open {resource}", RESOURCES[resource], use_container_width=True)
+            link_cols[idx].link_button(f"Open {resource}", resource_url(resource), use_container_width=True)
 
     with st.expander("Fallback question"):
         st.write(mission["fallback"])
@@ -330,16 +452,47 @@ for mission in MISSIONS:
 
     mission_answers = st.session_state.answers.setdefault(mission["id"], {})
     for field in mission["fields"]:
+        if field["type"] == "section":
+            st.markdown(f"#### {field['label']}")
+            continue
         key = f"answer_{mission['id']}_{field['key']}"
         current = mission_answers.get(field["key"], "")
+        widget_label = field["label"]
+        label_visibility = "visible"
+        if "hint" in field:
+            st.markdown(f"**{field['label']}**")
+            hint_key = f"{mission['id']}::{field['key']}"
+            if st.button("Show bonus hint", key=f"field_hint_{mission['id']}_{field['key']}"):
+                st.session_state.field_hints_used.add(hint_key)
+            if hint_key in st.session_state.field_hints_used:
+                st.warning(f"Hint: {field['hint']}")
+            widget_label = field["label"]
+            label_visibility = "collapsed"
         if field["type"] == "textarea":
-            mission_answers[field["key"]] = st.text_area(field["label"], value=current, key=key, height=90)
+            mission_answers[field["key"]] = st.text_area(
+                widget_label,
+                value=current,
+                key=key,
+                height=90,
+                label_visibility=label_visibility,
+            )
         elif field["type"] == "select":
             options = field["options"]
             index = options.index(current) if current in options else 0
-            mission_answers[field["key"]] = st.selectbox(field["label"], options, index=index, key=key)
+            mission_answers[field["key"]] = st.selectbox(
+                widget_label,
+                options,
+                index=index,
+                key=key,
+                label_visibility=label_visibility,
+            )
         else:
-            mission_answers[field["key"]] = st.text_input(field["label"], value=current, key=key)
+            mission_answers[field["key"]] = st.text_input(
+                widget_label,
+                value=current,
+                key=key,
+                label_visibility=label_visibility,
+            )
 
     st.markdown("</div>", unsafe_allow_html=True)
 
