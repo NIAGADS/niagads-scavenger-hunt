@@ -34,6 +34,36 @@ TEAM_LABEL_NOUNS = ["Review Group", "Working Group", "Analysis Team", "Data Team
 
 MISSIONS = [
     {
+        "id": "topgenes",
+        "title": "Check gene prioritization",
+        "skill": "Gene prioritization",
+        "points": 3,
+        "resources": ["TopGenes"],
+        "task": "Look up the assigned gene and record its prioritization information if available.",
+        "fields": [
+            {"key": "Rank, score, category, or not found", "label": "Rank, score, category, or “not found”", "type": "text"},
+            {"key": "Brief note on what the prioritization suggests", "label": "Brief note on what the prioritization suggests", "type": "textarea"},
+        ],
+        "fallback": "If no gene result is found, describe what TopGenes is designed to support.",
+        "hint": "Do not over-interpret. Capture how the resource ranks or categorizes the gene.",
+        "bonus": False,
+    },
+    {
+        "id": "varixam",
+        "title": "Inventory ADSP variants",
+        "skill": "Variant inventory",
+        "points": 3,
+        "resources": ["VarIXam"],
+        "task": "Find ADSP variants overlapping the assigned gene footprint. Record one example variant or summarize the returned variant set.",
+        "fields": [
+            {"key": "Example variant ID or coordinate", "label": "Example variant ID or coordinate", "type": "text"},
+            {"key": "Variant density", "label": "Variant density", "type": "select", "options": ["", "none", "few", "many"]},
+        ],
+        "fallback": "If too many variants are returned, write “many” and describe what kind of list VarIXam provides.",
+        "hint": "This is an inventory task, not interpretation. Any returned ADSP variant is acceptable.",
+        "bonus": False,
+    },
+    {
         "id": "advp",
         "title": "Review AD association evidence",
         "skill": "Association review",
@@ -190,21 +220,6 @@ MISSIONS = [
         "bonus": False,
     },
     {
-        "id": "varixam",
-        "title": "Inventory ADSP variants",
-        "skill": "Variant inventory",
-        "points": 3,
-        "resources": ["VarIXam"],
-        "task": "Find ADSP variants overlapping the assigned gene footprint. Record one example variant or summarize the returned variant set.",
-        "fields": [
-            {"key": "Example variant ID or coordinate", "label": "Example variant ID or coordinate", "type": "text"},
-            {"key": "Variant density", "label": "Variant density", "type": "select", "options": ["", "none", "few", "many"]},
-        ],
-        "fallback": "If too many variants are returned, write “many” and describe what kind of list VarIXam provides.",
-        "hint": "This is an inventory task, not interpretation. Any returned ADSP variant is acceptable.",
-        "bonus": False,
-    },
-    {
         "id": "functional",
         "title": "Review functional evidence for the carried-forward region",
         "skill": "Functional annotation",
@@ -237,21 +252,6 @@ MISSIONS = [
             "Use FILER for regulatory tracks and xQTL Browser for QTL-style evidence. Start with the region "
             "from GenomicsDB so this activity connects back to the dataset-level GWAS result."
         ),
-        "bonus": False,
-    },
-    {
-        "id": "topgenes",
-        "title": "Check gene prioritization",
-        "skill": "Gene prioritization",
-        "points": 3,
-        "resources": ["TopGenes"],
-        "task": "Look up the assigned gene and record its prioritization information if available.",
-        "fields": [
-            {"key": "Rank, score, category, or not found", "label": "Rank, score, category, or “not found”", "type": "text"},
-            {"key": "Brief note on what the prioritization suggests", "label": "Brief note on what the prioritization suggests", "type": "textarea"},
-        ],
-        "fallback": "If no gene result is found, describe what TopGenes is designed to support.",
-        "hint": "Do not over-interpret. Capture how the resource ranks or categorizes the gene.",
         "bonus": False,
     },
     {
