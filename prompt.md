@@ -9,6 +9,8 @@ The app should feel like a professional workshop challenge, not a roleplay scave
 - Keep points, progress, hints, completion states, and badge-style visual chips.
 - Badge chips use a trophy icon and distinguish earned vs pending by color.
 - Use a compact sidebar labeled "Workshop Progress" with team, team label, assigned gene, timer, score, progress, and completed skills.
+- On initial page load for a new Streamlit session, assign a random gene and generate a random team label.
+- Keep controls for manually rerolling the team label, randomly assigning another gene, and manually overriding the gene.
 - Resource links should remain buttons.
 - Keep the app single-page, with no database, using only Streamlit `session_state`.
 

@@ -286,11 +286,15 @@ MISSIONS = [
 ]
 
 
+def random_team_label():
+    return f"{random.choice(TEAM_LABEL_PREFIXES)} {random.choice(TEAM_LABEL_NOUNS)}"
+
+
 def initialize_state():
     defaults = {
         "team_name": "",
-        "team_label": "",
-        "assigned_gene": "APOE",
+        "team_label": random_team_label(),
+        "assigned_gene": random.choice(GENES),
         "timer_started_at": None,
         "answers": {},
         "hints_used": set(),
@@ -440,7 +444,7 @@ with st.sidebar:
     col_a, col_b = st.columns(2)
     with col_a:
         if st.button("Generate team label", use_container_width=True):
-            st.session_state.team_label = f"{random.choice(TEAM_LABEL_PREFIXES)} {random.choice(TEAM_LABEL_NOUNS)}"
+            st.session_state.team_label = random_team_label()
     with col_b:
         if st.button("Assign gene", use_container_width=True):
             st.session_state.assigned_gene = random.choice(GENES)
