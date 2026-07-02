@@ -1,11 +1,12 @@
-import csv
-import io
 import json
 import random
 import time
 from datetime import datetime, timezone
+from uuid import uuid4
 
 import streamlit as st
+
+from leaderboard_store import leaderboard_configured, leaderboard_rows, load_leaderboard, submit_to_leaderboard
 
 
 st.set_page_config(
@@ -293,8 +294,11 @@ def random_team_label():
 def initialize_state():
     defaults = {
         "team_name": "",
+        "leader_email": "",
         "team_label": random_team_label(),
         "assigned_gene": random.choice(GENES),
+        "leaderboard_entry_id": uuid4().hex,
+        "leaderboard_submitted": False,
         "timer_started_at": None,
         "answers": {},
         "hints_used": set(),
@@ -345,6 +349,7 @@ def build_summary():
     required = [mission for mission in MISSIONS if not mission["bonus"]]
     return {
         "team_name": st.session_state.team_name,
+        "leader_email": st.session_state.leader_email,
         "team_label": st.session_state.team_label,
         "assigned_gene": st.session_state.assigned_gene,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -366,20 +371,6 @@ def build_summary():
             for mission in MISSIONS
         ],
     }
-
-
-def summary_csv(summary):
-    output = io.StringIO()
-    writer = csv.writer(output)
-    writer.writerow(["team_name", "team_label", "assigned_gene", "activity", "skill", "field", "answer", "points_awarded"])
-    for mission in summary["activities"]:
-        answers = mission["answers"] or {"": ""}
-        for field, answer in answers.items():
-            writer.writerow([
-                summary["team_name"], summary["team_label"], summary["assigned_gene"],
-                mission["title"], mission["skill"], field, answer, mission["points_awarded"],
-            ])
-    return output.getvalue()
 
 
 def render_completed_skills(skill_names):
@@ -432,6 +423,35 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
+def render_leaderboard_view():
+    st.title("Workshop Leaderboard")
+    st.caption("Scores are sorted by points, required activity progress, completed skills, and fewer hints used.")
+    st.link_button("Return to workshop challenge", "?")
+
+    if not leaderboard_configured():
+        st.warning("Leaderboard storage is not configured yet.")
+        st.stop()
+
+    try:
+        entries = load_leaderboard()
+    except Exception as error:
+        st.error("Could not load the leaderboard from Google Sheets.")
+        st.caption(str(error))
+        st.stop()
+
+    rows = leaderboard_rows(entries)
+    if rows:
+        st.dataframe(rows, hide_index=True, use_container_width=True)
+    else:
+        st.caption("No leaderboard submissions yet.")
+    st.stop()
+
+
+if st.query_params.get("view") == "leaderboard":
+    render_leaderboard_view()
+
+
 required_missions = [mission for mission in MISSIONS if not mission["bonus"]]
 completed_required = sum(mission_complete(mission) for mission in required_missions)
 progress = completed_required / len(required_missions)
@@ -440,7 +460,8 @@ completed_skills = completed_skill_names(MISSIONS)
 
 with st.sidebar:
     st.header("Workshop Progress")
-    st.text_input("Team name", key="team_name", placeholder="e.g., Table 4")
+    st.text_input("Table or group number", key="team_name", placeholder="e.g., Table 4")
+    st.text_input("Team leader email (optional)", key="leader_email", placeholder="name@example.org")
     col_a, col_b = st.columns(2)
     with col_a:
         if st.button("Generate team label", use_container_width=True):
@@ -468,6 +489,7 @@ with st.sidebar:
     st.progress(progress, text=f"Required progress: {completed_required}/{len(required_missions)}")
     st.subheader("Skills completed")
     render_completed_skills(completed_skills)
+    st.link_button("🏆 View leaderboard", "?view=leaderboard", use_container_width=True)
 
 st.title("NIAGADS Open Access Workshop Challenge")
 st.subheader("Build a gene evidence summary")
@@ -568,20 +590,23 @@ st.header("Gene Evidence Summary Preview")
 st.caption("This preview updates as your team fills in activity fields.")
 st.json(summary, expanded=False)
 
-download_cols = st.columns(2)
-with download_cols[0]:
-    st.download_button(
-        "Download JSON summary",
-        data=json.dumps(summary, indent=2),
-        file_name=f"{st.session_state.assigned_gene}_workshop_summary.json",
-        mime="application/json",
-        use_container_width=True,
-    )
-with download_cols[1]:
-    st.download_button(
-        "Download CSV summary",
-        data=summary_csv(summary),
-        file_name=f"{st.session_state.assigned_gene}_workshop_summary.csv",
-        mime="text/csv",
-        use_container_width=True,
-    )
+st.divider()
+st.header("Submit Results")
+st.caption("Submit or update your team score when you are ready. The leaderboard is shown on a separate page.")
+
+submit_cols = st.columns([1, 1])
+with submit_cols[0]:
+    if leaderboard_configured():
+        if st.button("Submit / update leaderboard", type="primary", use_container_width=True):
+            submit_to_leaderboard(summary, st.session_state.leaderboard_entry_id)
+            st.session_state.leaderboard_submitted = True
+            st.success("Leaderboard updated.")
+    else:
+        st.warning("Leaderboard submission is not configured yet.")
+with submit_cols[1]:
+    st.metric("Current score", f"{score} pts")
+
+if st.session_state.leaderboard_submitted:
+    st.success("This team has submitted during the current session. Submit again to update the score.")
+
+st.link_button("🏆 Open leaderboard", "?view=leaderboard")

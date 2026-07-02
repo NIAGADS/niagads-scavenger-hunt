@@ -1,6 +1,6 @@
 # NIAGADS Open Access Workshop Challenge
 
-A single-page Streamlit app for a 20–30 minute genomics workshop where teams review open NIAGADS resources for one Alzheimer’s disease gene and build a gene evidence summary.
+A Streamlit app for a 20–30 minute genomics workshop where teams review open NIAGADS resources for one Alzheimer’s disease gene and build a gene evidence summary.
 
 ## What participants do
 
@@ -22,9 +22,10 @@ VarIXam is framed as an **ADSP variant inventory** activity: participants record
 
 ## Features
 
-- Single-page Streamlit app
-- No database; uses `st.session_state` only
+- Streamlit workshop app with a separate leaderboard page
+- No application database; uses `st.session_state` plus Google Sheets-backed leaderboard storage
 - Team name and random team label generator
+- Optional team leader contact email
 - Random assigned gene button plus manual gene override
 - Visible 20-minute countdown timer
 - Workshop Progress sidebar with timer, gene, score, progress, and completed skills
@@ -33,7 +34,7 @@ VarIXam is framed as an **ADSP variant inventory** activity: participants record
 - Functional annotation activity that uses the region carried forward from GenomicsDB
 - Required and bonus activity styling
 - Final Gene Evidence Summary preview
-- Downloadable JSON and CSV summaries
+- Separate leaderboard page backed by Google Sheets
 
 ## Run locally
 
@@ -49,7 +50,30 @@ streamlit run app.py
 1. Push this repository to GitHub.
 2. In Streamlit Community Cloud, create a new app from the repository.
 3. Set the main file path to `app.py`.
-4. Deploy. Streamlit will install dependencies from `requirements.txt`.
+4. Add Google Sheets credentials in Streamlit secrets if using the leaderboard.
+5. Deploy. Streamlit will install dependencies from `requirements.txt`.
+
+## Google Sheets leaderboard setup
+
+Create a Google Cloud service account, share the leaderboard spreadsheet with the service account email, and add secrets using this shape:
+
+```toml
+[leaderboard]
+spreadsheet_id = "your-google-sheet-id"
+worksheet_name = "Leaderboard"
+
+[gcp_service_account]
+type = "service_account"
+project_id = "..."
+private_key_id = "..."
+private_key = "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+client_email = "service-account@project.iam.gserviceaccount.com"
+client_id = "..."
+auth_uri = "https://accounts.google.com/o/oauth2/auth"
+token_uri = "https://oauth2.googleapis.com/token"
+auth_provider_x509_cert_url = "https://www.googleapis.com/oauth2/v1/certs"
+client_x509_cert_url = "..."
+```
 
 ## Workshop facilitation notes
 
@@ -58,3 +82,5 @@ streamlit run app.py
 - The API activity is bonus and is not required for completion.
 - Hints subtract 1 point once per activity.
 - An activity is complete when all required fields for that activity are filled.
+- Leaderboard submissions are written to Google Sheets.
+- Participant-facing download buttons are intentionally omitted.

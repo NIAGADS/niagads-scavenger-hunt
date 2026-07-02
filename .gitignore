@@ -217,3 +217,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Legacy local leaderboard files
+leaderboard.json
+leaderboard.tmp
