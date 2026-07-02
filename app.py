@@ -2,6 +2,7 @@ import json
 import random
 import time
 from datetime import datetime, timezone
+from html import escape
 from uuid import uuid4
 
 import streamlit as st
@@ -360,6 +361,7 @@ def build_summary():
         "hints_used": sorted(st.session_state.hints_used),
         "activities": [
             {
+                "id": mission["id"],
                 "title": mission["title"],
                 "skill": mission["skill"],
                 "skills": [skill["skill"] for skill in mission_skills(mission)],
@@ -396,6 +398,91 @@ def render_activity_skills(mission):
     )
 
 
+def activity_answers(summary, activity_id):
+    for activity in summary["activities"]:
+        if activity.get("id") == activity_id:
+            return activity.get("answers", {})
+    return {}
+
+
+def answer_value(summary, activity_id, key):
+    value = activity_answers(summary, activity_id).get(key, "")
+    return str(value).strip()
+
+
+def first_answer(summary, activity_id, keys):
+    for key in keys:
+        value = answer_value(summary, activity_id, key)
+        if value:
+            return value
+    return ""
+
+
+def display_value(value, fallback="Not recorded yet"):
+    return escape(str(value).strip() or fallback)
+
+
+def pathway_node(label, source, value, complete=False):
+    status_class = "path-node-complete" if complete else "path-node-pending"
+    status_text = "Complete" if complete else "Pending"
+    return (
+        f"<div class='path-node {status_class}'>"
+        f"<div class='path-source'>{escape(source)}</div>"
+        f"<div class='path-label'>{escape(label)}</div>"
+        f"<div class='path-value'>{display_value(value)}</div>"
+        f"<div class='path-status'>{status_text}</div>"
+        f"</div>"
+    )
+
+
+def render_evidence_pathway(summary):
+    advp_signal = first_answer(summary, "advp", ["AD association status", "One association or evidence detail"])
+    gwas_signal = first_answer(summary, "genomicsdb", ["Selected variant", "Variant p-value"])
+    dataset_signal = first_answer(summary, "genomicsdb", ["Locus zoom variant", "Dataset top region", "Dataset top result"])
+    variant_signal = first_answer(summary, "genomicsdb", ["Variant consequence", "Variant record ID", "Variant RefSNP"])
+    browser_region = first_answer(summary, "genomicsdb", ["Region to carry forward", "Genome browser observation"])
+    functional_signal = first_answer(summary, "functional", ["Dataset, track, or result name", "Evidence type", "Functional annotation note"])
+    interpretation = first_answer(summary, "interpretation", ["One-sentence interpretation", "One limitation or unanswered question"])
+
+    progress_text = f"{summary['required_activities_completed']}/{summary['required_activities_total']}"
+    skills_text = ", ".join(summary["skills_completed"]) if summary["skills_completed"] else "No skills completed yet"
+
+    st.header("Evidence Pathway")
+    snapshot_cols = st.columns(4)
+    snapshot_cols[0].metric("Gene", summary["assigned_gene"])
+    snapshot_cols[1].metric("Team label", summary["team_label"] or "Not set")
+    snapshot_cols[2].metric("Score", f"{summary['score']} pts")
+    snapshot_cols[3].metric("Required progress", progress_text)
+    st.markdown(f"<div class='summary-skill-strip'>{display_value(skills_text)}</div>", unsafe_allow_html=True)
+
+    nodes = [
+        pathway_node("Assigned gene", "Workshop setup", summary["assigned_gene"], bool(summary["assigned_gene"])),
+        pathway_node("Association evidence", "ADVP", advp_signal, bool(advp_signal)),
+        pathway_node("GWAS table signal", "GenomicsDB", gwas_signal, bool(gwas_signal)),
+        pathway_node("Dataset / locus zoom", "GenomicsDB", dataset_signal, bool(dataset_signal)),
+        pathway_node("Variant record", "GenomicsDB", variant_signal, bool(variant_signal)),
+        pathway_node("Browser region", "GenomicsDB", browser_region, bool(browser_region)),
+        pathway_node("Functional annotation", "FILER / xQTL", functional_signal, bool(functional_signal)),
+        pathway_node("Interpretation", "Synthesis", interpretation, bool(interpretation)),
+    ]
+    st.markdown(f"<div class='path-grid'>{''.join(nodes)}</div>", unsafe_allow_html=True)
+
+    st.subheader("Carry-Forward Focus")
+    focus_items = [
+        ("Dataset / track", answer_value(summary, "genomicsdb", "Dataset or track name")),
+        ("Locus zoom variant", answer_value(summary, "genomicsdb", "Locus zoom variant")),
+        ("Variant context", first_answer(summary, "genomicsdb", ["Variant consequence", "Variant alleles", "Variant RefSNP"])),
+        ("Genome browser region", answer_value(summary, "genomicsdb", "Region to carry forward")),
+        ("Functional evidence", first_answer(summary, "functional", ["Dataset, track, or result name", "Evidence type"])),
+        ("Limitation / question", answer_value(summary, "interpretation", "One limitation or unanswered question")),
+    ]
+    focus_html = "".join(
+        f"<div class='focus-item'><div class='focus-label'>{escape(label)}</div><div class='focus-value'>{display_value(value)}</div></div>"
+        for label, value in focus_items
+    )
+    st.markdown(f"<div class='focus-panel'>{focus_html}</div>", unsafe_allow_html=True)
+
+
 def resource_url(resource):
     return RESOURCES[resource]
 
@@ -417,6 +504,83 @@ st.markdown(
     .skill-chip {border: 1px solid; }
     .skill-earned {background: #e7f6ec; border-color: #94d3a2; color: #14532d;}
     .skill-pending {background: #f6f8fa; border-color: #d0d7de; color: #57606a;}
+    .summary-skill-strip {
+        background: #f6f8fa;
+        border: 1px solid #d0d7de;
+        border-radius: 8px;
+        color: #394b59;
+        margin: 0.5rem 0 1rem 0;
+        padding: 0.65rem 0.8rem;
+    }
+    .path-grid {
+        display: grid;
+        gap: 0.7rem;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        margin: 0.6rem 0 1.25rem 0;
+    }
+    .path-node {
+        border: 1px solid #d0d7de;
+        border-left: 6px solid #8c959f;
+        border-radius: 8px;
+        background: #ffffff;
+        min-height: 8.4rem;
+        padding: 0.75rem;
+    }
+    .path-node-complete {border-left-color: #2e7d32;}
+    .path-node-pending {background: #f6f8fa;}
+    .path-source {
+        color: #57606a;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+    .path-label {
+        color: #24292f;
+        font-size: 1rem;
+        font-weight: 700;
+        margin-top: 0.2rem;
+    }
+    .path-value {
+        color: #394b59;
+        font-size: 0.9rem;
+        line-height: 1.3;
+        margin-top: 0.45rem;
+        overflow-wrap: anywhere;
+    }
+    .path-status {
+        color: #57606a;
+        font-size: 0.75rem;
+        margin-top: 0.6rem;
+    }
+    .focus-panel {
+        background: #fff8e6;
+        border: 1px solid #f0c36d;
+        border-radius: 8px;
+        display: grid;
+        gap: 0.65rem;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        margin: 0.5rem 0 1.25rem 0;
+        padding: 0.85rem;
+    }
+    .focus-item {
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px solid rgba(184, 134, 11, 0.22);
+        border-radius: 6px;
+        padding: 0.65rem;
+    }
+    .focus-label {
+        color: #6b4e16;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .focus-value {
+        color: #24292f;
+        font-size: 0.92rem;
+        margin-top: 0.25rem;
+        overflow-wrap: anywhere;
+    }
     .small-note {color: #52606d; font-size: 0.92rem;}
     </style>
     """,
@@ -585,6 +749,8 @@ for mission in MISSIONS:
     st.markdown("</div>", unsafe_allow_html=True)
 
 summary = build_summary()
+st.divider()
+render_evidence_pathway(summary)
 st.divider()
 st.header("Gene Evidence Summary Preview")
 st.caption("This preview updates as your team fills in activity fields.")
