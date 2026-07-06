@@ -22,19 +22,19 @@ VarIXam is framed as an **ADSP variant inventory** activity: participants record
 
 ## Features
 
-- Streamlit workshop app with a separate leaderboard page
+- Streamlit workshop app with an in-app leaderboard view
 - No application database; uses `st.session_state` plus Google Sheets-backed leaderboard storage
 - Team name and random team label generator
 - Optional team leader contact email
 - Random assigned gene button plus manual gene override
 - Visible 20-minute countdown timer
 - Workshop Progress sidebar with timer, gene, score, progress, and completed skills
-- Activity sections with resource buttons, required answer fields, fallback prompts, hints, and hint penalties
+- Activity sections with resource buttons, required answer fields, hints, and hint penalties
 - Directed GenomicsDB activity that moves from a gene record to summary statistics, dataset record, variant record, genome browser, and follow-up region
 - Functional annotation activity that uses the region carried forward from GenomicsDB
 - Required and bonus activity styling
 - Final Gene Evidence Summary preview
-- Separate leaderboard page backed by Google Sheets
+- Leaderboard view backed by Google Sheets
 
 ## Run locally
 
@@ -55,7 +55,95 @@ streamlit run app.py
 
 ## Google Sheets leaderboard setup
 
-Create a Google Cloud service account, share the leaderboard spreadsheet with the service account email, and add secrets using this shape:
+The leaderboard is optional. If Google Sheets secrets are not configured, the app still runs and shows a warning in the Submit Results area.
+
+### 1. Create the Google Sheet
+
+1. Go to <https://sheets.google.com>.
+2. Create a new blank spreadsheet.
+3. Rename it something recognizable, such as `NIAGADS Workshop Leaderboard`.
+4. Copy the spreadsheet ID from the browser URL.
+
+For example, if the URL is:
+
+```text
+https://docs.google.com/spreadsheets/d/1abcDEFghiJKLmnoPQRstuVWxyz/edit
+```
+
+the spreadsheet ID is:
+
+```text
+1abcDEFghiJKLmnoPQRstuVWxyz
+```
+
+### 2. Create a Google Cloud project
+
+1. Go to <https://console.cloud.google.com/>.
+2. In the top project menu, select **New Project**.
+3. Name it something like `NIAGADS Workshop Leaderboard`.
+4. Click **Create**.
+5. Make sure this new project is selected in the top project menu before continuing.
+
+### 3. Enable Google Sheets API
+
+1. In Google Cloud Console, go to **APIs & Services** > **Library**.
+2. Search for `Google Sheets API`.
+3. Open **Google Sheets API**.
+4. Click **Enable**.
+
+### 4. Create the service account
+
+1. Go to **IAM & Admin** > **Service Accounts**.
+2. Click **Create service account**.
+3. Enter a name, for example `streamlit-leaderboard`.
+4. Click **Create and continue**.
+5. For this app, you do not need to grant project-wide roles. Click **Continue**.
+6. Click **Done**.
+
+### 5. Create and download the JSON key
+
+1. On the **Service Accounts** page, click the service account you just created.
+2. Open the **Keys** tab.
+3. Click **Add key** > **Create new key**.
+4. Choose **JSON**.
+5. Click **Create**.
+6. Google downloads a `.json` file. Keep it private.
+
+### 6. Share the Sheet with the service account
+
+1. Open the downloaded `.json` file.
+2. Copy the `client_email` value. It will look like:
+
+```text
+streamlit-leaderboard@your-project.iam.gserviceaccount.com
+```
+
+3. Go back to the Google Sheet.
+4. Click **Share**.
+5. Paste the service account email.
+6. Give it **Editor** access.
+7. Click **Send** or **Share**.
+
+### 7. Add Streamlit secrets
+
+The downloaded Google key is JSON, but Streamlit secrets are written as TOML. Use the helper script to convert the JSON key into `.streamlit/secrets.toml`:
+
+```bash
+python3 scripts/create_streamlit_secrets.py --json-key path/to/google-key.json --spreadsheet-id your-google-sheet-id
+```
+
+To use a worksheet/tab name other than `Leaderboard`:
+
+```bash
+python3 scripts/create_streamlit_secrets.py --json-key path/to/google-key.json --spreadsheet-id your-google-sheet-id --worksheet-name "Workshop Scores"
+```
+
+The script refuses to overwrite an existing secrets file unless you add `--force`.
+
+For Streamlit Community Cloud, open the generated `.streamlit/secrets.toml`, copy its contents, and paste them into the app's **Secrets** settings.
+
+Manual format, if needed:
+
 
 ```toml
 [leaderboard]
@@ -74,6 +162,12 @@ token_uri = "https://oauth2.googleapis.com/token"
 auth_provider_x509_cert_url = "https://www.googleapis.com/oauth2/v1/certs"
 client_x509_cert_url = "..."
 ```
+
+Notes:
+
+- `worksheet_name` can be any tab name. If it does not exist, the app creates it.
+- Keep the private key on one TOML line with `\n` line breaks, as shown above.
+- Do not commit `.streamlit/secrets.toml` to Git.
 
 ## Workshop facilitation notes
 

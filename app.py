@@ -1,4 +1,3 @@
-import json
 import random
 import time
 from datetime import datetime, timezone
@@ -7,8 +6,12 @@ from uuid import uuid4
 
 import streamlit as st
 
-from leaderboard_store import leaderboard_configured, leaderboard_rows, load_leaderboard, submit_to_leaderboard
-
+from leaderboard_store import (
+    leaderboard_configured,
+    leaderboard_rows,
+    load_leaderboard,
+    submit_to_leaderboard,
+)
 
 st.set_page_config(
     page_title="NIAGADS AD Gene Workshop Challenge",
@@ -16,7 +19,18 @@ st.set_page_config(
     layout="wide",
 )
 
-GENES = ["APOE", "BIN1", "TREM2", "ABCA7", "CLU", "PICALM", "CR1", "SORL1", "MS4A6A", "CD33"]
+GENES = [
+    "APOE",
+    "BIN1",
+    "TREM2",
+    "ABCA7",
+    "CLU",
+    "PICALM",
+    "CR1",
+    "SORL1",
+    "MS4A6A",
+    "CD33",
+]
 
 RESOURCES = {
     "ADVP": "https://advp.niagads.org/",
@@ -29,8 +43,24 @@ RESOURCES = {
 }
 
 AWARD_ICON = "🏆"
-TEAM_LABEL_PREFIXES = ["Amyloid", "Tau", "Synapse", "Hippocampus", "Microglia", "Genome", "Variant", "Atlas"]
-TEAM_LABEL_NOUNS = ["Review Group", "Working Group", "Analysis Team", "Data Team", "Study Group", "Workshop Team"]
+TEAM_LABEL_PREFIXES = [
+    "Amyloid",
+    "Tau",
+    "Synapse",
+    "Hippocampus",
+    "Microglia",
+    "Genome",
+    "Variant",
+    "Atlas",
+]
+TEAM_LABEL_NOUNS = [
+    "Review Group",
+    "Working Group",
+    "Analysis Team",
+    "Data Team",
+    "Study Group",
+    "Workshop Team",
+]
 
 MISSIONS = [
     {
@@ -41,10 +71,17 @@ MISSIONS = [
         "resources": ["TopGenes"],
         "task": "Look up the assigned gene and record its prioritization information if available.",
         "fields": [
-            {"key": "Rank, score, category, or not found", "label": "Rank, score, category, or “not found”", "type": "text"},
-            {"key": "Brief note on what the prioritization suggests", "label": "Brief note on what the prioritization suggests", "type": "textarea"},
+            {
+                "key": "Rank, score, category, or not found",
+                "label": "Rank, score, category, or “not found”",
+                "type": "text",
+            },
+            {
+                "key": "Brief note on what the prioritization suggests",
+                "label": "Brief note on what the prioritization suggests",
+                "type": "textarea",
+            },
         ],
-        "fallback": "If no gene result is found, describe what TopGenes is designed to support.",
         "hint": "Do not over-interpret. Capture how the resource ranks or categorizes the gene.",
         "bonus": False,
     },
@@ -56,10 +93,18 @@ MISSIONS = [
         "resources": ["VarIXam"],
         "task": "Find ADSP variants overlapping the assigned gene footprint. Record one example variant or summarize the returned variant set.",
         "fields": [
-            {"key": "Example variant ID or coordinate", "label": "Example variant ID or coordinate", "type": "text"},
-            {"key": "Variant density", "label": "Variant density", "type": "select", "options": ["", "none", "few", "many"]},
+            {
+                "key": "Example variant ID or coordinate",
+                "label": "Example variant ID or coordinate",
+                "type": "text",
+            },
+            {
+                "key": "Variant density",
+                "label": "Variant density",
+                "type": "select",
+                "options": ["", "none", "few", "many"],
+            },
         ],
-        "fallback": "If too many variants are returned, write “many” and describe what kind of list VarIXam provides.",
         "hint": "This is an inventory task, not interpretation. Any returned ADSP variant is acceptable.",
         "bonus": False,
     },
@@ -71,10 +116,17 @@ MISSIONS = [
         "resources": ["ADVP"],
         "task": "Search the assigned gene in ADVP and determine whether it has Alzheimer’s disease association evidence.",
         "fields": [
-            {"key": "AD association status", "label": "AD association status", "type": "text"},
-            {"key": "One association or evidence detail", "label": "One association or evidence detail", "type": "textarea"},
+            {
+                "key": "AD association status",
+                "label": "AD association status",
+                "type": "text",
+            },
+            {
+                "key": "One association or evidence detail",
+                "label": "One association or evidence detail",
+                "type": "textarea",
+            },
         ],
-        "fallback": "If no result is found, write what ADVP is designed to help users find.",
         "hint": "Search by gene symbol and look for curated association/evidence records.",
         "bonus": False,
     },
@@ -124,8 +176,16 @@ MISSIONS = [
         ),
         "fields": [
             {"type": "section", "label": "Search and Gene Record"},
-            {"key": "Ensembl ID", "label": "After searching for the assigned gene, what Ensembl ID is shown?", "type": "text"},
-            {"key": "Gene location", "label": "What genomic location is shown on the gene record?", "type": "text"},
+            {
+                "key": "Ensembl ID",
+                "label": "After searching for the assigned gene, what Ensembl ID is shown?",
+                "type": "text",
+            },
+            {
+                "key": "Gene location",
+                "label": "What genomic location is shown on the gene record?",
+                "type": "text",
+            },
             {
                 "key": "Gene overview takeaway",
                 "label": "From the overview chart, which trait or biomarker category has the most significant variants near this gene?",
@@ -138,15 +198,27 @@ MISSIONS = [
                 "type": "select",
                 "options": ["", "Alzheimer’s Disease", "AD-related neuropathologies"],
             },
-            {"key": "Selected variant", "label": "Which significant summary-statistics variant did you choose from the table?", "type": "text"},
+            {
+                "key": "Selected variant",
+                "label": "Which significant summary-statistics variant did you choose from the table?",
+                "type": "text",
+            },
             {
                 "key": "Relative position",
                 "label": "Where is that variant relative to the gene?",
                 "type": "select",
                 "options": ["", "upstream", "in gene", "downstream"],
             },
-            {"key": "Variant p-value", "label": "What p-value is reported for that variant?", "type": "text"},
-            {"key": "Dataset or track name", "label": "What linked dataset or track contains this summary-statistics result?", "type": "text"},
+            {
+                "key": "Variant p-value",
+                "label": "What p-value is reported for that variant?",
+                "type": "text",
+            },
+            {
+                "key": "Dataset or track name",
+                "label": "What linked dataset or track contains this summary-statistics result?",
+                "type": "text",
+            },
             {
                 "key": "ADSP variant",
                 "label": "Is the selected variant marked in the ADSP Variant column?",
@@ -154,13 +226,21 @@ MISSIONS = [
                 "options": ["", "yes", "no", "not shown"],
             },
             {"type": "section", "label": "Dataset Record"},
-            {"key": "Dataset record title", "label": "After opening the dataset link, what is the dataset record title?", "type": "text"},
+            {
+                "key": "Dataset record title",
+                "label": "After opening the dataset link, what is the dataset record title?",
+                "type": "text",
+            },
             {
                 "key": "Dataset top region",
                 "label": "From the dataset record, identify another strong association region outside the assigned gene if possible.",
                 "type": "text",
             },
-            {"key": "Dataset top result", "label": "What top variant, p-value, or nearest result supports that region?", "type": "text"},
+            {
+                "key": "Dataset top result",
+                "label": "What top variant, p-value, or nearest result supports that region?",
+                "type": "text",
+            },
             {
                 "key": "Locus zoom variant",
                 "label": "After toggling locus zoom view on the dataset Manhattan plot, which variant did you select?",
@@ -172,9 +252,21 @@ MISSIONS = [
                 "type": "textarea",
             },
             {"type": "section", "label": "Variant Record"},
-            {"key": "Variant record ID", "label": "After clicking the selected variant, what variant ID appears in the header?", "type": "text"},
-            {"key": "Variant RefSNP", "label": "What RefSNP ID is shown, if any?", "type": "text"},
-            {"key": "Variant alleles", "label": "What alleles are shown in the variant record header?", "type": "text"},
+            {
+                "key": "Variant record ID",
+                "label": "After clicking the selected variant, what variant ID appears in the header?",
+                "type": "text",
+            },
+            {
+                "key": "Variant RefSNP",
+                "label": "What RefSNP ID is shown, if any?",
+                "type": "text",
+            },
+            {
+                "key": "Variant alleles",
+                "label": "What alleles are shown in the variant record header?",
+                "type": "text",
+            },
             {
                 "key": "Variant consequence",
                 "label": "What consequence or impacted gene/transcript is listed in the header?",
@@ -207,10 +299,6 @@ MISSIONS = [
                 "type": "text",
             },
         ],
-        "fallback": (
-            "If the dataset record is difficult to use, carry forward the original gene-region variant from "
-            "the gene table and note the dataset link you tried."
-        ),
         "hint": (
             "Search for the gene, open the gene record, then go to Trait associations → NIAGADS GWAS. Choose one "
             "significant summary-statistics variant with a linked dataset or track. Open the dataset record, use "
@@ -236,18 +324,23 @@ MISSIONS = [
                 "type": "text",
             },
             {"key": "Evidence type", "label": "Evidence type", "type": "text"},
-            {"key": "Dataset, track, or result name", "label": "Dataset, track, or result name", "type": "text"},
-            {"key": "Which resource was used", "label": "Which resource was used", "type": "select", "options": ["", "FILER", "xQTL Browser"]},
+            {
+                "key": "Dataset, track, or result name",
+                "label": "Dataset, track, or result name",
+                "type": "text",
+            },
+            {
+                "key": "Which resource was used",
+                "label": "Which resource was used",
+                "type": "select",
+                "options": ["", "FILER", "xQTL Browser"],
+            },
             {
                 "key": "Functional annotation note",
                 "label": "Brief note on how this annotation may help interpret the region",
                 "type": "textarea",
             },
         ],
-        "fallback": (
-            "If the carried-forward region is hard to use, inspect the original assigned gene region instead "
-            "and record which region you used."
-        ),
         "hint": (
             "Use FILER for regulatory tracks and xQTL Browser for QTL-style evidence. Start with the region "
             "from GenomicsDB so this activity connects back to the dataset-level GWAS result."
@@ -262,11 +355,22 @@ MISSIONS = [
         "resources": [],
         "task": "Write a short synthesis of what the collected evidence suggests.",
         "fields": [
-            {"key": "One-sentence interpretation", "label": "One-sentence interpretation", "type": "textarea"},
-            {"key": "Most useful resource", "label": "Most useful resource", "type": "text"},
-            {"key": "One limitation or unanswered question", "label": "One limitation or unanswered question", "type": "textarea"},
+            {
+                "key": "One-sentence interpretation",
+                "label": "One-sentence interpretation",
+                "type": "textarea",
+            },
+            {
+                "key": "Most useful resource",
+                "label": "Most useful resource",
+                "type": "text",
+            },
+            {
+                "key": "One limitation or unanswered question",
+                "label": "One limitation or unanswered question",
+                "type": "textarea",
+            },
         ],
-        "fallback": "None",
         "hint": "Good answers combine association, genomic context, variant inventory, and functional/prioritization evidence.",
         "bonus": False,
     },
@@ -279,9 +383,12 @@ MISSIONS = [
         "task": "Identify one step in the workshop challenge that should eventually be automated through the NIAGADS API.",
         "fields": [
             {"key": "Step to automate", "label": "Step to automate", "type": "text"},
-            {"key": "Why automation would help", "label": "Why automation would help", "type": "textarea"},
+            {
+                "key": "Why automation would help",
+                "label": "Why automation would help",
+                "type": "textarea",
+            },
         ],
-        "fallback": "Name one lookup that would be useful to retrieve programmatically.",
         "hint": "Think repeated lookup, coordinate retrieval, variant inventory, evidence aggregation, or report generation.",
         "bonus": True,
     },
@@ -327,14 +434,27 @@ def skill_complete(mission, skill):
 def mission_skills(mission):
     if "sub_skills" in mission:
         return mission["sub_skills"]
-    return [{"skill": mission["skill"], "fields": [field["key"] for field in mission["fields"] if field.get("type") != "section" and field.get("required", True)]}]
+    return [
+        {
+            "skill": mission["skill"],
+            "fields": [
+                field["key"]
+                for field in mission["fields"]
+                if field.get("type") != "section" and field.get("required", True)
+            ],
+        }
+    ]
 
 
 def completed_skill_names(missions):
     skills = []
     for mission in missions:
         if "sub_skills" in mission:
-            skills.extend(skill["skill"] for skill in mission["sub_skills"] if skill_complete(mission, skill))
+            skills.extend(
+                skill["skill"]
+                for skill in mission["sub_skills"]
+                if skill_complete(mission, skill)
+            )
         elif mission_complete(mission):
             skills.append(mission["skill"])
     return skills
@@ -343,7 +463,10 @@ def completed_skill_names(missions):
 def earned_points(mission):
     if not mission_complete(mission):
         return 0
-    return max(mission["points"] - (1 if mission["id"] in st.session_state.hints_used else 0), 0)
+    return max(
+        mission["points"] - (1 if mission["id"] in st.session_state.hints_used else 0),
+        0,
+    )
 
 
 def build_summary():
@@ -355,7 +478,9 @@ def build_summary():
         "assigned_gene": st.session_state.assigned_gene,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "score": sum(earned_points(mission) for mission in MISSIONS),
-        "required_activities_completed": sum(mission_complete(mission) for mission in required),
+        "required_activities_completed": sum(
+            mission_complete(mission) for mission in required
+        ),
         "required_activities_total": len(required),
         "skills_completed": completed_skill_names(MISSIONS),
         "hints_used": sorted(st.session_state.hints_used),
@@ -436,16 +561,46 @@ def pathway_node(label, source, value, complete=False):
 
 
 def render_evidence_pathway(summary):
-    advp_signal = first_answer(summary, "advp", ["AD association status", "One association or evidence detail"])
-    gwas_signal = first_answer(summary, "genomicsdb", ["Selected variant", "Variant p-value"])
-    dataset_signal = first_answer(summary, "genomicsdb", ["Locus zoom variant", "Dataset top region", "Dataset top result"])
-    variant_signal = first_answer(summary, "genomicsdb", ["Variant consequence", "Variant record ID", "Variant RefSNP"])
-    browser_region = first_answer(summary, "genomicsdb", ["Region to carry forward", "Genome browser observation"])
-    functional_signal = first_answer(summary, "functional", ["Dataset, track, or result name", "Evidence type", "Functional annotation note"])
-    interpretation = first_answer(summary, "interpretation", ["One-sentence interpretation", "One limitation or unanswered question"])
+    advp_signal = first_answer(
+        summary, "advp", ["AD association status", "One association or evidence detail"]
+    )
+    gwas_signal = first_answer(
+        summary, "genomicsdb", ["Selected variant", "Variant p-value"]
+    )
+    dataset_signal = first_answer(
+        summary,
+        "genomicsdb",
+        ["Locus zoom variant", "Dataset top region", "Dataset top result"],
+    )
+    variant_signal = first_answer(
+        summary,
+        "genomicsdb",
+        ["Variant consequence", "Variant record ID", "Variant RefSNP"],
+    )
+    browser_region = first_answer(
+        summary, "genomicsdb", ["Region to carry forward", "Genome browser observation"]
+    )
+    functional_signal = first_answer(
+        summary,
+        "functional",
+        [
+            "Dataset, track, or result name",
+            "Evidence type",
+            "Functional annotation note",
+        ],
+    )
+    interpretation = first_answer(
+        summary,
+        "interpretation",
+        ["One-sentence interpretation", "One limitation or unanswered question"],
+    )
 
     progress_text = f"{summary['required_activities_completed']}/{summary['required_activities_total']}"
-    skills_text = ", ".join(summary["skills_completed"]) if summary["skills_completed"] else "No skills completed yet"
+    skills_text = (
+        ", ".join(summary["skills_completed"])
+        if summary["skills_completed"]
+        else "No skills completed yet"
+    )
 
     st.header("Evidence Pathway")
     snapshot_cols = st.columns(4)
@@ -453,28 +608,79 @@ def render_evidence_pathway(summary):
     snapshot_cols[1].metric("Team label", summary["team_label"] or "Not set")
     snapshot_cols[2].metric("Score", f"{summary['score']} pts")
     snapshot_cols[3].metric("Required progress", progress_text)
-    st.markdown(f"<div class='summary-skill-strip'>{display_value(skills_text)}</div>", unsafe_allow_html=True)
+    st.markdown(
+        f"<div class='summary-skill-strip'>{display_value(skills_text)}</div>",
+        unsafe_allow_html=True,
+    )
 
     nodes = [
-        pathway_node("Assigned gene", "Workshop setup", summary["assigned_gene"], bool(summary["assigned_gene"])),
+        pathway_node(
+            "Assigned gene",
+            "Workshop setup",
+            summary["assigned_gene"],
+            bool(summary["assigned_gene"]),
+        ),
         pathway_node("Association evidence", "ADVP", advp_signal, bool(advp_signal)),
         pathway_node("GWAS table signal", "GenomicsDB", gwas_signal, bool(gwas_signal)),
-        pathway_node("Dataset / locus zoom", "GenomicsDB", dataset_signal, bool(dataset_signal)),
-        pathway_node("Variant record", "GenomicsDB", variant_signal, bool(variant_signal)),
-        pathway_node("Browser region", "GenomicsDB", browser_region, bool(browser_region)),
-        pathway_node("Functional annotation", "FILER / xQTL", functional_signal, bool(functional_signal)),
-        pathway_node("Interpretation", "Synthesis", interpretation, bool(interpretation)),
+        pathway_node(
+            "Dataset / locus zoom", "GenomicsDB", dataset_signal, bool(dataset_signal)
+        ),
+        pathway_node(
+            "Variant record", "GenomicsDB", variant_signal, bool(variant_signal)
+        ),
+        pathway_node(
+            "Browser region", "GenomicsDB", browser_region, bool(browser_region)
+        ),
+        pathway_node(
+            "Functional annotation",
+            "FILER / xQTL",
+            functional_signal,
+            bool(functional_signal),
+        ),
+        pathway_node(
+            "Interpretation", "Synthesis", interpretation, bool(interpretation)
+        ),
     ]
-    st.markdown(f"<div class='path-grid'>{''.join(nodes)}</div>", unsafe_allow_html=True)
+    st.markdown(
+        f"<div class='path-grid'>{''.join(nodes)}</div>", unsafe_allow_html=True
+    )
 
     st.subheader("Carry-Forward Focus")
     focus_items = [
-        ("Dataset / track", answer_value(summary, "genomicsdb", "Dataset or track name")),
-        ("Locus zoom variant", answer_value(summary, "genomicsdb", "Locus zoom variant")),
-        ("Variant context", first_answer(summary, "genomicsdb", ["Variant consequence", "Variant alleles", "Variant RefSNP"])),
-        ("Genome browser region", answer_value(summary, "genomicsdb", "Region to carry forward")),
-        ("Functional evidence", first_answer(summary, "functional", ["Dataset, track, or result name", "Evidence type"])),
-        ("Limitation / question", answer_value(summary, "interpretation", "One limitation or unanswered question")),
+        (
+            "Dataset / track",
+            answer_value(summary, "genomicsdb", "Dataset or track name"),
+        ),
+        (
+            "Locus zoom variant",
+            answer_value(summary, "genomicsdb", "Locus zoom variant"),
+        ),
+        (
+            "Variant context",
+            first_answer(
+                summary,
+                "genomicsdb",
+                ["Variant consequence", "Variant alleles", "Variant RefSNP"],
+            ),
+        ),
+        (
+            "Genome browser region",
+            answer_value(summary, "genomicsdb", "Region to carry forward"),
+        ),
+        (
+            "Functional evidence",
+            first_answer(
+                summary,
+                "functional",
+                ["Dataset, track, or result name", "Evidence type"],
+            ),
+        ),
+        (
+            "Limitation / question",
+            answer_value(
+                summary, "interpretation", "One limitation or unanswered question"
+            ),
+        ),
     ]
     focus_html = "".join(
         f"<div class='focus-item'><div class='focus-label'>{escape(label)}</div><div class='focus-value'>{display_value(value)}</div></div>"
@@ -590,7 +796,9 @@ st.markdown(
 
 def render_leaderboard_view():
     st.title("Workshop Leaderboard")
-    st.caption("Scores are sorted by points, required activity progress, completed skills, and fewer hints used.")
+    st.caption(
+        "Scores are sorted by points, required activity progress, completed skills, and fewer hints used."
+    )
     st.link_button("Return to workshop challenge", "?")
 
     if not leaderboard_configured():
@@ -625,7 +833,11 @@ completed_skills = completed_skill_names(MISSIONS)
 with st.sidebar:
     st.header("Workshop Progress")
     st.text_input("Table or group number", key="team_name", placeholder="e.g., Table 4")
-    st.text_input("Team leader email (optional)", key="leader_email", placeholder="name@example.org")
+    st.text_input(
+        "Team leader email (optional)",
+        key="leader_email",
+        placeholder="name@example.org",
+    )
     col_a, col_b = st.columns(2)
     with col_a:
         if st.button("Generate team label", use_container_width=True):
@@ -650,7 +862,10 @@ with st.sidebar:
             st.rerun()
 
     st.metric("Current score", f"{score} pts")
-    st.progress(progress, text=f"Required progress: {completed_required}/{len(required_missions)}")
+    st.progress(
+        progress,
+        text=f"Required progress: {completed_required}/{len(required_missions)}",
+    )
     st.subheader("Skills completed")
     render_completed_skills(completed_skills)
     st.link_button("🏆 View leaderboard", "?view=leaderboard", use_container_width=True)
@@ -671,31 +886,50 @@ st.divider()
 
 for mission in MISSIONS:
     complete = mission_complete(mission)
-    status_class = "mission-bonus" if mission["bonus"] else ("mission-complete" if complete else "mission-incomplete")
-    status_text = "Bonus" if mission["bonus"] else ("Complete" if complete else "Incomplete")
-    pill_class = "status-bonus" if mission["bonus"] else ("status-complete" if complete else "status-incomplete")
+    status_class = (
+        "mission-bonus"
+        if mission["bonus"]
+        else ("mission-complete" if complete else "mission-incomplete")
+    )
+    status_text = (
+        "Bonus" if mission["bonus"] else ("Complete" if complete else "Incomplete")
+    )
+    pill_class = (
+        "status-bonus"
+        if mission["bonus"]
+        else ("status-complete" if complete else "status-incomplete")
+    )
 
     st.markdown(f"<div class='mission-card {status_class}'>", unsafe_allow_html=True)
     header_cols = st.columns([3, 1])
     with header_cols[0]:
         st.markdown(f"### {mission['title']}")
-        st.markdown(f"<span class='status-pill {pill_class}'>{status_text}</span>", unsafe_allow_html=True)
+        st.markdown(
+            f"<span class='status-pill {pill_class}'>{status_text}</span>",
+            unsafe_allow_html=True,
+        )
         render_activity_skills(mission)
     with header_cols[1]:
-        label = f"+{mission['points']} bonus pts" if mission["bonus"] else f"{mission['points']} pts"
+        label = (
+            f"+{mission['points']} bonus pts"
+            if mission["bonus"]
+            else f"{mission['points']} pts"
+        )
         st.metric("Value", label)
 
     st.write(mission["task"])
     if mission["id"] == "varixam":
-        st.info("VarIXam is used here for ADSP variant inventory within a gene footprint, not variant interpretation.", icon="ℹ️")
+        st.info(
+            "VarIXam is used here for ADSP variant inventory within a gene footprint, not variant interpretation.",
+            icon="ℹ️",
+        )
 
     if mission["resources"]:
         link_cols = st.columns(max(len(mission["resources"]), 1))
         for idx, resource in enumerate(mission["resources"]):
-            link_cols[idx].link_button(f"Open {resource}", resource_url(resource), use_container_width=True)
-
-    with st.expander("Fallback question"):
-        st.write(mission["fallback"])
+            link_cols[idx].link_button(
+                f"Open {resource}", resource_url(resource), use_container_width=True
+            )
 
     if st.button("Show hint (-1 point once)", key=f"hint_{mission['id']}"):
         st.session_state.hints_used.add(mission["id"])
@@ -714,7 +948,9 @@ for mission in MISSIONS:
         if "hint" in field:
             st.markdown(f"**{field['label']}**")
             hint_key = f"{mission['id']}::{field['key']}"
-            if st.button("Show bonus hint", key=f"field_hint_{mission['id']}_{field['key']}"):
+            if st.button(
+                "Show bonus hint", key=f"field_hint_{mission['id']}_{field['key']}"
+            ):
                 st.session_state.field_hints_used.add(hint_key)
             if hint_key in st.session_state.field_hints_used:
                 st.warning(f"Hint: {field['hint']}")
@@ -758,12 +994,16 @@ st.json(summary, expanded=False)
 
 st.divider()
 st.header("Submit Results")
-st.caption("Submit or update your team score when you are ready. The leaderboard is shown on a separate page.")
+st.caption(
+    "Submit or update your team score when you are ready. The leaderboard is shown on a separate page."
+)
 
 submit_cols = st.columns([1, 1])
 with submit_cols[0]:
     if leaderboard_configured():
-        if st.button("Submit / update leaderboard", type="primary", use_container_width=True):
+        if st.button(
+            "Submit / update leaderboard", type="primary", use_container_width=True
+        ):
             submit_to_leaderboard(summary, st.session_state.leaderboard_entry_id)
             st.session_state.leaderboard_submitted = True
             st.success("Leaderboard updated.")
@@ -773,6 +1013,8 @@ with submit_cols[1]:
     st.metric("Current score", f"{score} pts")
 
 if st.session_state.leaderboard_submitted:
-    st.success("This team has submitted during the current session. Submit again to update the score.")
+    st.success(
+        "This team has submitted during the current session. Submit again to update the score."
+    )
 
 st.link_button("🏆 Open leaderboard", "?view=leaderboard")
