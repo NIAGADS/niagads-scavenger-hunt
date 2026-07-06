@@ -36,6 +36,7 @@ def leaderboard_configured():
         leaderboard
         and service_account
         and leaderboard.get("spreadsheet_id")
+        and leaderboard.get("worksheet_name")
         and service_account.get("client_email")
         and service_account.get("private_key")
     )
@@ -54,7 +55,7 @@ def get_worksheet():
     credentials = Credentials.from_service_account_info(dict(service_account), scopes=scopes)
     client = gspread.authorize(credentials)
     spreadsheet = client.open_by_key(leaderboard["spreadsheet_id"])
-    worksheet_name = leaderboard.get("worksheet_name", "Leaderboard")
+    worksheet_name = leaderboard["worksheet_name"]
 
     try:
         worksheet = spreadsheet.worksheet(worksheet_name)

@@ -799,7 +799,9 @@ def render_leaderboard_view():
     st.caption(
         "Scores are sorted by points, required activity progress, completed skills, and fewer hints used."
     )
-    st.link_button("Return to workshop challenge", "?")
+    if st.button("Return to workshop challenge"):
+        st.query_params.clear()
+        st.rerun()
 
     if not leaderboard_configured():
         st.warning("Leaderboard storage is not configured yet.")
