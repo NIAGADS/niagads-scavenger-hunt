@@ -335,7 +335,7 @@ def render_sidebar(
     completed_required,
     required_count,
     completed_skills,
-    genes,
+    assignment_pool,
     award_icon,
     random_team_label,
 ):
@@ -353,9 +353,9 @@ def render_sidebar(
                 st.session_state.team_label = random_team_label()
         with col_b:
             if st.button("Assign gene", use_container_width=True):
-                st.session_state.assigned_gene = random.choice(genes)
+                st.session_state.assigned_gene = random.choice(assignment_pool)
         st.text_input("Team label", key="team_label", placeholder="Generate or type one")
-        st.selectbox("Manual gene override", genes, key="assigned_gene")
+        st.selectbox("Manual gene override", assignment_pool, key="assigned_gene")
 
         if st.session_state.timer_started_at is None:
             if st.button("Start 20-minute timer", type="primary", use_container_width=True):

@@ -1,9 +1,14 @@
-import random
-from datetime import datetime, timezone
-from uuid import uuid4
-
 import streamlit as st
 
+from scoring import (
+    completed_skill_names,
+    earned_points,
+    mission_complete,
+    mission_skills,
+    skill_complete,
+)
+from state import initialize_state, random_team_label
+from summary import build_summary
 from ui import (
     render_leaderboard_view,
     render_missions,
@@ -19,7 +24,7 @@ st.set_page_config(
     layout="wide",
 )
 
-GENES = [
+ASSIGNMENT_POOL = [
     "APOE",
     "BIN1",
     "TREM2",
@@ -43,42 +48,6 @@ RESOURCES = {
 }
 
 AWARD_ICON = "🏆"
-TEAM_LABEL_ADJECTIVES = [
-    "Agile",
-    "Bright",
-    "Careful",
-    "Focused",
-    "Insightful",
-    "Lively",
-    "Methodical",
-    "Quick",
-    "Sharp",
-    "Steady",
-]
-TEAM_LABEL_TOPICS = [
-    "Amyloid",
-    "Atlas",
-    "Cohort",
-    "Genome",
-    "Haplotype",
-    "Hippocampus",
-    "Microglia",
-    "Signal",
-    "Synapse",
-    "Tau",
-    "Variant",
-]
-TEAM_LABEL_NOUNS = [
-    "Analysts",
-    "Explorers",
-    "Mappers",
-    "Reviewers",
-    "Scouts",
-    "Team",
-    "Trackers",
-    "Working Group",
-]
-TEAM_LABEL_CODE_CHARS = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"
 
 MISSIONS = [
     {
@@ -413,121 +382,11 @@ MISSIONS = [
 ]
 
 
-def random_team_label():
-    code = "".join(random.choice(TEAM_LABEL_CODE_CHARS) for _ in range(3))
-    return (
-        f"{random.choice(TEAM_LABEL_ADJECTIVES)} "
-        f"{random.choice(TEAM_LABEL_TOPICS)} "
-        f"{random.choice(TEAM_LABEL_NOUNS)} {code}"
-    )
-
-
-def initialize_state():
-    defaults = {
-        "team_name": "",
-        "leader_email": "",
-        "team_label": random_team_label(),
-        "assigned_gene": random.choice(GENES),
-        "leaderboard_entry_id": uuid4().hex,
-        "leaderboard_submitted": False,
-        "timer_started_at": None,
-        "answers": {},
-        "hints_used": set(),
-        "field_hints_used": set(),
-    }
-    for key, value in defaults.items():
-        if key not in st.session_state:
-            st.session_state[key] = value
-
-
-def mission_complete(mission):
-    answers = st.session_state.answers.get(mission["id"], {})
-    return all(
-        str(answers.get(field["key"], "")).strip()
-        for field in mission["fields"]
-        if field.get("required", True) and field.get("type") != "section"
-    )
-
-
-def skill_complete(mission, skill):
-    answers = st.session_state.answers.get(mission["id"], {})
-    return all(str(answers.get(field_key, "")).strip() for field_key in skill["fields"])
-
-
-def mission_skills(mission):
-    if "sub_skills" in mission:
-        return mission["sub_skills"]
-    return [
-        {
-            "skill": mission["skill"],
-            "fields": [
-                field["key"]
-                for field in mission["fields"]
-                if field.get("type") != "section" and field.get("required", True)
-            ],
-        }
-    ]
-
-
-def completed_skill_names(missions):
-    skills = []
-    for mission in missions:
-        if "sub_skills" in mission:
-            skills.extend(
-                skill["skill"]
-                for skill in mission["sub_skills"]
-                if skill_complete(mission, skill)
-            )
-        elif mission_complete(mission):
-            skills.append(mission["skill"])
-    return skills
-
-
-def earned_points(mission):
-    if not mission_complete(mission):
-        return 0
-    return max(
-        mission["points"] - (1 if mission["id"] in st.session_state.hints_used else 0),
-        0,
-    )
-
-
-def build_summary():
-    required = [mission for mission in MISSIONS if not mission["bonus"]]
-    return {
-        "team_name": st.session_state.team_name,
-        "leader_email": st.session_state.leader_email,
-        "team_label": st.session_state.team_label,
-        "assigned_gene": st.session_state.assigned_gene,
-        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
-        "score": sum(earned_points(mission) for mission in MISSIONS),
-        "required_activities_completed": sum(
-            mission_complete(mission) for mission in required
-        ),
-        "required_activities_total": len(required),
-        "skills_completed": completed_skill_names(MISSIONS),
-        "hints_used": sorted(st.session_state.hints_used),
-        "activities": [
-            {
-                "id": mission["id"],
-                "title": mission["title"],
-                "skill": mission["skill"],
-                "skills": [skill["skill"] for skill in mission_skills(mission)],
-                "bonus": mission["bonus"],
-                "complete": mission_complete(mission),
-                "points_awarded": earned_points(mission),
-                "answers": st.session_state.answers.get(mission["id"], {}),
-            }
-            for mission in MISSIONS
-        ],
-    }
-
-
 def resource_url(resource):
     return RESOURCES[resource]
 
 
-initialize_state()
+initialize_state(ASSIGNMENT_POOL)
 render_styles()
 
 
@@ -547,7 +406,7 @@ render_sidebar(
     completed_required,
     len(required_missions),
     completed_skills,
-    GENES,
+    ASSIGNMENT_POOL,
     AWARD_ICON,
     random_team_label,
 )
@@ -563,5 +422,5 @@ render_missions(
     resource_url,
 )
 
-summary = build_summary()
+summary = build_summary(MISSIONS)
 render_summary_and_submit(summary, score)
