@@ -39,11 +39,11 @@ TEAM_LABEL_NOUNS = [
     "Trackers",
     "Working Group",
 ]
-TEAM_LABEL_CODE_CHARS = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"
+TEAM_LABEL_CODE_RANGE = range(100, 1000)
 
 
 def random_team_label():
-    code = "".join(random.choice(TEAM_LABEL_CODE_CHARS) for _ in range(3))
+    code = random.choice(TEAM_LABEL_CODE_RANGE)
     return (
         f"{random.choice(TEAM_LABEL_ADJECTIVES)} "
         f"{random.choice(TEAM_LABEL_TOPICS)} "

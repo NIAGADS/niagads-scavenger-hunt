@@ -16,23 +16,86 @@ def render_styles():
     st.markdown(
         """
         <style>
-        .block-container {padding-top: 1.5rem;}
-        .mission-card {border: 1px solid #d9e2ec; border-radius: 14px; padding: 1rem; margin-bottom: 1rem; background: #ffffff;}
-        .mission-complete {border-left: 7px solid #2e7d32;}
-        .mission-incomplete {border-left: 7px solid #7b8794;}
-        .mission-bonus {border-left: 7px solid #6f42c1; background: #fbf9ff;}
-        .status-pill, .skill-chip {display: inline-block; border-radius: 999px; padding: 0.18rem 0.55rem; margin: 0.12rem; font-size: 0.85rem;}
-        .status-complete {background: #e8f5e9; color: #1b5e20;}
-        .status-incomplete {background: #eef2f7; color: #394b59;}
-        .status-bonus {background: #f0e7ff; color: #4b2380;}
-        .skill-chip {border: 1px solid; }
-        .skill-earned {background: #e7f6ec; border-color: #94d3a2; color: #14532d;}
-        .skill-pending {background: #f6f8fa; border-color: #d0d7de; color: #57606a;}
-        .summary-skill-strip {
-            background: #f6f8fa;
-            border: 1px solid #d0d7de;
+        :root {
+            --niagads-navy: #23313f;
+            --niagads-navy-deep: #1d2a36;
+            --niagads-gold: #ffc45c;
+            --niagads-gold-deep: #f3aa34;
+            --niagads-blue: #5f8fb8;
+            --niagads-violet: #5d4bd8;
+            --niagads-ink: #24313c;
+            --niagads-muted: #647384;
+            --niagads-line: #d8e0e7;
+            --niagads-page: #f7f8fa;
+        }
+        .stApp {background: var(--niagads-page);}
+        section[data-testid="stSidebar"] {
+            background: var(--niagads-navy-deep);
+            border-right: 4px solid var(--niagads-gold);
+        }
+        section[data-testid="stSidebar"] h1,
+        section[data-testid="stSidebar"] h2,
+        section[data-testid="stSidebar"] h3,
+        section[data-testid="stSidebar"] label,
+        section[data-testid="stSidebar"] p {
+            color: #eef3f7;
+        }
+        h1, h2, h3 {color: var(--niagads-ink);}
+        .block-container {padding-top: 1.25rem;}
+        .app-hero {
+            background: var(--niagads-navy);
+            border-top: 4px solid var(--niagads-gold);
+            border-radius: 0;
+            box-shadow: 0 8px 20px rgba(29, 42, 54, 0.12);
+            margin: -0.25rem 0 1.4rem 0;
+            overflow: hidden;
+            padding: 2rem 2.25rem;
+            position: relative;
+        }
+        .app-kicker {
+            color: var(--niagads-gold);
+            font-size: 0.88rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .app-title {
+            color: var(--niagads-gold);
+            font-size: 2.25rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-top: 0.25rem;
+        }
+        .app-subtitle {
+            color: #dce4eb;
+            font-size: 1.02rem;
+            line-height: 1.45;
+            margin-top: 0.8rem;
+            max-width: 48rem;
+        }
+        .mission-card {
+            background: #ffffff;
+            border: 1px solid var(--niagads-line);
             border-radius: 8px;
-            color: #394b59;
+            box-shadow: 0 2px 10px rgba(35, 49, 63, 0.06);
+            margin-bottom: 1rem;
+            padding: 1rem;
+        }
+        .mission-complete {border-left: 7px solid var(--niagads-blue);}
+        .mission-incomplete {border-left: 7px solid #8a98a8;}
+        .mission-bonus {border-left: 7px solid var(--niagads-violet); background: #f9f8ff;}
+        .status-pill, .skill-chip {display: inline-block; border-radius: 999px; padding: 0.18rem 0.55rem; margin: 0.12rem; font-size: 0.85rem;}
+        .status-complete {background: #eaf3f9; color: #224f73;}
+        .status-incomplete {background: #edf1f4; color: #425466;}
+        .status-bonus {background: #eeeaff; color: #3e2ba4;}
+        .skill-chip {border: 1px solid; }
+        .skill-earned {background: #fff3d6; border-color: var(--niagads-gold-deep); color: #6d4714;}
+        .skill-pending {background: #f3f6f8; border-color: var(--niagads-line); color: var(--niagads-muted);}
+        .summary-skill-strip {
+            background: #f3f6f8;
+            border: 1px solid var(--niagads-line);
+            border-radius: 8px;
+            color: var(--niagads-ink);
             margin: 0.5rem 0 1rem 0;
             padding: 0.65rem 0.8rem;
         }
@@ -43,43 +106,43 @@ def render_styles():
             margin: 0.6rem 0 1.25rem 0;
         }
         .path-node {
-            border: 1px solid #d0d7de;
+            border: 1px solid var(--niagads-line);
             border-left: 6px solid #8c959f;
             border-radius: 8px;
             background: #ffffff;
             min-height: 8.4rem;
             padding: 0.75rem;
         }
-        .path-node-complete {border-left-color: #2e7d32;}
-        .path-node-pending {background: #f6f8fa;}
+        .path-node-complete {border-left-color: var(--niagads-blue);}
+        .path-node-pending {background: #f3f6f8;}
         .path-source {
-            color: #57606a;
+            color: var(--niagads-muted);
             font-size: 0.75rem;
             font-weight: 700;
             letter-spacing: 0.04em;
             text-transform: uppercase;
         }
         .path-label {
-            color: #24292f;
+            color: var(--niagads-ink);
             font-size: 1rem;
             font-weight: 700;
             margin-top: 0.2rem;
         }
         .path-value {
-            color: #394b59;
+            color: #3c4b58;
             font-size: 0.9rem;
             line-height: 1.3;
             margin-top: 0.45rem;
             overflow-wrap: anywhere;
         }
         .path-status {
-            color: #57606a;
+            color: var(--niagads-muted);
             font-size: 0.75rem;
             margin-top: 0.6rem;
         }
         .focus-panel {
-            background: #fff8e6;
-            border: 1px solid #f0c36d;
+            background: #fff5dd;
+            border: 1px solid var(--niagads-gold-deep);
             border-radius: 8px;
             display: grid;
             gap: 0.65rem;
@@ -89,23 +152,62 @@ def render_styles():
         }
         .focus-item {
             background: rgba(255, 255, 255, 0.72);
-            border: 1px solid rgba(184, 134, 11, 0.22);
+            border: 1px solid rgba(243, 170, 52, 0.34);
             border-radius: 6px;
             padding: 0.65rem;
         }
         .focus-label {
-            color: #6b4e16;
+            color: #70501a;
             font-size: 0.78rem;
             font-weight: 700;
             text-transform: uppercase;
         }
         .focus-value {
-            color: #24292f;
+            color: var(--niagads-ink);
             font-size: 0.92rem;
             margin-top: 0.25rem;
             overflow-wrap: anywhere;
         }
-        .small-note {color: #52606d; font-size: 0.92rem;}
+        .stButton > button,
+        .stLinkButton > a {
+            border-color: var(--niagads-blue);
+            border-radius: 4px;
+            color: var(--niagads-ink);
+        }
+        section[data-testid="stSidebar"] .stButton > button,
+        section[data-testid="stSidebar"] .stLinkButton > a {
+            background: var(--niagads-gold);
+            border-color: var(--niagads-gold-deep);
+            color: var(--niagads-ink);
+        }
+        section[data-testid="stSidebar"] .stButton > button:hover,
+        section[data-testid="stSidebar"] .stLinkButton > a:hover {
+            background: #ffd37a;
+            border-color: var(--niagads-blue);
+            color: var(--niagads-ink);
+        }
+        section[data-testid="stSidebar"] .stButton > button:focus,
+        section[data-testid="stSidebar"] .stLinkButton > a:focus {
+            box-shadow: 0 0 0 0.16rem rgba(255, 196, 92, 0.45);
+            outline: none;
+        }
+        section[data-testid="stSidebar"] .stButton > button *,
+        section[data-testid="stSidebar"] .stLinkButton > a * {
+            color: var(--niagads-ink);
+        }
+        section[data-testid="stSidebar"] .stButton > button:hover *,
+        section[data-testid="stSidebar"] .stLinkButton > a:hover * {
+            color: var(--niagads-ink);
+        }
+        .stButton > button[kind="primary"] {
+            background: var(--niagads-blue);
+            border-color: var(--niagads-blue);
+            color: #ffffff;
+        }
+        .stProgress > div > div > div > div {
+            background-color: var(--niagads-gold);
+        }
+        .small-note {color: var(--niagads-muted); font-size: 0.92rem;}
         </style>
         """,
         unsafe_allow_html=True,
@@ -381,10 +483,18 @@ def render_sidebar(
 
 
 def render_page_header(completed_required, required_count, score, completed_skills, award_icon):
-    st.title("NIAGADS Open Access Workshop Challenge")
-    st.subheader("Build a gene evidence summary")
     st.markdown(
-        f"Your team is reviewing **{st.session_state.assigned_gene}**. Complete the required activities in about 20 minutes; the API activity is optional bonus credit."
+        f"""
+        <div class="app-hero">
+            <div class="app-kicker">NIAGADS Open Access</div>
+            <div class="app-title">Workshop Challenge</div>
+            <div class="app-subtitle">
+                Build a gene evidence summary for <strong>{escape(st.session_state.assigned_gene)}</strong>.
+                Complete the required activities in about 20 minutes; the API activity is optional bonus credit.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
     col1, col2, col3 = st.columns(3)
