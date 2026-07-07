@@ -366,7 +366,11 @@ MISSIONS = [
                 "type": "select",
                 "options": ["", "yes", "no", "not shown"],
             },
-            {"type": "section", "label": "Dataset Record"},
+            {
+                "type": "section",
+                "label": "Dataset Record",
+                "next_step": "Open the linked dataset or track from the selected table result.",
+            },
             {
                 "key": "Dataset record title",
                 "label": "After opening the dataset link, what is the dataset record title?",
@@ -392,7 +396,11 @@ MISSIONS = [
                 "label": "Why did you choose that variant or peak to inspect next?",
                 "type": "textarea",
             },
-            {"type": "section", "label": "Variant Record"},
+            {
+                "type": "section",
+                "label": "Variant Record",
+                "next_step": "Use locus zoom from the dataset record, then open one variant from the Manhattan plot.",
+            },
             {
                 "key": "Variant record ID",
                 "label": "After clicking the selected variant, what variant ID appears in the header?",
@@ -423,7 +431,11 @@ MISSIONS = [
                     "Open the linked variant record and mouse over the <code>ADSP Variant badge</code>."
                 ),
             },
-            {"type": "section", "label": "Genome Browser"},
+            {
+                "type": "section",
+                "label": "Genome Browser",
+                "next_step": "From the dataset or variant context, choose <code>View on Genome Browser</code> and inspect the loaded track.",
+            },
             {
                 "key": "Genome browser dataset track",
                 "label": "Click View on Genome Browser. Which dataset track did you load?",
@@ -434,7 +446,11 @@ MISSIONS = [
                 "label": "After exploring the loaded track, what region or pattern looks useful to inspect in FILER?",
                 "type": "textarea",
             },
-            {"type": "section", "label": "Carry Forward"},
+            {
+                "type": "section",
+                "label": "Carry Forward",
+                "next_step": "Choose the final region or pattern you want to reuse in the FILER activity.",
+            },
             {
                 "key": "Region to carry forward",
                 "label": "What final region will you carry forward to the functional annotation activity?",
@@ -480,7 +496,11 @@ MISSIONS = [
                 "label": "Which xQTL type has the highest number of associations?",
                 "type": "text",
             },
-            {"type": "section", "label": "Associations Tab"},
+            {
+                "type": "section",
+                "label": "Associations Tab",
+                "next_step": "Open the Associations tab, then expand the Cis/TAD association summary by xQTL type.",
+            },
             {
                 "key": "Local or broader context",
                 "label": "Are the xQTL associations for this gene mostly found within the local gene region, or are there also associations linked through the broader 3D genome/TAD context?",

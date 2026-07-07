@@ -162,11 +162,20 @@ def render_styles():
             max-width: 66rem;
         }
         .mission-start {
-            background: #fff5dd;
-            border-left: 4px solid var(--niagads-gold-deep);
+            background: #e7f6ec;
+            border-left: 4px solid #2f8f4e;
             color: var(--niagads-ink);
             margin: 0;
             padding: 0.6rem 0.75rem;
+        }
+        .next-step {
+            background: #e7f6ec;
+            border-left: 4px solid #2f8f4e;
+            color: var(--niagads-ink);
+            font-size: 0.92rem;
+            line-height: 1.35;
+            margin: -0.1rem 0 0.55rem 0;
+            padding: 0.5rem 0.7rem;
         }
         .resource-action-row {
             align-items: stretch;
@@ -299,21 +308,22 @@ def render_styles():
         }
         .resource-open-button {
             align-items: center;
-            background: var(--niagads-gold);
-            border: 1px solid var(--niagads-gold-deep);
+            background: #2f8f4e;
+            border: 1px solid #1f6b3a;
             border-radius: 4px;
-            color: var(--niagads-ink) !important;
+            color: #ffffff !important;
             display: inline-flex;
             font-size: 0.95rem;
+            font-weight: 800;
             min-height: 2.5rem;
             padding: 0.45rem 0.85rem;
             text-decoration: none !important;
             white-space: nowrap;
         }
         .resource-open-button:hover {
-            background: #ffd37a;
-            border-color: var(--niagads-blue);
-            color: var(--niagads-ink) !important;
+            background: #25743f;
+            border-color: #144d2a;
+            color: #ffffff !important;
             text-decoration: none !important;
         }
         .resource-open-button + .resource-open-button {
@@ -922,6 +932,10 @@ def render_mission_fields(mission):
     for field in mission["fields"]:
         if field["type"] == "section":
             st.html(f"<div class='section-heading'>{escape(field['label'])}</div>")
+            if field.get("next_step"):
+                st.html(
+                    f"<div class='next-step'><strong>Next step:</strong> {content_html(field['next_step'])}</div>"
+                )
             continue
         key = f"answer_{mission['id']}_{field['key']}"
         current = mission_answers.get(field["key"], "")
