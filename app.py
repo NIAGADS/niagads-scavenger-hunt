@@ -113,67 +113,126 @@ MISSIONS = [
         "id": "topgenes",
         "title": "Check gene prioritization",
         "skill": "Gene prioritization",
-        "points": 3,
+        "points": 4,
         "resources": ["TopGenes"],
-        "task": "Look up the assigned gene and record its prioritization information if available.",
+        "purpose": (
+            "The ADSP Gene Verification Committee Top Genes repository provides access to a curated list of "
+            "high-confidence AD/ADRD genes and loci that have been rigorously reviewed by domain experts. It helps "
+            "researchers move from genetic association signals to prioritized targets for functional validation, "
+            "mechanistic follow-up, and therapeutic discovery."
+        ),
+        "getting_started": "Search for your assigned gene, then select View all Results.",
+        "task": "Use TopGenes to review how the assigned gene appears in curated reported locus records.",
         "fields": [
             {
-                "key": "Rank, score, category, or not found",
-                "label": "Rank, score, category, or “not found”",
+                "key": "Reported locus records returned",
+                "label": "How many reported locus records are returned for this gene?",
                 "type": "text",
             },
             {
-                "key": "Brief note on what the prioritization suggests",
-                "label": "Brief note on what the prioritization suggests",
-                "type": "textarea",
+                "key": "Strongest support tier",
+                "label": "What is the strongest support tier shown for this gene? Remember: Tier 1 = strongest support; Tier 7 = weakest support.",
+                "type": "text",
+            },
+            {
+                "key": "Supporting study",
+                "label": "Record one supporting study listed in the table.",
+                "type": "text",
+            },
+            {
+                "key": "Nearby gene",
+                "label": "Record one nearby gene listed in the table.",
+                "type": "text",
             },
         ],
-        "hint": "Do not over-interpret. Capture how the resource ranks or categorizes the gene.",
+        "reference_links": [
+            {
+                "label": "Methods and tier definitions",
+                "url": "https://adsp.niagads.org/wp-content/uploads/2022/05/SingleVariantTest-V42.pdf",
+            }
+        ],
+        "hint": "Use View all Results to see the table that contains reported locus records, support tiers, studies, and nearby genes.",
         "bonus": False,
     },
     {
         "id": "varixam",
         "title": "Inventory ADSP variants",
         "skill": "Variant inventory",
-        "points": 3,
+        "points": 4,
         "resources": ["VarIXam"],
-        "task": "Find ADSP variants overlapping the assigned gene footprint. Record one example variant or summarize the returned variant set.",
+        "purpose": (
+            "VariXam is an ADSP variant inventory browser. It helps researchers find WGS/WES variants called in "
+            "ADSP releases within a gene or genomic region, using GRCh38 coordinates and PASS-filtered released "
+            "variant calls."
+        ),
+        "getting_started": "Search for your assigned gene.",
+        "task": "Use VariXam to inspect ADSP variant records in the footprint of your assigned gene.",
         "fields": [
             {
-                "key": "Example variant ID or coordinate",
-                "label": "Example variant ID or coordinate",
+                "key": "Total ADSP variant records",
+                "label": "Record the total number of ADSP variant records found in the footprint of your assigned gene.",
                 "type": "text",
             },
             {
-                "key": "Variant density",
-                "label": "Variant density",
-                "type": "select",
-                "options": ["", "none", "few", "many"],
+                "key": "R5 multiallelic variant coordinate",
+                "label": "Sort by the Multiallelic column and then filter/search for variants called in the most recent ADSP release (R5). Report the chromosome and position of one multi-allelic variant.",
+                "type": "text",
+            },
+            {
+                "key": "Alternative alleles",
+                "label": "What are the alternative alleles for that variant?",
+                "type": "text",
             },
         ],
-        "hint": "This is an inventory task, not interpretation. Any returned ADSP variant is acceptable.",
+        "hint": "Use the table controls to sort by Multiallelic and search/filter for R5.",
         "bonus": False,
     },
     {
         "id": "advp",
         "title": "Review AD association evidence",
         "skill": "Association review",
-        "points": 3,
+        "points": 4,
         "resources": ["ADVP"],
-        "task": "Search the assigned gene in ADVP and determine whether it has Alzheimer’s disease association evidence.",
+        "purpose": (
+            "The Alzheimer's Disease Variant Portal is a curated, AD-specific GWAS catalog. It helps researchers "
+            "browse reported AD genetic associations from the literature, including associated genes, loci and "
+            "variants, contextualized by populations, phenotypes, and supporting studies."
+        ),
+        "getting_started": "Select Genes from the top-level navigation and then search for your assigned gene.",
+        "task": "Use ADVP to review curated AD association evidence for the assigned gene.",
         "fields": [
             {
-                "key": "AD association status",
-                "label": "AD association status",
+                "key": "Curated association count",
+                "label": "How many curated associations are there for your gene in ADVP?",
                 "type": "text",
             },
             {
-                "key": "One association or evidence detail",
-                "label": "One association or evidence detail",
-                "type": "textarea",
+                "key": "Distinct publication count",
+                "label": "Curated from how many distinct publications?",
+                "type": "text",
+            },
+            {
+                "key": "Example association SNP",
+                "label": "Click on the number in the Association records column to view all curated associations for your gene. Record one SNP from the table.",
+                "type": "text",
+            },
+            {
+                "key": "Example association PubMed ID",
+                "label": "From the same curated association table, record one supporting PubMed ID.",
+                "type": "text",
+            },
+            {
+                "key": "Example association phenotype",
+                "label": "From the same curated association table, record one phenotype.",
+                "type": "text",
+            },
+            {
+                "key": "Example association p-value or effect size",
+                "label": "From the same curated association table, record one reported p-value or effect size.",
+                "type": "text",
             },
         ],
-        "hint": "Search by gene symbol and look for curated association/evidence records.",
+        "hint": "Start in the Genes view, then use the Association records link for your gene.",
         "bonus": False,
     },
     {
@@ -211,8 +270,14 @@ MISSIONS = [
                 ],
             },
         ],
-        "points": 8,
+        "points": 10,
         "resources": ["GenomicsDB"],
+        "purpose": (
+            "The NIAGADS Alzheimer’s Genomics Database is an interactive AD/ADRD genetics knowledgebase containing "
+            "genes, variants, genomic regions, annotations, and related evidence on GRCh38. It helps researchers "
+            "search, browse, and analyze Alzheimer’s disease genetic data in one integrated resource."
+        ),
+        "getting_started": "Search for the assigned gene, then open the gene record.",
         "task": (
             "Search for the assigned gene in GenomicsDB, then use the gene record to review significant NIAGADS "
             "GWAS summary-statistics results in the gene footprint. Follow one table result to its dataset record, "
@@ -323,6 +388,7 @@ MISSIONS = [
                 "label": "Bonus: If the variant is ADSP-flagged, what does the ADSP Variant label indicate?",
                 "type": "textarea",
                 "required": False,
+                "bonus_points": 1,
                 "hint": (
                     "Open the linked variant record and look for the ADSP Variant label in the overview."
                 ),
@@ -354,43 +420,118 @@ MISSIONS = [
         "bonus": False,
     },
     {
-        "id": "functional",
-        "title": "Review functional evidence for the carried-forward region",
-        "skill": "Functional annotation",
-        "points": 4,
-        "resources": ["FILER", "xQTL Browser"],
-        "task": (
-            "Use the region carried forward from the GenomicsDB dataset record to look for one regulatory, "
-            "functional, or QTL-related evidence item in FILER or the xQTL Browser."
+        "id": "xqtl",
+        "title": "Review xQTL evidence for the assigned gene",
+        "skill": "xQTL evidence",
+        "points": 5,
+        "resources": ["xQTL Browser"],
+        "purpose": (
+            "The NIAGADS xQTL Browser contains harmonized brain xQTL associations across histone acetylation, "
+            "DNA methylation, gene expression, splicing, and protein abundance, spanning multiple cohorts, brain "
+            "regions, and cell types. It helps researchers connect genetic variation with functional molecular "
+            "mechanisms in AD-relevant brain datasets."
         ),
+        "getting_started": "Search for your assigned gene.",
+        "task": "Use the xQTL Browser to review molecular association evidence connected to your assigned gene.",
         "fields": [
             {
-                "key": "Region carried forward from GenomicsDB",
-                "label": "Region carried forward from GenomicsDB",
-                "type": "text",
-            },
-            {"key": "Evidence type", "label": "Evidence type", "type": "text"},
-            {
-                "key": "Dataset, track, or result name",
-                "label": "Dataset, track, or result name",
+                "key": "Total target variants",
+                "label": "What is the total number of variants that target your assigned gene?",
                 "type": "text",
             },
             {
-                "key": "Which resource was used",
-                "label": "Which resource was used",
-                "type": "select",
-                "options": ["", "FILER", "xQTL Browser"],
+                "key": "xQTL type with highest associations",
+                "label": "Which xQTL type has the highest number of associations?",
+                "type": "text",
+            },
+            {"type": "section", "label": "Associations Tab"},
+            {
+                "key": "Local or broader context",
+                "label": "Are the xQTL associations for this gene mostly found within the local gene region, or are there also associations linked through the broader 3D genome/TAD context?",
+                "type": "textarea",
             },
             {
-                "key": "Functional annotation note",
-                "label": "Brief note on how this annotation may help interpret the region",
+                "key": "Most significant association variant",
+                "label": "Which variant has the most significant association with this target gene?",
+                "type": "text",
+            },
+            {
+                "key": "Most significant association xQTL type",
+                "label": "For what xQTL type?",
+                "type": "text",
+            },
+        ],
+        "hint": "Click on the Associations tab, then expand the Cis/TAD association summary by xQTL type section.",
+        "bonus": False,
+    },
+    {
+        "id": "filer",
+        "title": "Review FILER annotations for the carried-forward region",
+        "skill": "Functional annotation",
+        "points": 5,
+        "resources": ["FILER"],
+        "purpose": (
+            "FILER is a harmonized functional genomics repository containing indexed, searchable datasets from "
+            "more than 20 human functional genomics data sources. It helps researchers find and reuse regulatory "
+            "and functional genomics evidence by tissue, cell type, biosample, assay, data type, or data collection "
+            "in consistent formats."
+        ),
+        "getting_started": (
+            "Select Search from the top-level navigation. Select hg38 for the Genome Build and then submit your "
+            "gene region from the GenomicsDB section."
+        ),
+        "task": "Use FILER to review functional annotations overlapping the region carried forward from GenomicsDB.",
+        "fields": [
+            {
+                "key": "Region searched in FILER",
+                "label": "What gene region from the GenomicsDB section did you submit to FILER?",
+                "type": "text",
+            },
+            {
+                "key": "Overlapping functional annotations",
+                "label": "How many overlapping functional annotations (database intervals) were found for your gene region?",
+                "type": "text",
+            },
+            {
+                "key": "Total search time",
+                "label": "What was the total search time?",
+                "type": "text",
+            },
+            {
+                "key": "Highest overlap genomic feature type",
+                "label": "Open the genomic feature type overlap summary. What type of genomic feature has the highest number of overlaps in your region?",
+                "type": "text",
+            },
+            {
+                "key": "Functional annotation interpretation bonus",
+                "label": "Bonus: What does that suggest about the types of regulatory or functional annotations available for this region? What caveats should you keep in mind?",
+                "type": "textarea",
+                "required": False,
+                "bonus_points": 1,
+                "hint": "Consider what overlap counts can and cannot tell you about disease mechanism.",
+            },
+            {
+                "key": "Darkest heatmap data source",
+                "label": "In the overlap heatmap, find the darkest cell and hover over it. Which data source does it represent?",
+                "type": "text",
+            },
+            {
+                "key": "Darkest heatmap tissue category",
+                "label": "For that same darkest heatmap cell, which tissue category does it represent?",
+                "type": "text",
+            },
+            {
+                "key": "Darkest heatmap overlap count",
+                "label": "For that same darkest heatmap cell, how many overlaps are reported?",
+                "type": "text",
+            },
+            {
+                "key": "Strongest heatmap tissue categories",
+                "label": "Across the heatmap, which tissue categories show the strongest concentration of overlaps for your gene region? Are any of them relevant to AD biology?",
                 "type": "textarea",
             },
         ],
-        "hint": (
-            "Use FILER for regulatory tracks and xQTL Browser for QTL-style evidence. Start with the region "
-            "from GenomicsDB so this activity connects back to the dataset-level GWAS result."
-        ),
+        "hint": "Use the carried-forward GenomicsDB region, then inspect the feature type summary and heatmap.",
         "bonus": False,
     },
     {
@@ -424,7 +565,7 @@ MISSIONS = [
         "id": "api_bonus",
         "title": "Plan future automation",
         "skill": "API planning",
-        "points": 2,
+        "points": 4,
         "resources": ["API"],
         "task": "Identify one step in the workshop challenge that should eventually be automated through the NIAGADS API.",
         "fields": [

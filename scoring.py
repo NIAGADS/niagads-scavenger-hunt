@@ -6,7 +6,9 @@ def mission_complete(mission):
     return all(
         str(answers.get(field["key"], "")).strip()
         for field in mission["fields"]
-        if field.get("required", True) and field.get("type") != "section"
+        if field.get("required", True)
+        and field.get("type") != "section"
+        and not field.get("bonus_points")
     )
 
 
@@ -24,7 +26,9 @@ def mission_skills(mission):
             "fields": [
                 field["key"]
                 for field in mission["fields"]
-                if field.get("type") != "section" and field.get("required", True)
+                if field.get("type") != "section"
+                and field.get("required", True)
+                and not field.get("bonus_points")
             ],
         }
     ]
@@ -45,9 +49,16 @@ def completed_skill_names(missions):
 
 
 def earned_points(mission):
+    answers = st.session_state.answers.get(mission["id"], {})
+    bonus_points = sum(
+        field.get("bonus_points", 0)
+        for field in mission["fields"]
+        if field.get("bonus_points") and str(answers.get(field["key"], "")).strip()
+    )
     if not mission_complete(mission):
-        return 0
-    return max(
+        return bonus_points
+    base_points = max(
         mission["points"] - (1 if mission["id"] in st.session_state.hints_used else 0),
         0,
     )
+    return base_points + bonus_points

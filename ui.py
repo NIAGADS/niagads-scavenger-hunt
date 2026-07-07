@@ -319,7 +319,7 @@ def pathway_node(label, source, value, complete=False):
 
 def render_evidence_pathway(summary):
     advp_signal = first_answer(
-        summary, "advp", ["AD association status", "One association or evidence detail"]
+        summary, "advp", ["Curated association count", "Example association SNP"]
     )
     gwas_signal = first_answer(
         summary, "genomicsdb", ["Selected variant", "Variant p-value"]
@@ -337,15 +337,25 @@ def render_evidence_pathway(summary):
     browser_region = first_answer(
         summary, "genomicsdb", ["Region to carry forward", "Genome browser observation"]
     )
-    functional_signal = first_answer(
+    filer_signal = first_answer(
         summary,
-        "functional",
+        "filer",
         [
-            "Dataset, track, or result name",
-            "Evidence type",
-            "Functional annotation note",
+            "Highest overlap genomic feature type",
+            "Darkest heatmap data source",
+            "Strongest heatmap tissue categories",
         ],
     )
+    xqtl_signal = first_answer(
+        summary,
+        "xqtl",
+        [
+            "xQTL type with highest associations",
+            "Most significant association variant",
+            "Local or broader context",
+        ],
+    )
+    functional_signal = filer_signal or xqtl_signal
     interpretation = first_answer(
         summary,
         "interpretation",
@@ -428,8 +438,13 @@ def render_evidence_pathway(summary):
             "Functional evidence",
             first_answer(
                 summary,
-                "functional",
-                ["Dataset, track, or result name", "Evidence type"],
+                "filer",
+                ["Highest overlap genomic feature type", "Darkest heatmap data source"],
+            )
+            or first_answer(
+                summary,
+                "xqtl",
+                ["xQTL type with highest associations", "Most significant association variant"],
             ),
         ),
         (
@@ -565,19 +580,21 @@ def render_missions(
             )
             render_activity_skills(mission, award_icon, mission_skills, skill_complete)
         with header_cols[1]:
+            bonus_total = sum(field.get("bonus_points", 0) for field in mission["fields"])
             label = (
                 f"+{mission['points']} bonus pts"
                 if mission["bonus"]
                 else f"{mission['points']} pts"
             )
+            if bonus_total and not mission["bonus"]:
+                label = f"{label} + {bonus_total} bonus"
             st.metric("Value", label)
 
+        if mission.get("purpose"):
+            st.markdown(f"**Purpose:** {mission['purpose']}")
+        if mission.get("getting_started"):
+            st.markdown(f"**Getting started:** {mission['getting_started']}")
         st.write(mission["task"])
-        if mission["id"] == "varixam":
-            st.info(
-                "VarIXam is used here for ADSP variant inventory within a gene footprint, not variant interpretation.",
-                icon="ℹ️",
-            )
 
         if mission["resources"]:
             link_cols = st.columns(max(len(mission["resources"]), 1))
@@ -585,6 +602,9 @@ def render_missions(
                 link_cols[idx].link_button(
                     f"Open {resource}", resource_url(resource), use_container_width=True
                 )
+        if mission.get("reference_links"):
+            for link in mission["reference_links"]:
+                st.link_button(link["label"], link["url"])
 
         if st.button("Show hint (-1 point once)", key=f"hint_{mission['id']}"):
             st.session_state.hints_used.add(mission["id"])
@@ -604,10 +624,19 @@ def render_mission_fields(mission):
             continue
         key = f"answer_{mission['id']}_{field['key']}"
         current = mission_answers.get(field["key"], "")
-        widget_label = field["label"]
+        bonus_points = field.get("bonus_points", 0)
+        widget_label = (
+            f"{field['label']} (+{bonus_points} bonus point)"
+            if bonus_points == 1
+            else (
+                f"{field['label']} (+{bonus_points} bonus points)"
+                if bonus_points
+                else field["label"]
+            )
+        )
         label_visibility = "visible"
         if "hint" in field:
-            st.markdown(f"**{field['label']}**")
+            st.markdown(f"**{widget_label}**")
             hint_key = f"{mission['id']}::{field['key']}"
             if st.button(
                 "Show bonus hint", key=f"field_hint_{mission['id']}_{field['key']}"
@@ -615,7 +644,6 @@ def render_mission_fields(mission):
                 st.session_state.field_hints_used.add(hint_key)
             if hint_key in st.session_state.field_hints_used:
                 st.warning(f"Hint: {field['hint']}")
-            widget_label = field["label"]
             label_visibility = "collapsed"
         if field["type"] == "textarea":
             mission_answers[field["key"]] = st.text_area(
