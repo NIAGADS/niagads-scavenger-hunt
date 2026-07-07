@@ -3,6 +3,7 @@ toolbarMode = "minimal"
 
 [server]
 runOnSave = true
+enableStaticServing = true
 
 [ui]
 hideTopBar = true

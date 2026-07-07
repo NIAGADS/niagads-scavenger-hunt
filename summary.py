@@ -30,7 +30,7 @@ def build_summary(missions):
                 "title": mission["title"],
                 "skill": mission["skill"],
                 "skills": [skill["skill"] for skill in mission_skills(mission)],
-                "bonus": mission["bonus"],
+                "bonus": mission.get("bonus", 0),
                 "complete": mission_complete(mission),
                 "points_awarded": earned_points(mission),
                 "answers": st.session_state.answers.get(mission["id"], {}),

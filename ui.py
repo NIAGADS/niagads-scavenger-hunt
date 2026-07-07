@@ -335,14 +335,6 @@ def render_styles():
             font-weight: 800;
             margin-right: 0.3rem;
         }
-        div[role="dialog"]:has(.field-info-dialog) {
-            max-width: min(92vw, 920px) !important;
-            width: min(92vw, 920px) !important;
-        }
-        div[role="dialog"]:has(.field-info-dialog) [data-testid="stImage"] img {
-            height: auto !important;
-            width: 100% !important;
-        }
         section[data-testid="stSidebar"] .stButton > button,
         section[data-testid="stSidebar"] .stLinkButton > a {
             background: var(--niagads-gold);
@@ -946,10 +938,9 @@ def render_mission_fields(mission):
                 f"<div class='field-label'><details class='hint-details'><summary><span class='inline-hint-button'></span><span class='hint-question'>{rendered_label}</span></summary><div class='hint-content'>{content_html(field['hint'])}</div></details></div>"
             )
             label_visibility = "collapsed"
-        elif ("<" in widget_label and ">" in widget_label) or field.get("more_info"):
+        elif "<" in widget_label and ">" in widget_label:
             st.html(f"<div class='field-label'>{rendered_label}</div>")
             label_visibility = "collapsed"
-        render_field_more_info(field, key)
         if field["type"] == "textarea":
             mission_answers[field["key"]] = st.text_area(
                 widget_label,
@@ -978,29 +969,6 @@ def render_mission_fields(mission):
                 on_change=start_timer_if_needed,
                 label_visibility=label_visibility,
             )
-
-
-@st.dialog("More Information")
-def render_more_info_dialog(info):
-    st.html("<div class='field-info-dialog'></div>")
-    st.subheader(info.get("title", "More Information"))
-    if info.get("image"):
-        st.image(info["image"], width="stretch")
-    if info.get("caption"):
-        st.caption(info["caption"])
-
-
-def render_field_more_info(field, key):
-    info = field.get("more_info")
-    if not info:
-        return
-    if st.button(
-        info.get("button_label", "More Information"),
-        key=f"more_info_{key}",
-        type="secondary",
-    ):
-        render_more_info_dialog(info)
-
 
 def start_timer_if_needed():
     if st.session_state.timer_started_at is None:

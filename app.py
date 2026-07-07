@@ -143,15 +143,8 @@ MISSIONS = [
             {
                 "key": "Strongest support tier",
                 "label": "What is the strongest support tier shown for this gene?",
-                "hint": "Tier 1 = strongest support; Tier 7 = weakest support.",
+                "hint": "Tier 1 = strongest support; Tier 7 = weakest support. More information about <a href='app/static/gvc-tiers.png' target='_blank'>GVC Confidence Tiers</a> (opens in new tab).",
                 "type": "select",
-                "more_info": {
-                    "button_label": "About GVC Tiers",
-                    "title": "GVC Support Tiers",
-                    "image": "assets/gvc-tiers.png",
-                    "image_width": 760,
-                    "caption": "Reference guide for GVC Top Genes support tiers.",
-                },
                 "options": [
                     "",
                     "Tier 1",
