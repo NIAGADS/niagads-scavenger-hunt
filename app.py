@@ -146,7 +146,8 @@ MISSIONS = [
             {
                 "key": "Agora",
                 "label": "Is this a gene also an Agora (AD Knowledge Portal) nominated target?",
-                "type": "text",
+                "type": "select",
+                "options": ["", "yes", "no"],
             },
         ],
         "hint": "Use View all Results to see the table that contains reported locus records, support tiers, studies, and nearby genes.",
