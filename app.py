@@ -136,7 +136,17 @@ MISSIONS = [
             {
                 "key": "Strongest support tier",
                 "label": "What is the strongest support tier shown for this gene? Tier 1 = strongest support; Tier 7 = weakest support.",
-                "type": "text",
+                "type": "select",
+                "options": [
+                    "",
+                    "Tier 1",
+                    "Tier 2",
+                    "Tier 3",
+                    "Tier 4",
+                    "Tier 5",
+                    "Tier 6",
+                    "Tier 7",
+                ],
             },
             {
                 "key": "Supporting study",
