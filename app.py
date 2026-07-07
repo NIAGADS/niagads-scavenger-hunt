@@ -11,6 +11,7 @@ from scoring import (
 from state import initialize_state
 from summary import build_summary
 from ui import (
+    render_landing_page,
     render_leaderboard_view,
     render_missions,
     render_page_header,
@@ -20,7 +21,7 @@ from ui import (
 )
 
 st.set_page_config(
-    page_title="NIAGADS AD Gene Workshop Challenge",
+    page_title="NIAGADS Open Access AD Gene Challenge",
     page_icon="🧬",
     layout="wide",
 )
@@ -108,6 +109,7 @@ RESOURCES = {
 }
 
 AWARD_ICON = "🏆"
+INTRO_VIDEO_PATH = "assets/scavenger-hunt-intro.mp4"
 
 MISSIONS = [
     {
@@ -588,6 +590,10 @@ render_styles()
 
 if st.query_params.get("view") == "leaderboard":
     render_leaderboard_view()
+
+if not st.session_state.hunt_started:
+    render_landing_page(INTRO_VIDEO_PATH)
+    st.stop()
 
 
 required_missions = [mission for mission in MISSIONS if not mission["bonus"]]

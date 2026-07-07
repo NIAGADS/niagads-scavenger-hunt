@@ -58,6 +58,7 @@ def initialize_state(assignment_pool):
         "assigned_gene": random.choice(assignment_pool),
         "leaderboard_entry_id": uuid4().hex,
         "leaderboard_submitted": False,
+        "hunt_started": False,
         "timer_started_at": None,
         "answers": {},
         "completed_missions": set(),

@@ -73,6 +73,43 @@ def render_styles():
             margin-top: 0.8rem;
             max-width: 48rem;
         }
+        .landing-intro {
+            margin: 0.5rem 0 0.75rem 0;
+        }
+        .landing-eyebrow {
+            color: var(--niagads-navy-deep);
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            margin-bottom: 0.28rem;
+            text-transform: uppercase;
+        }
+        .landing-title {
+            color: var(--niagads-ink);
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1.08;
+            margin-top: 0.22rem;
+        }
+        .landing-copy {
+            color: var(--niagads-muted);
+            font-size: 1rem;
+            line-height: 1.4;
+            margin-top: 0.45rem;
+        }
+        .landing-video-spacer {margin-top: 0.55rem;}
+        .landing-action-spacer {margin-top: 0.55rem;}
+        .stButton > button[kind="primary"] {
+            background: var(--niagads-gold);
+            border-color: var(--niagads-gold-deep);
+            color: var(--niagads-ink);
+            font-weight: 800;
+        }
+        .stButton > button[kind="primary"]:hover {
+            background: #ffd37a;
+            border-color: var(--niagads-blue);
+            color: var(--niagads-ink);
+        }
         .mission-description {
             color: #3c4b58;
             line-height: 1.45;
@@ -277,11 +314,6 @@ def render_styles():
             padding: 0;
             white-space: nowrap;
         }
-        .stButton > button[kind="primary"] {
-            background: var(--niagads-blue);
-            border-color: var(--niagads-blue);
-            color: #ffffff;
-        }
         .stProgress > div > div > div > div {
             background-color: var(--niagads-gold);
         }
@@ -359,12 +391,34 @@ def render_styles():
     )
 
 
+def render_landing_page(video_path):
+    _, content_col, _ = st.columns([0.26, 0.48, 0.26])
+    with content_col:
+        st.html(
+            """
+            <div class="landing-intro">
+                <div class="landing-eyebrow">NIAGADS</div>
+                <div class="landing-title">Open Access Scavenger Hunt</div>
+                <div class="landing-copy">
+                    Watch the short introduction, then begin the hunt when you're ready.
+                </div>
+            </div>
+            """,
+        )
+        st.html("<div class='landing-video-spacer'></div>")
+        st.video(video_path)
+        st.html("<div class='landing-action-spacer'></div>")
+        if st.button("Begin the Hunt", type="primary"):
+            st.session_state.hunt_started = True
+            st.rerun()
+
+
 def render_leaderboard_view():
     st.title("Workshop Leaderboard")
     st.caption(
         "Scores are sorted by points, required activity progress, completed skills, and fewer hints used."
     )
-    if st.button("Return to workshop challenge"):
+    if st.button("Return to challenge"):
         st.query_params.clear()
         st.rerun()
 
@@ -665,7 +719,7 @@ def render_page_header(
         f"""
         <div class="app-hero">
             <div class="app-kicker">NIAGADS Open Access</div>
-            <div class="app-title">Workshop Challenge</div>
+            <div class="app-title">AD Gene Challenge</div>
             <div class="app-subtitle">
                 Build a gene evidence summary for <strong>{escape(st.session_state.assigned_gene)}</strong>.
                 Complete the required activities in about 20 minutes; the API activity is optional bonus credit.
@@ -826,13 +880,13 @@ def render_summary_and_submit(summary, score):
     render_evidence_pathway(summary)
     st.divider()
     st.header("Gene Evidence Summary Preview")
-    st.caption("This preview updates as your team fills in activity fields.")
+    st.caption("This preview updates as you fill in activity fields.")
     st.json(summary, expanded=False)
 
     st.divider()
     st.header("Submit Results")
     st.caption(
-        "Submit or update your team score when you are ready. The leaderboard is shown on a separate page."
+        "Submit or update your score when you are ready. The leaderboard is shown on a separate page."
     )
 
     submit_cols = st.columns([1, 1])

@@ -1,12 +1,10 @@
-# NIAGADS Open Access Workshop Challenge
+# NIAGADS Open Access Scavenger Hunt Application
 
 A Streamlit app for a 20–30 minute genomics workshop where teams review open NIAGADS resources for one Alzheimer’s disease gene and build a gene evidence summary.
 
 ## What participants do
 
-Teams receive or choose one gene from:
-
-`APOE`, `BIN1`, `TREM2`, `ABCA7`, `CLU`, `PICALM`, `CR1`, `SORL1`, `MS4A6A`, `CD33`
+Teams receive or choose one gene from a curated list pulled from intersection of GVC Genes and ADVP curated genes to ensure all questions will give a positive result.
 
 They complete guided activities using NIAGADS and related open resources:
 
@@ -17,8 +15,6 @@ They complete guided activities using NIAGADS and related open resources:
 - [TopGenes](https://topgenes.niagads.org/)
 - [xQTL Browser](https://xqtl.niagads.org/)
 - [NIAGADS API](https://api.niagads.org/)
-
-VarIXam is framed as an **ADSP variant inventory** activity: participants record variants overlapping a gene footprint or summarize the returned variant set. The app does not present VarIXam as variant interpretation.
 
 ## Features
 
@@ -118,11 +114,11 @@ the spreadsheet ID is:
 streamlit-leaderboard@your-project.iam.gserviceaccount.com
 ```
 
-3. Go back to the Google Sheet.
-4. Click **Share**.
-5. Paste the service account email.
-6. Give it **Editor** access.
-7. Click **Send** or **Share**.
+1. Go back to the Google Sheet.
+2. Click **Share**.
+3. Paste the service account email.
+4. Give it **Editor** access.
+5. Click **Send** or **Share**.
 
 ### 7. Add Streamlit secrets
 
@@ -143,7 +139,6 @@ The script refuses to overwrite an existing secrets file unless you add `--force
 For Streamlit Community Cloud, open the generated `.streamlit/secrets.toml`, copy its contents, and paste them into the app's **Secrets** settings.
 
 Manual format, if needed:
-
 
 ```toml
 [leaderboard]
