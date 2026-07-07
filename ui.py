@@ -116,6 +116,13 @@ def render_styles():
         .skill-chip {border: 1px solid; }
         .skill-earned {background: #fff3d6; border-color: var(--niagads-gold-deep); color: #6d4714;}
         .skill-pending {background: #f3f6f8; border-color: var(--niagads-line); color: var(--niagads-muted);}
+        .skill-label {
+            color: var(--niagads-muted);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
         code {
             background: #e7eff6;
             border: 1px solid #bfd1df;
@@ -362,7 +369,8 @@ def render_completed_skills(skill_names, award_icon):
 
 def render_activity_skills(mission, award_icon, mission_skills, skill_complete):
     st.html(
-        " ".join(
+        "<span class='skill-label'>Badges to earn:</span> "
+        + " ".join(
             f"<span class='skill-chip {'skill-earned' if skill_complete(mission, skill) else 'skill-pending'}'>{award_icon} {skill['skill']}</span>"
             for skill in mission_skills(mission)
         ),
