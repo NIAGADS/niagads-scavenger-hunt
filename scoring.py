@@ -1,4 +1,8 @@
+import time
+
 import streamlit as st
+
+TIME_LIMIT_SECONDS = 20 * 60
 
 
 def mission_ready(mission):
@@ -55,6 +59,14 @@ def completed_skill_names(missions):
 
 
 def earned_points(mission):
+    if timer_expired_before_completion(mission["id"]):
+        return 0
+    if mission["id"] in st.session_state.mission_points_awarded:
+        return st.session_state.mission_points_awarded[mission["id"]]
+    return current_points(mission)
+
+
+def current_points(mission):
     answers = st.session_state.answers.get(mission["id"], {})
     bonus_points = sum(
         field.get("bonus_points", 0)
@@ -68,3 +80,13 @@ def earned_points(mission):
         0,
     )
     return base_points + bonus_points
+
+
+def timer_expired_before_completion(mission_id):
+    started_at = st.session_state.timer_started_at
+    if started_at is None:
+        return False
+    completed_at = st.session_state.mission_completed_at.get(mission_id)
+    if completed_at is None:
+        completed_at = time.time()
+    return completed_at > started_at + TIME_LIMIT_SECONDS

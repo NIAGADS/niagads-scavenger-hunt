@@ -62,6 +62,8 @@ def initialize_state(assignment_pool):
         "timer_started_at": None,
         "answers": {},
         "completed_missions": set(),
+        "mission_completed_at": {},
+        "mission_points_awarded": {},
         "hints_used": set(),
         "field_hints_used": set(),
     }

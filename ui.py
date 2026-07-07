@@ -10,6 +10,7 @@ from leaderboard_store import (
     load_leaderboard,
     submit_to_leaderboard,
 )
+from scoring import current_points
 
 
 def render_styles():
@@ -870,7 +871,7 @@ def render_missions(
                 type="primary" if ready and not complete else "secondary",
                 disabled=complete or not ready,
                 on_click=mark_mission_complete,
-                args=(mission["id"],),
+                args=(mission,),
             )
 
 
@@ -933,8 +934,11 @@ def start_timer_if_needed():
         st.session_state.timer_started_at = time.time()
 
 
-def mark_mission_complete(mission_id):
+def mark_mission_complete(mission):
+    mission_id = mission["id"]
     st.session_state.completed_missions.add(mission_id)
+    st.session_state.mission_completed_at[mission_id] = time.time()
+    st.session_state.mission_points_awarded[mission_id] = current_points(mission)
 
 
 def render_summary_and_submit(summary, score):
