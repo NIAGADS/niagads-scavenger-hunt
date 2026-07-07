@@ -84,12 +84,6 @@ def render_styles():
         .mission-complete {border-left: 7px solid var(--niagads-blue);}
         .mission-incomplete {border-left: 7px solid #8a98a8;}
         .mission-bonus {border-left: 7px solid var(--niagads-violet); background: #f9f8ff;}
-        .mission-website {
-            color: var(--niagads-ink);
-            font-size: 1rem;
-            font-weight: 700;
-            margin-top: 0.75rem;
-        }
         .mission-description {
             color: #3c4b58;
             line-height: 1.45;
@@ -662,12 +656,18 @@ def render_missions(
             if mission["bonus"]
             else ("status-complete" if complete else "status-incomplete")
         )
+        resource_text = ", ".join(mission["resources"])
+        display_title = (
+            f"{mission['title']}: {resource_text}"
+            if resource_text
+            else mission["title"]
+        )
 
         st.html(f"<div class='mission-card {status_class}'>")
         header_cols = st.columns([3, 1])
         with header_cols[0]:
             st.html(
-                f"<div class='mission-title-row'><div class='mission-title'>{escape(mission['title'])}</div><span class='status-pill {pill_class}'>{status_text}</span></div>"
+                f"<div class='mission-title-row'><div class='mission-title'>{escape(display_title)}</div><span class='status-pill {pill_class}'>{status_text}</span></div>"
             )
             render_activity_skills(mission, award_icon, mission_skills, skill_complete)
         with header_cols[1]:
@@ -681,11 +681,6 @@ def render_missions(
                 label = f"{label} + {bonus_total} bonus"
             st.metric("Value", label)
 
-        if mission["resources"]:
-            resource_text = ", ".join(mission["resources"])
-            st.html(
-                f"<div class='mission-website'>{escape(resource_text)}</div>",
-            )
         if mission.get("purpose"):
             st.html(
                 f"<div class='mission-description'>{content_html(mission['purpose'])}</div>"

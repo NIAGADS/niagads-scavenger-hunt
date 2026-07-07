@@ -416,7 +416,7 @@ MISSIONS = [
     },
     {
         "id": "xqtl",
-        "title": "Review xQTL evidence for the assigned gene",
+        "title": "Connect genetic variation to molecular function",
         "skill": "xQTL evidence",
         "points": 5,
         "resources": ["xQTL Browser"],
@@ -461,7 +461,7 @@ MISSIONS = [
     },
     {
         "id": "filer",
-        "title": "Review FILER annotations for the carried-forward region",
+        "title": "Exploring Regulatory and Functional Context",
         "skill": "Functional annotation",
         "points": 5,
         "resources": ["FILER"],
