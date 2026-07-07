@@ -212,7 +212,7 @@ MISSIONS = [
     },
     {
         "id": "advp",
-        "title": "Review AD association evidence",
+        "title": "Trace AD genetic associations",
         "skill": "AD Genetic Association Finder",
         "points": 4,
         "resources": ["ADVP"],
@@ -261,7 +261,7 @@ MISSIONS = [
     },
     {
         "id": "genomicsdb",
-        "title": "Explore GWAS summary statistics in GenomicsDB",
+        "title": "Explore GWAS summary statistics",
         "skill": "Record Linker",
         "sub_skills": [
             {
