@@ -76,7 +76,7 @@ def render_styles():
             border-top: 4px solid var(--niagads-gold);
             border-radius: 0;
             box-shadow: 0 8px 20px rgba(29, 42, 54, 0.12);
-            margin: -0.25rem 0 1.4rem 0;
+            margin: -0.50rem 0 0 0;
             overflow: hidden;
             padding: 2rem 2.25rem;
             position: relative;
@@ -125,6 +125,21 @@ def render_styles():
             font-size: 1rem;
             line-height: 1.4;
             margin-top: 0.45rem;
+        }
+        .mobile-resource-note {
+            background: #fff9e8;
+            border-left: 4px solid var(--niagads-gold-deep);
+            color: #70501a;
+            display: none;
+            font-size: 0.92rem;
+            line-height: 1.35;
+            margin-top: 0.65rem;
+            padding: 0.55rem 0.7rem;
+        }
+        @media (max-width: 760px) {
+            .mobile-resource-note {
+                display: block;
+            }
         }
         .landing-video-spacer {margin-top: 0.55rem;}
         .landing-action-spacer {margin-top: 0.55rem;}
@@ -757,6 +772,15 @@ def render_page_header(
         """,
     )
 
+    st.html(
+        """
+        <div class="mobile-resource-note">
+            This activity is designed for desktop; it requires opening multiple browser tabs. </br></br>
+            On mobile, press and hold <code>Open Resource</code>
+            buttons (next to the <code>Getting Started</code> directives) and select option to open link in a new tab.
+        </div>
+        """,
+    )
     col1, col2, col3 = st.columns(3)
     col1.metric("Assigned gene", st.session_state.assigned_gene)
     col2.metric("Required activities", f"{completed_required}/{required_count}")
