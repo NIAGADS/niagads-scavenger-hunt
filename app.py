@@ -144,8 +144,8 @@ MISSIONS = [
                 "type": "text",
             },
             {
-                "key": "Nearby gene",
-                "label": "Record one nearby gene listed in the table.",
+                "key": "Agora",
+                "label": "Is this a gene also an Agora (AD Knowledge Portal) nominated target?",
                 "type": "text",
             },
         ],

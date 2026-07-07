@@ -904,6 +904,7 @@ def render_mission_fields(mission):
                 value=current,
                 key=key,
                 height=90,
+                on_change=start_timer_if_needed,
                 label_visibility=label_visibility,
             )
         elif field["type"] == "select":
@@ -914,6 +915,7 @@ def render_mission_fields(mission):
                 options,
                 index=index,
                 key=key,
+                on_change=start_timer_if_needed,
                 label_visibility=label_visibility,
             )
         else:
@@ -921,8 +923,14 @@ def render_mission_fields(mission):
                 widget_label,
                 value=current,
                 key=key,
+                on_change=start_timer_if_needed,
                 label_visibility=label_visibility,
             )
+
+
+def start_timer_if_needed():
+    if st.session_state.timer_started_at is None:
+        st.session_state.timer_started_at = time.time()
 
 
 def mark_mission_complete(mission_id):
