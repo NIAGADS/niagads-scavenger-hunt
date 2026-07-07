@@ -119,7 +119,8 @@ MISSIONS = [
             "The ADSP Gene Verification Committee Top Genes repository provides access to a curated list of "
             "high-confidence AD/ADRD genes and loci that have been rigorously reviewed by domain experts. It helps "
             "researchers move from genetic association signals to prioritized targets for functional validation, "
-            "mechanistic follow-up, and therapeutic discovery."
+            "mechanistic follow-up, and therapeutic discovery. More details about ranked confidence levels (tiers) are available in the "
+            "[ADSP GVC Methods](https://adsp.niagads.org/wp-content/uploads/2022/05/SingleVariantTest-V42.pdf)."
         ),
         "getting_started": "Search for your assigned gene, then select `View all Results`.",
         "task": "Use TopGenes to review how the assigned gene appears in curated reported locus records.",
@@ -131,7 +132,7 @@ MISSIONS = [
             },
             {
                 "key": "Strongest support tier",
-                "label": "What is the strongest support tier shown for this gene? Remember: Tier 1 = strongest support; Tier 7 = weakest support.",
+                "label": "What is the strongest support tier shown for this gene? Tier 1 = strongest support; Tier 7 = weakest support.",
                 "type": "text",
             },
             {
@@ -144,12 +145,6 @@ MISSIONS = [
                 "label": "Record one nearby gene listed in the table.",
                 "type": "text",
             },
-        ],
-        "reference_links": [
-            {
-                "label": "Methods and tier definitions",
-                "url": "https://adsp.niagads.org/wp-content/uploads/2022/05/SingleVariantTest-V42.pdf",
-            }
         ],
         "hint": "Use View all Results to see the table that contains reported locus records, support tiers, studies, and nearby genes.",
         "bonus": False,

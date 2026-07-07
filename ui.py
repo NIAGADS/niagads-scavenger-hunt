@@ -1,4 +1,5 @@
 import random
+import re
 import time
 from html import escape
 
@@ -84,6 +85,37 @@ def render_styles():
         .mission-complete {border-left: 7px solid var(--niagads-blue);}
         .mission-incomplete {border-left: 7px solid #8a98a8;}
         .mission-bonus {border-left: 7px solid var(--niagads-violet); background: #f9f8ff;}
+        .mission-website {
+            color: var(--niagads-ink);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-top: 0.75rem;
+        }
+        .mission-description {
+            color: #3c4b58;
+            line-height: 1.45;
+            margin: 0.35rem 0 0.75rem 0;
+            max-width: 66rem;
+        }
+        .mission-start {
+            background: #fff5dd;
+            border-left: 4px solid var(--niagads-gold-deep);
+            color: var(--niagads-ink);
+            margin: 0;
+            padding: 0.6rem 0.75rem;
+        }
+        .resource-action-row {
+            align-items: stretch;
+            display: flex;
+            gap: 0.75rem;
+            margin: 0.75rem 0;
+        }
+        .resource-action-row > div:first-child {
+            flex: 0 0 auto;
+        }
+        .resource-action-row > div:last-child {
+            flex: 1 1 auto;
+        }
         .status-pill, .skill-chip {display: inline-block; border-radius: 999px; padding: 0.18rem 0.55rem; margin: 0.12rem; font-size: 0.85rem;}
         .status-complete {background: #eaf3f9; color: #224f73;}
         .status-incomplete {background: #edf1f4; color: #425466;}
@@ -185,6 +217,37 @@ def render_styles():
             border-color: var(--niagads-blue);
             border-radius: 4px;
             color: var(--niagads-ink);
+        }
+        .stLinkButton > a {
+            background: var(--niagads-gold);
+            border-color: var(--niagads-gold-deep);
+        }
+        .stLinkButton > a:hover {
+            background: #ffd37a;
+            border-color: var(--niagads-blue);
+            color: var(--niagads-ink);
+        }
+        .resource-open-button {
+            align-items: center;
+            background: var(--niagads-gold);
+            border: 1px solid var(--niagads-gold-deep);
+            border-radius: 4px;
+            color: var(--niagads-ink) !important;
+            display: inline-flex;
+            font-size: 0.95rem;
+            min-height: 2.5rem;
+            padding: 0.45rem 0.85rem;
+            text-decoration: none !important;
+            white-space: nowrap;
+        }
+        .resource-open-button:hover {
+            background: #ffd37a;
+            border-color: var(--niagads-blue);
+            color: var(--niagads-ink) !important;
+            text-decoration: none !important;
+        }
+        .resource-open-button + .resource-open-button {
+            margin-left: 0.45rem;
         }
         section[data-testid="stSidebar"] .stButton > button,
         section[data-testid="stSidebar"] .stLinkButton > a {
@@ -314,6 +377,26 @@ def first_answer(summary, activity_id, keys):
 
 def display_value(value, fallback="Not recorded yet"):
     return escape(str(value).strip() or fallback)
+
+
+def format_inline_badges(text):
+    parts = str(text).split("`")
+    html = []
+    for idx, part in enumerate(parts):
+        if idx % 2:
+            html.append(f"<code>{escape(part)}</code>")
+        else:
+            html.append(escape(part))
+    return "".join(html)
+
+
+def format_inline_markdown(text):
+    escaped = escape(str(text))
+    return re.sub(
+        r"\[([^\]]+)\]\((https?://[^)]+)\)",
+        r'<a href="\2" target="_blank" rel="noopener noreferrer">\1</a>',
+        escaped,
+    )
 
 
 def pathway_node(label, source, value, complete=False):
@@ -585,9 +668,8 @@ def render_missions(
         )
         header_cols = st.columns([3, 1])
         with header_cols[0]:
-            st.markdown(f"### {mission['title']}")
             st.markdown(
-                f"<span class='status-pill {pill_class}'>{status_text}</span>",
+                f"### {escape(mission['title'])} <span class='status-pill {pill_class}'>{status_text}</span>",
                 unsafe_allow_html=True,
             )
             render_activity_skills(mission, award_icon, mission_skills, skill_complete)
@@ -602,27 +684,36 @@ def render_missions(
                 label = f"{label} + {bonus_total} bonus"
             st.metric("Value", label)
 
-        if mission.get("purpose"):
-            st.markdown(f"**Purpose:** {mission['purpose']}")
-        if mission.get("getting_started"):
-            st.markdown(f"**Getting started:** {mission['getting_started']}")
-        st.markdown(mission["task"])
-
         if mission["resources"]:
-            link_cols = st.columns(max(len(mission["resources"]), 1))
-            for idx, resource in enumerate(mission["resources"]):
-                link_cols[idx].link_button(
-                    f"Open {resource}", resource_url(resource), use_container_width=True
-                )
+            resource_text = ", ".join(mission["resources"])
+            st.markdown(
+                f"<div class='mission-website'>{escape(resource_text)}</div>",
+                unsafe_allow_html=True,
+            )
+        if mission.get("purpose"):
+            st.markdown(
+                f"<div class='mission-description'>{format_inline_markdown(mission['purpose'])}</div>",
+                unsafe_allow_html=True,
+            )
+
         if mission.get("reference_links"):
             for link in mission["reference_links"]:
                 st.link_button(link["label"], link["url"])
 
-        if st.button("Show hint (-1 point once)", key=f"hint_{mission['id']}"):
-            st.session_state.hints_used.add(mission["id"])
-        if mission["id"] in st.session_state.hints_used:
-            st.warning(f"Hint: {mission['hint']}")
-
+        if mission["resources"] or mission.get("getting_started"):
+            buttons_html = "".join(
+                f"<a class='resource-open-button' href='{escape(resource_url(resource))}' target='_blank' rel='noopener noreferrer'>Open {escape(resource)}</a>"
+                for resource in mission["resources"]
+            )
+            start_html = (
+                f"<div class='mission-start'><strong>Getting started:</strong> {format_inline_badges(mission['getting_started'])}</div>"
+                if mission.get("getting_started")
+                else ""
+            )
+            st.markdown(
+                f"<div class='resource-action-row'><div>{buttons_html}</div><div>{start_html}</div></div>",
+                unsafe_allow_html=True,
+            )
         render_mission_fields(mission)
 
         st.markdown("</div>", unsafe_allow_html=True)
