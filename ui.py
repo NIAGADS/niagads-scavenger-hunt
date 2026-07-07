@@ -418,9 +418,6 @@ def render_leaderboard_view():
     st.caption(
         "Scores are sorted by points, required activity progress, completed skills, and fewer hints used."
     )
-    if st.button("Return to challenge"):
-        st.query_params.clear()
-        st.rerun()
 
     if not leaderboard_configured():
         st.warning("Leaderboard storage is not configured yet.")
