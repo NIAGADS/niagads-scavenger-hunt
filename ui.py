@@ -29,6 +29,14 @@ def render_styles():
             --niagads-page: #f7f8fa;
         }
         .stApp {background: var(--niagads-page);}
+        header[data-testid="stHeader"],
+        div[data-testid="stToolbar"] {
+            display: none;
+        }
+        #MainMenu,
+        footer {
+            visibility: hidden;
+        }
         section[data-testid="stSidebar"] {
             background: var(--niagads-navy-deep);
             border-right: 4px solid var(--niagads-gold);
@@ -41,7 +49,7 @@ def render_styles():
             color: #eef3f7;
         }
         h1, h2, h3 {color: var(--niagads-ink);}
-        .block-container {padding-top: 1.25rem;}
+        .block-container {padding-top: 0.5rem;}
         .app-hero {
             background: var(--niagads-navy);
             border-top: 4px solid var(--niagads-gold);
