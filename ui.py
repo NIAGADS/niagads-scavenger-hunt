@@ -741,9 +741,6 @@ def render_sidebar(
             remaining = max(20 * 60 - elapsed, 0)
             st.metric("Time remaining", f"{remaining // 60:02d}:{remaining % 60:02d}")
             st.caption(f"Elapsed: {elapsed // 60:02d}:{elapsed % 60:02d}")
-            if remaining > 0:
-                time.sleep(1)
-                st.rerun()
 
         st.metric("Current score", f"{score} pts")
         st.progress(
