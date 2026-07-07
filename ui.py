@@ -199,6 +199,21 @@ def render_styles():
         section[data-testid="stSidebar"] .stLinkButton > a:hover * {
             color: var(--niagads-ink);
         }
+
+        section[data-testid="stSidebar"] .stButton > button,
+        section[data-testid="stSidebar"] .stLinkButton > a {
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            white-space: nowrap;
+        }
+        section[data-testid="stSidebar"] .stButton > button p,
+        section[data-testid="stSidebar"] .stLinkButton > a p {
+            line-height: 1;
+            margin: 0;
+            padding: 0;
+            white-space: nowrap;
+        }
         .stButton > button[kind="primary"] {
             background: var(--niagads-blue);
             border-color: var(--niagads-blue);
@@ -347,7 +362,7 @@ def render_evidence_pathway(summary):
     st.header("Evidence Pathway")
     snapshot_cols = st.columns(4)
     snapshot_cols[0].metric("Gene", summary["assigned_gene"])
-    snapshot_cols[1].metric("Team label", summary["team_label"] or "Not set")
+    snapshot_cols[1].metric("Team name", summary["team_name"] or "Not set")
     snapshot_cols[2].metric("Score", f"{summary['score']} pts")
     snapshot_cols[3].metric("Required progress", progress_text)
     st.markdown(
@@ -439,28 +454,32 @@ def render_sidebar(
     completed_skills,
     assignment_pool,
     award_icon,
-    random_team_label,
 ):
+    def assign_random_gene():
+        st.session_state.assigned_gene = random.choice(assignment_pool)
+
     with st.sidebar:
-        st.header("Workshop Progress")
-        st.text_input("Table or group number", key="team_name", placeholder="e.g., Table 4")
+        st.header("Challenge Status")
+        st.text_input("Team name", key="team_name")
         st.text_input(
-            "Team leader email (optional)",
-            key="leader_email",
+            "Email (optional)",
+            key="email",
             placeholder="name@example.org",
         )
-        col_a, col_b = st.columns(2)
-        with col_a:
-            if st.button("Generate team label", use_container_width=True):
-                st.session_state.team_label = random_team_label()
-        with col_b:
-            if st.button("Assign gene", use_container_width=True):
-                st.session_state.assigned_gene = random.choice(assignment_pool)
-        st.text_input("Team label", key="team_label", placeholder="Generate or type one")
-        st.selectbox("Manual gene override", assignment_pool, key="assigned_gene")
+        gene_cols = st.columns([2.35, 0.65], vertical_alignment="bottom")
+        with gene_cols[0]:
+            st.text_input(
+                "Assigned gene",
+                key="assigned_gene",
+                label_visibility="collapsed",
+            )
+        with gene_cols[1]:
+            st.button("New", on_click=assign_random_gene, use_container_width=True)
 
         if st.session_state.timer_started_at is None:
-            if st.button("Start 20-minute timer", type="primary", use_container_width=True):
+            if st.button(
+                "Start 20-minute timer", type="primary", use_container_width=True
+            ):
                 st.session_state.timer_started_at = time.time()
                 st.rerun()
         else:
@@ -479,10 +498,14 @@ def render_sidebar(
         )
         st.subheader("Skills completed")
         render_completed_skills(completed_skills, award_icon)
-        st.link_button("🏆 View leaderboard", "?view=leaderboard", use_container_width=True)
+        st.link_button(
+            "🏆 View leaderboard", "?view=leaderboard", use_container_width=True
+        )
 
 
-def render_page_header(completed_required, required_count, score, completed_skills, award_icon):
+def render_page_header(
+    completed_required, required_count, score, completed_skills, award_icon
+):
     st.markdown(
         f"""
         <div class="app-hero">
@@ -530,7 +553,9 @@ def render_missions(
             else ("status-complete" if complete else "status-incomplete")
         )
 
-        st.markdown(f"<div class='mission-card {status_class}'>", unsafe_allow_html=True)
+        st.markdown(
+            f"<div class='mission-card {status_class}'>", unsafe_allow_html=True
+        )
         header_cols = st.columns([3, 1])
         with header_cols[0]:
             st.markdown(f"### {mission['title']}")

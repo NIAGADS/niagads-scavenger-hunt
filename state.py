@@ -4,7 +4,7 @@ from uuid import uuid4
 import streamlit as st
 
 
-TEAM_LABEL_ADJECTIVES = [
+TEAM_NAME_ADJECTIVES = [
     "Agile",
     "Bright",
     "Careful",
@@ -16,7 +16,7 @@ TEAM_LABEL_ADJECTIVES = [
     "Sharp",
     "Steady",
 ]
-TEAM_LABEL_TOPICS = [
+TEAM_NAME_TOPICS = [
     "Amyloid",
     "Atlas",
     "Cohort",
@@ -29,7 +29,7 @@ TEAM_LABEL_TOPICS = [
     "Tau",
     "Variant",
 ]
-TEAM_LABEL_NOUNS = [
+TEAM_NAME_NOUNS = [
     "Analysts",
     "Explorers",
     "Mappers",
@@ -39,23 +39,22 @@ TEAM_LABEL_NOUNS = [
     "Trackers",
     "Working Group",
 ]
-TEAM_LABEL_CODE_RANGE = range(100, 1000)
+TEAM_NAME_CODE_RANGE = range(100, 1000)
 
 
-def random_team_label():
-    code = random.choice(TEAM_LABEL_CODE_RANGE)
+def random_team_name():
+    code = random.choice(TEAM_NAME_CODE_RANGE)
     return (
-        f"{random.choice(TEAM_LABEL_ADJECTIVES)} "
-        f"{random.choice(TEAM_LABEL_TOPICS)} "
-        f"{random.choice(TEAM_LABEL_NOUNS)} {code}"
+        f"{random.choice(TEAM_NAME_ADJECTIVES)} "
+        f"{random.choice(TEAM_NAME_TOPICS)} "
+        f"{random.choice(TEAM_NAME_NOUNS)} {code}"
     )
 
 
 def initialize_state(assignment_pool):
     defaults = {
-        "team_name": "",
-        "leader_email": "",
-        "team_label": random_team_label(),
+        "team_name": random_team_name(),
+        "email": "",
         "assigned_gene": random.choice(assignment_pool),
         "leaderboard_entry_id": uuid4().hex,
         "leaderboard_submitted": False,

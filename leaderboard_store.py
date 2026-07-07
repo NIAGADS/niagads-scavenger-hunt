@@ -9,8 +9,7 @@ LEADERBOARD_HEADERS = [
     "submitted_at_utc",
     "updated_at_utc",
     "team_name",
-    "team_label",
-    "leader_email",
+    "email",
     "assigned_gene",
     "score",
     "required_activities_completed",
@@ -97,8 +96,7 @@ def entry_to_row(entry):
         entry.get("submitted_at_utc", ""),
         entry.get("updated_at_utc", ""),
         entry.get("team_name", ""),
-        entry.get("team_label", ""),
-        entry.get("leader_email", ""),
+        entry.get("email", ""),
         entry.get("assigned_gene", ""),
         entry.get("score", 0),
         entry.get("required_activities_completed", 0),
@@ -119,8 +117,7 @@ def leaderboard_entry(summary, entry_id, existing_entry=None):
         "submitted_at_utc": (existing_entry or {}).get("submitted_at_utc", now),
         "updated_at_utc": now,
         "team_name": summary["team_name"],
-        "team_label": summary["team_label"],
-        "leader_email": summary["leader_email"],
+        "email": summary["email"],
         "assigned_gene": summary["assigned_gene"],
         "score": summary["score"],
         "required_activities_completed": required_done,
@@ -164,8 +161,7 @@ def leaderboard_rows(entries, include_email=False):
     for rank, entry in enumerate(sorted_leaderboard(entries), start=1):
         row = {
             "Rank": rank,
-            "Team label": entry.get("team_label", ""),
-            "Table/group": entry.get("team_name", ""),
+            "Team name": entry.get("team_name", ""),
             "Gene": entry.get("assigned_gene", ""),
             "Score": entry.get("score", 0),
             "Progress": entry.get("progress", ""),
@@ -174,7 +170,7 @@ def leaderboard_rows(entries, include_email=False):
             "Updated": entry.get("updated_at_utc", ""),
         }
         if include_email:
-            row["Leader email"] = entry.get("leader_email", "")
+            row["Email"] = entry.get("email", "")
             row["Skills completed"] = "; ".join(entry.get("skills_completed", []))
         rows.append(row)
     return rows

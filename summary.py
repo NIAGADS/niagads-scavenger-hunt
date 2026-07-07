@@ -14,8 +14,7 @@ def build_summary(missions):
     required = [mission for mission in missions if not mission["bonus"]]
     return {
         "team_name": st.session_state.team_name,
-        "leader_email": st.session_state.leader_email,
-        "team_label": st.session_state.team_label,
+        "email": st.session_state.email,
         "assigned_gene": st.session_state.assigned_gene,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "score": sum(earned_points(mission) for mission in missions),
