@@ -103,7 +103,7 @@ RESOURCES = {
     "GenomicsDB": "https://www.niagads.org/genomics",
     "FILER": "https://tf.lisanwanglab.org/FILER/",
     "VariXam": "https://varixam.niagads.org/",
-    "TopGenes": "https://topgenes.niagads.org/",
+    "GVC Top Genes": "https://topgenes.niagads.org/",
     "xQTL Browser": "https://xqtl.niagads.org/",
     "API": "https://api.niagads.org/",
 }
@@ -115,9 +115,9 @@ MISSIONS = [
     {
         "id": "topgenes",
         "title": "Check gene prioritization",
-        "skill": "Gene prioritization",
+        "skill": "Gene Prioritization",
         "points": 4,
-        "resources": ["TopGenes"],
+        "resources": ["GVC Top Genes"],
         "purpose": (
             "The ADSP Gene Verification Committee Top Genes repository provides access to a curated list of "
             "high-confidence AD/ADRD genes and loci that have been rigorously reviewed by domain experts. It helps "
@@ -126,7 +126,7 @@ MISSIONS = [
             "<a href='https://adsp.niagads.org/wp-content/uploads/2022/05/SingleVariantTest-V42.pdf' target='_blank' rel='noopener noreferrer'>ADSP GVC Methods</a>."
         ),
         "getting_started": "Search for your assigned gene, then select <code>View all Results</code>.",
-        "task": "Use TopGenes to review how the assigned gene appears in curated reported locus records.",
+        "task": "Use GVC Top Genes to review how the assigned gene appears in curated reported locus records.",
         "fields": [
             {
                 "key": "Reported locus records returned",

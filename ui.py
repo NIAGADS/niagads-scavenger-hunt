@@ -29,6 +29,27 @@ def render_styles():
             --niagads-page: #f7f8fa;
         }
         .stApp {background: var(--niagads-page);}
+        input,
+        textarea,
+        select,
+        [data-baseweb="input"],
+        [data-baseweb="textarea"],
+        [data-baseweb="select"] {
+            background-color: #ffffff !important;
+            color: var(--niagads-ink) !important;
+        }
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--niagads-muted) !important;
+            opacity: 1;
+        }
+        .stButton > button:disabled,
+        .stButton > button:disabled * {
+            background-color: #edf1f4 !important;
+            border-color: var(--niagads-line) !important;
+            color: #425466 !important;
+            opacity: 1;
+        }
         header[data-testid="stHeader"],
         div[data-testid="stToolbar"] {
             display: none;

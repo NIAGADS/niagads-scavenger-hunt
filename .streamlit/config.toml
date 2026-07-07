@@ -6,3 +6,10 @@ runOnSave = true
 
 [ui]
 hideTopBar = true
+
+[theme]
+base = "light"
+primaryColor = "#ffc45c"
+backgroundColor = "#f7f8fa"
+secondaryBackgroundColor = "#ffffff"
+textColor = "#24313c"
