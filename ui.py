@@ -1,5 +1,4 @@
 import random
-import re
 import time
 from html import escape
 
@@ -14,7 +13,7 @@ from leaderboard_store import (
 
 
 def render_styles():
-    st.markdown(
+    st.html(
         """
         <style>
         :root {
@@ -123,8 +122,7 @@ def render_styles():
         .skill-chip {border: 1px solid; }
         .skill-earned {background: #fff3d6; border-color: var(--niagads-gold-deep); color: #6d4714;}
         .skill-pending {background: #f3f6f8; border-color: var(--niagads-line); color: var(--niagads-muted);}
-        [data-testid="stMarkdownContainer"] code,
-        .stWidgetLabel code {
+        code {
             background: #e7eff6;
             border: 1px solid #bfd1df;
             border-radius: 999px;
@@ -298,9 +296,33 @@ def render_styles():
             background-color: var(--niagads-gold);
         }
         .small-note {color: var(--niagads-muted); font-size: 0.92rem;}
+        .section-heading {
+            color: var(--niagads-ink);
+            font-size: 1.08rem;
+            font-weight: 800;
+            margin: 1rem 0 0.4rem 0;
+        }
+        .field-label {
+            color: var(--niagads-ink);
+            font-size: 0.95rem;
+            font-weight: 600;
+            line-height: 1.35;
+            margin: 0.45rem 0 0.25rem 0;
+        }
+        .mission-title-row {
+            align-items: center;
+            display: flex;
+            gap: 0.55rem;
+            margin: 0 0 0.2rem 0;
+        }
+        .mission-title {
+            color: var(--niagads-ink);
+            font-size: 1.55rem;
+            font-weight: 800;
+            line-height: 1.1;
+        }
         </style>
         """,
-        unsafe_allow_html=True,
     )
 
 
@@ -336,22 +358,20 @@ def render_completed_skills(skill_names, award_icon):
     if not skill_names:
         st.caption("No skills completed yet.")
         return
-    st.markdown(
+    st.html(
         " ".join(
             f"<span class='skill-chip skill-earned'>{award_icon} {skill}</span>"
             for skill in skill_names
         ),
-        unsafe_allow_html=True,
     )
 
 
 def render_activity_skills(mission, award_icon, mission_skills, skill_complete):
-    st.markdown(
+    st.html(
         " ".join(
             f"<span class='skill-chip {'skill-earned' if skill_complete(mission, skill) else 'skill-pending'}'>{award_icon} {skill['skill']}</span>"
             for skill in mission_skills(mission)
         ),
-        unsafe_allow_html=True,
     )
 
 
@@ -379,24 +399,8 @@ def display_value(value, fallback="Not recorded yet"):
     return escape(str(value).strip() or fallback)
 
 
-def format_inline_badges(text):
-    parts = str(text).split("`")
-    html = []
-    for idx, part in enumerate(parts):
-        if idx % 2:
-            html.append(f"<code>{escape(part)}</code>")
-        else:
-            html.append(escape(part))
-    return "".join(html)
-
-
-def format_inline_markdown(text):
-    escaped = escape(str(text))
-    return re.sub(
-        r"\[([^\]]+)\]\((https?://[^)]+)\)",
-        r'<a href="\2" target="_blank" rel="noopener noreferrer">\1</a>',
-        escaped,
-    )
+def content_html(text):
+    return str(text)
 
 
 def pathway_node(label, source, value, complete=False):
@@ -470,9 +474,8 @@ def render_evidence_pathway(summary):
     snapshot_cols[1].metric("Team name", summary["team_name"] or "Not set")
     snapshot_cols[2].metric("Score", f"{summary['score']} pts")
     snapshot_cols[3].metric("Required progress", progress_text)
-    st.markdown(
+    st.html(
         f"<div class='summary-skill-strip'>{display_value(skills_text)}</div>",
-        unsafe_allow_html=True,
     )
 
     nodes = [
@@ -503,9 +506,7 @@ def render_evidence_pathway(summary):
             "Interpretation", "Synthesis", interpretation, bool(interpretation)
         ),
     ]
-    st.markdown(
-        f"<div class='path-grid'>{''.join(nodes)}</div>", unsafe_allow_html=True
-    )
+    st.html(f"<div class='path-grid'>{''.join(nodes)}</div>")
 
     st.subheader("Carry-Forward Focus")
     focus_items = [
@@ -553,7 +554,7 @@ def render_evidence_pathway(summary):
         f"<div class='focus-item'><div class='focus-label'>{escape(label)}</div><div class='focus-value'>{display_value(value)}</div></div>"
         for label, value in focus_items
     )
-    st.markdown(f"<div class='focus-panel'>{focus_html}</div>", unsafe_allow_html=True)
+    st.html(f"<div class='focus-panel'>{focus_html}</div>")
 
 
 def render_sidebar(
@@ -616,7 +617,7 @@ def render_sidebar(
 def render_page_header(
     completed_required, required_count, score, completed_skills, award_icon
 ):
-    st.markdown(
+    st.html(
         f"""
         <div class="app-hero">
             <div class="app-kicker">NIAGADS Open Access</div>
@@ -627,7 +628,6 @@ def render_page_header(
             </div>
         </div>
         """,
-        unsafe_allow_html=True,
     )
 
     col1, col2, col3 = st.columns(3)
@@ -663,14 +663,11 @@ def render_missions(
             else ("status-complete" if complete else "status-incomplete")
         )
 
-        st.markdown(
-            f"<div class='mission-card {status_class}'>", unsafe_allow_html=True
-        )
+        st.html(f"<div class='mission-card {status_class}'>")
         header_cols = st.columns([3, 1])
         with header_cols[0]:
-            st.markdown(
-                f"### {escape(mission['title'])} <span class='status-pill {pill_class}'>{status_text}</span>",
-                unsafe_allow_html=True,
+            st.html(
+                f"<div class='mission-title-row'><div class='mission-title'>{escape(mission['title'])}</div><span class='status-pill {pill_class}'>{status_text}</span></div>"
             )
             render_activity_skills(mission, award_icon, mission_skills, skill_complete)
         with header_cols[1]:
@@ -686,14 +683,12 @@ def render_missions(
 
         if mission["resources"]:
             resource_text = ", ".join(mission["resources"])
-            st.markdown(
+            st.html(
                 f"<div class='mission-website'>{escape(resource_text)}</div>",
-                unsafe_allow_html=True,
             )
         if mission.get("purpose"):
-            st.markdown(
-                f"<div class='mission-description'>{format_inline_markdown(mission['purpose'])}</div>",
-                unsafe_allow_html=True,
+            st.html(
+                f"<div class='mission-description'>{content_html(mission['purpose'])}</div>"
             )
 
         if mission.get("reference_links"):
@@ -706,24 +701,23 @@ def render_missions(
                 for resource in mission["resources"]
             )
             start_html = (
-                f"<div class='mission-start'><strong>Getting started:</strong> {format_inline_badges(mission['getting_started'])}</div>"
+                f"<div class='mission-start'><strong>Getting started:</strong> {content_html(mission['getting_started'])}</div>"
                 if mission.get("getting_started")
                 else ""
             )
-            st.markdown(
+            st.html(
                 f"<div class='resource-action-row'><div>{buttons_html}</div><div>{start_html}</div></div>",
-                unsafe_allow_html=True,
             )
         render_mission_fields(mission)
 
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.html("</div>")
 
 
 def render_mission_fields(mission):
     mission_answers = st.session_state.answers.setdefault(mission["id"], {})
     for field in mission["fields"]:
         if field["type"] == "section":
-            st.markdown(f"#### {field['label']}")
+            st.html(f"<div class='section-heading'>{escape(field['label'])}</div>")
             continue
         key = f"answer_{mission['id']}_{field['key']}"
         current = mission_answers.get(field["key"], "")
@@ -738,8 +732,9 @@ def render_mission_fields(mission):
             )
         )
         label_visibility = "visible"
+        rendered_label = content_html(widget_label)
         if "hint" in field:
-            st.markdown(f"**{widget_label}**")
+            st.html(f"<div class='field-label'>{rendered_label}</div>")
             hint_key = f"{mission['id']}::{field['key']}"
             if st.button(
                 "Show bonus hint", key=f"field_hint_{mission['id']}_{field['key']}"
@@ -747,6 +742,9 @@ def render_mission_fields(mission):
                 st.session_state.field_hints_used.add(hint_key)
             if hint_key in st.session_state.field_hints_used:
                 st.warning(f"Hint: {field['hint']}")
+            label_visibility = "collapsed"
+        elif "<" in widget_label and ">" in widget_label:
+            st.html(f"<div class='field-label'>{rendered_label}</div>")
             label_visibility = "collapsed"
         if field["type"] == "textarea":
             mission_answers[field["key"]] = st.text_area(
