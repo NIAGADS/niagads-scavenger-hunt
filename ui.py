@@ -319,6 +319,30 @@ def render_styles():
         .resource-open-button + .resource-open-button {
             margin-left: 0.45rem;
         }
+        .resource-note {
+            background: #eaf3fb;
+            border: 1px solid #8fb8d6;
+            border-left: 6px solid var(--niagads-blue);
+            border-radius: 6px;
+            color: var(--niagads-ink);
+            font-size: 0.92rem;
+            line-height: 1.35;
+            margin: -0.25rem 0 0.85rem 0;
+            padding: 0.62rem 0.75rem;
+        }
+        .resource-note-icon {
+            color: var(--niagads-blue);
+            font-weight: 800;
+            margin-right: 0.3rem;
+        }
+        div[role="dialog"]:has(.field-info-dialog) {
+            max-width: min(92vw, 920px) !important;
+            width: min(92vw, 920px) !important;
+        }
+        div[role="dialog"]:has(.field-info-dialog) [data-testid="stImage"] img {
+            height: auto !important;
+            width: 100% !important;
+        }
         section[data-testid="stSidebar"] .stButton > button,
         section[data-testid="stSidebar"] .stLinkButton > a {
             background: var(--niagads-gold);
@@ -840,7 +864,7 @@ def render_missions(
                 st.html(
                     f"<div class='mission-description'>{content_html(mission['purpose'])}</div>"
                 )
-
+            render_resource_notes(mission.get("resource_notes", []))
             if mission.get("reference_links"):
                 for link in mission["reference_links"]:
                     st.link_button(link["label"], link["url"])
@@ -858,6 +882,7 @@ def render_missions(
                 st.html(
                     f"<div class='resource-action-row'><div>{buttons_html}</div><div>{start_html}</div></div>",
                 )
+
             render_mission_fields(mission)
             ready = mission_ready(mission)
             complete = mission_complete(mission)
@@ -870,6 +895,15 @@ def render_missions(
                 on_click=mark_mission_complete,
                 args=(mission,),
             )
+
+
+def render_resource_notes(notes):
+    notes_html = "".join(
+        f"<div class='resource-note'><span class='resource-note-icon'>ⓘ</span><strong>{escape(note['label'])}:</strong> {content_html(note['message'])}</div>"
+        for note in notes
+    )
+    if notes_html:
+        st.html(notes_html)
 
 
 def render_mission_fields(mission):
@@ -893,9 +927,10 @@ def render_mission_fields(mission):
                 f"<div class='field-label'>{rendered_label}<details class='hint-details'><summary>Hint</summary><div class='hint-content'>{escape(field['hint'])}</div></details></div>"
             )
             label_visibility = "collapsed"
-        elif "<" in widget_label and ">" in widget_label:
+        elif ("<" in widget_label and ">" in widget_label) or field.get("more_info"):
             st.html(f"<div class='field-label'>{rendered_label}</div>")
             label_visibility = "collapsed"
+        render_field_more_info(field, key)
         if field["type"] == "textarea":
             mission_answers[field["key"]] = st.text_area(
                 widget_label,
@@ -924,6 +959,28 @@ def render_mission_fields(mission):
                 on_change=start_timer_if_needed,
                 label_visibility=label_visibility,
             )
+
+
+@st.dialog("More Information")
+def render_more_info_dialog(info):
+    st.html("<div class='field-info-dialog'></div>")
+    st.subheader(info.get("title", "More Information"))
+    if info.get("image"):
+        st.image(info["image"], width="stretch")
+    if info.get("caption"):
+        st.caption(info["caption"])
+
+
+def render_field_more_info(field, key):
+    info = field.get("more_info")
+    if not info:
+        return
+    if st.button(
+        info.get("button_label", "More Information"),
+        key=f"more_info_{key}",
+        type="secondary",
+    ):
+        render_more_info_dialog(info)
 
 
 def start_timer_if_needed():

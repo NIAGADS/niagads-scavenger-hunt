@@ -118,12 +118,19 @@ MISSIONS = [
         "skill": "Gene Prioritization",
         "points": 4,
         "resources": ["GVC Top Genes"],
+        "resource_notes": [
+            {
+                "label": "GVC Top Genes",
+                "message": "Alpha release. This new resource is under active development, and content or interface details may change.</br></br>"
+                "For now, please see the <a href='https://adsp.niagads.org/wp-content/uploads/2022/05/SingleVariantTest-V42.pdf' target='_blank' rel='noopener noreferrer'>ADSP GVC Methods</a> "
+                "for details on how confidence tiers are defined and assigned.",
+            }
+        ],
         "purpose": (
             "The ADSP Gene Verification Committee Top Genes repository provides access to a curated list of "
             "high-confidence AD/ADRD genes and loci that have been rigorously reviewed by domain experts. It helps "
             "researchers move from genetic association signals to prioritized targets for functional validation, "
-            "mechanistic follow-up, and therapeutic discovery. More details about ranked confidence levels (tiers) are available in the "
-            "<a href='https://adsp.niagads.org/wp-content/uploads/2022/05/SingleVariantTest-V42.pdf' target='_blank' rel='noopener noreferrer'>ADSP GVC Methods</a>."
+            "mechanistic follow-up, and therapeutic discovery."
         ),
         "getting_started": "Search for your assigned gene, then select <code>View all Results</code>.",
         "task": "Use GVC Top Genes to review how the assigned gene appears in curated reported locus records.",
@@ -137,6 +144,13 @@ MISSIONS = [
                 "key": "Strongest support tier",
                 "label": "What is the strongest support tier shown for this gene? Tier 1 = strongest support; Tier 7 = weakest support.",
                 "type": "select",
+                "more_info": {
+                    "button_label": "About GVC Tiers",
+                    "title": "GVC Support Tiers",
+                    "image": "assets/gvc-tiers.png",
+                    "image_width": 760,
+                    "caption": "Reference guide for GVC Top Genes support tiers.",
+                },
                 "options": [
                     "",
                     "Tier 1",
@@ -281,6 +295,12 @@ MISSIONS = [
         ],
         "points": 10,
         "resources": ["GenomicsDB"],
+        "resource_notes": [
+            {
+                "label": "GenomicsDB",
+                "message": "This resource is currently being updated. Explore now, but please check back in early Fall 2026 for expanded data and new features.",
+            }
+        ],
         "purpose": (
             "The NIAGADS Alzheimer’s Genomics Database is an interactive AD/ADRD genetics knowledgebase containing "
             "genes, variants, genomic regions, annotations, and related evidence on GRCh38. It helps researchers "
@@ -434,6 +454,12 @@ MISSIONS = [
         "skill": "xQTL evidence",
         "points": 5,
         "resources": ["xQTL Browser"],
+        "resource_notes": [
+            {
+                "label": "xQTL Browser",
+                "message": "Alpha release. This new resource is under active development, and content or interface details may change.",
+            }
+        ],
         "purpose": (
             "The NIAGADS xQTL Browser contains harmonized brain xQTL associations across histone acetylation, "
             "DNA methylation, gene expression, splicing, and protein abundance, spanning multiple cohorts, brain "
@@ -479,6 +505,12 @@ MISSIONS = [
         "skill": "Functional annotation",
         "points": 5,
         "resources": ["FILER"],
+        "resource_notes": [
+            {
+                "label": "FILER",
+                "message": "This resource is currently being updated. Explore now, but please check back in early Fall 2026 for expanded data and new features.",
+            }
+        ],
         "purpose": (
             "FILER is a harmonized functional genomics repository containing indexed, searchable datasets from "
             "more than 20 human functional genomics data sources. It helps researchers find and reuse regulatory "
