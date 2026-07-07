@@ -674,7 +674,10 @@ def render_sidebar(
 
     with st.sidebar:
         st.header("Challenge Status")
-        st.text_input("Team name", key="team_name")
+        st.session_state.team_name = st.text_input(
+            "Team name",
+            value=st.session_state.team_name,
+        )
         st.text_input(
             "Email (optional)",
             key="email",
@@ -682,9 +685,9 @@ def render_sidebar(
         )
         gene_cols = st.columns([2.35, 0.65], vertical_alignment="bottom")
         with gene_cols[0]:
-            st.text_input(
+            st.session_state.assigned_gene = st.text_input(
                 "Assigned gene",
-                key="assigned_gene",
+                value=st.session_state.assigned_gene,
                 label_visibility="collapsed",
             )
         with gene_cols[1]:

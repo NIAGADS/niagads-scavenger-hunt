@@ -159,7 +159,7 @@ MISSIONS = [
         "points": 4,
         "resources": ["VariXam"],
         "purpose": (
-            "VariXam is an ADSP variant inventory browser. It helps researchers find WGS/WES variants called in "
+            "VariXam is an ADSP variant browser. It helps researchers find WGS/WES variants called in "
             "ADSP releases within a gene or genomic region, using GRCh38 coordinates and PASS-filtered released "
             "variant calls."
         ),

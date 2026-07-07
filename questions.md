@@ -40,7 +40,7 @@ Select `Genes` from the top-level navigation and then search for your assigned g
 
 ### Purpose
 
-VariXam is an ADSP variant inventory browser. It helps researchers find WGS/WES variants called in ADSP releases within a gene or genomic region, using GRCh38 coordinates and PASS-filtered released variant calls.
+VariXam is an ADSP variant browser. It helps researchers find WGS/WES variants called in ADSP releases within a gene or genomic region, using GRCh38 coordinates and PASS-filtered released variant calls.
 
 ### Getting Started
 
