@@ -258,9 +258,16 @@ MISSIONS = [
         "skill": "Record Linker",
         "sub_skills": [
             {
+                "skill": "AD Genetic Association Evidence Summarizer",
+                "fields": [
+                    "Gene phenotypes",
+                    "Gene relative position",
+                    "Variant consequence",
+                ],
+            },
+            {
                 "skill": "Record Linker",
                 "fields": [
-                    "Ensembl ID",
                     "Gene location",
                     "GWAS table used",
                     "Selected variant",
@@ -309,43 +316,43 @@ MISSIONS = [
             "activity."
         ),
         "fields": [
-            {"type": "section", "label": "Search and Gene Record"},
-            {
-                "key": "Ensembl ID",
-                "label": "After searching for the assigned gene, what Ensembl ID is shown?",
-                "type": "text",
-            },
+            {"type": "section", "label": "Gene Annotation Record"},
             {
                 "key": "Gene location",
-                "label": "What genomic location is shown on the gene record?",
+                "label": "What is the footprint (genomic span) of this gene?",
                 "type": "text",
             },
             {
-                "key": "Gene overview takeaway",
-                "label": "From the overview chart, which trait or biomarker category has the most significant variants near this gene?",
+                "key": "Gene phenotypes",
+                "label": "Which phenotype (disease, neuropathology, or biomarker) has the most number of trait associated variants proximal to this gene",
+                "hint": "Mouse over the interactive bar charts in the report header that provide a quick summary of significant AD/ADRD associations relative to the gene span.",
                 "type": "text",
             },
-            {"type": "section", "label": "Gene Record / NIAGADS GWAS"},
+            {
+                "key": "Gene relative position",
+                "label": "Where are the majority of the informative variants located relative to the gene?",
+                "type": "select",
+                "options": ["", "upstream", "downstream", "in gene"],
+            },
             {
                 "key": "GWAS table used",
-                "label": "Which NIAGADS GWAS table did you use?",
+                "label": "The GenomicsDB separates curated summary statistics datasets by into AD and ADRD collections.  Choose one to continue on.",
                 "type": "select",
-                "options": ["", "Alzheimer’s Disease", "AD-related neuropathologies"],
+                "options": [
+                    "",
+                    "Alzheimer’s Disease",
+                    "AD-related neuropathologies and biomarkers",
+                ],
             },
             {
                 "key": "Selected variant",
-                "label": "Which significant summary-statistics variant did you choose from the table?",
+                "label": "Report one variant (Ref SNP ID or positional identifier) listed in the selected table that catches your interest.",
                 "type": "text",
             },
             {
-                "key": "Relative position",
-                "label": "Where is that variant relative to the gene?",
-                "type": "select",
-                "options": ["", "upstream", "in gene", "downstream"],
-            },
-            {
-                "key": "Variant p-value",
-                "label": "What p-value is reported for that variant?",
+                "key": "Variant consequence",
+                "label": "What is the predicted functional consequence of the variant?",
+                "hint": "Add the <code>Consequence</code> column to the table.",
                 "type": "text",
             },
             {
@@ -402,7 +409,7 @@ MISSIONS = [
                 "type": "text",
             },
             {
-                "key": "Variant consequence",
+                "key": "Most severe variant consequence",
                 "label": "What consequence or impacted gene/transcript is listed in the header?",
                 "type": "text",
             },
