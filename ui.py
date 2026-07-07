@@ -73,17 +73,6 @@ def render_styles():
             margin-top: 0.8rem;
             max-width: 48rem;
         }
-        .mission-card {
-            background: #ffffff;
-            border: 1px solid var(--niagads-line);
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(35, 49, 63, 0.06);
-            margin-bottom: 1rem;
-            padding: 1rem;
-        }
-        .mission-complete {border-left: 7px solid var(--niagads-blue);}
-        .mission-incomplete {border-left: 7px solid #8a98a8;}
-        .mission-bonus {border-left: 7px solid var(--niagads-violet); background: #f9f8ff;}
         .mission-description {
             color: #3c4b58;
             line-height: 1.45;
@@ -110,7 +99,7 @@ def render_styles():
             flex: 1 1 auto;
         }
         .status-pill, .skill-chip {display: inline-block; border-radius: 999px; padding: 0.18rem 0.55rem; margin: 0.12rem; font-size: 0.85rem;}
-        .status-complete {background: #eaf3f9; color: #224f73;}
+        .status-complete {background: #e7f6ec; color: #1f6b3a;}
         .status-incomplete {background: #edf1f4; color: #425466;}
         .status-bonus {background: #eeeaff; color: #3e2ba4;}
         .skill-chip {border: 1px solid; }
@@ -643,6 +632,7 @@ def render_missions(
     missions,
     award_icon,
     mission_complete,
+    mission_ready,
     mission_skills,
     skill_complete,
     resource_url,
@@ -651,11 +641,6 @@ def render_missions(
 
     for mission in missions:
         complete = mission_complete(mission)
-        status_class = (
-            "mission-bonus"
-            if mission["bonus"]
-            else ("mission-complete" if complete else "mission-incomplete")
-        )
         status_text = (
             "Bonus" if mission["bonus"] else ("Complete" if complete else "Incomplete")
         )
@@ -671,49 +656,59 @@ def render_missions(
             else mission["title"]
         )
 
-        st.html(f"<div class='mission-card {status_class}'>")
-        header_cols = st.columns([3, 1])
-        with header_cols[0]:
-            st.html(
-                f"<div class='mission-title-row'><div class='mission-title'>{escape(display_title)}</div><span class='status-pill {pill_class}'>{status_text}</span></div>"
-            )
-            render_activity_skills(mission, award_icon, mission_skills, skill_complete)
-        with header_cols[1]:
-            bonus_total = sum(field.get("bonus_points", 0) for field in mission["fields"])
-            label = (
-                f"+{mission['points']} bonus pts"
-                if mission["bonus"]
-                else f"{mission['points']} pts"
-            )
-            if bonus_total and not mission["bonus"]:
-                label = f"{label} + {bonus_total} bonus"
-            st.metric("Value", label)
+        with st.container(border=True):
+            header_cols = st.columns([3, 1])
+            with header_cols[0]:
+                st.html(
+                    f"<div class='mission-title-row'><div class='mission-title'>{escape(display_title)}</div><span class='status-pill {pill_class}'>{status_text}</span></div>"
+                )
+                render_activity_skills(mission, award_icon, mission_skills, skill_complete)
+            with header_cols[1]:
+                bonus_total = sum(
+                    field.get("bonus_points", 0) for field in mission["fields"]
+                )
+                label = (
+                    f"+{mission['points']} bonus pts"
+                    if mission["bonus"]
+                    else f"{mission['points']} pts"
+                )
+                if bonus_total and not mission["bonus"]:
+                    label = f"{label} + {bonus_total} bonus"
+                st.metric("Value", label)
 
-        if mission.get("purpose"):
-            st.html(
-                f"<div class='mission-description'>{content_html(mission['purpose'])}</div>"
-            )
+            if mission.get("purpose"):
+                st.html(
+                    f"<div class='mission-description'>{content_html(mission['purpose'])}</div>"
+                )
 
-        if mission.get("reference_links"):
-            for link in mission["reference_links"]:
-                st.link_button(link["label"], link["url"])
+            if mission.get("reference_links"):
+                for link in mission["reference_links"]:
+                    st.link_button(link["label"], link["url"])
 
-        if mission["resources"] or mission.get("getting_started"):
-            buttons_html = "".join(
-                f"<a class='resource-open-button' href='{escape(resource_url(resource))}' target='_blank' rel='noopener noreferrer'>Open {escape(resource)}</a>"
-                for resource in mission["resources"]
+            if mission["resources"] or mission.get("getting_started"):
+                buttons_html = "".join(
+                    f"<a class='resource-open-button' href='{escape(resource_url(resource))}' target='_blank' rel='noopener noreferrer'>Open {escape(resource)}</a>"
+                    for resource in mission["resources"]
+                )
+                start_html = (
+                    f"<div class='mission-start'><strong>Getting started:</strong> {content_html(mission['getting_started'])}</div>"
+                    if mission.get("getting_started")
+                    else ""
+                )
+                st.html(
+                    f"<div class='resource-action-row'><div>{buttons_html}</div><div>{start_html}</div></div>",
             )
-            start_html = (
-                f"<div class='mission-start'><strong>Getting started:</strong> {content_html(mission['getting_started'])}</div>"
-                if mission.get("getting_started")
-                else ""
+            render_mission_fields(mission)
+            ready = mission_ready(mission)
+            complete = mission_complete(mission)
+            button_label = "Section complete" if complete else "Mark section complete"
+            st.button(
+                button_label,
+                key=f"complete_{mission['id']}",
+                disabled=complete or not ready,
+                on_click=mark_mission_complete,
+                args=(mission["id"],),
             )
-            st.html(
-                f"<div class='resource-action-row'><div>{buttons_html}</div><div>{start_html}</div></div>",
-            )
-        render_mission_fields(mission)
-
-        st.html("</div>")
 
 
 def render_mission_fields(mission):
@@ -774,6 +769,10 @@ def render_mission_fields(mission):
                 key=key,
                 label_visibility=label_visibility,
             )
+
+
+def mark_mission_complete(mission_id):
+    st.session_state.completed_missions.add(mission_id)
 
 
 def render_summary_and_submit(summary, score):

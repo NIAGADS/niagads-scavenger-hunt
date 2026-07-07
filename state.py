@@ -60,6 +60,7 @@ def initialize_state(assignment_pool):
         "leaderboard_submitted": False,
         "timer_started_at": None,
         "answers": {},
+        "completed_missions": set(),
         "hints_used": set(),
         "field_hints_used": set(),
     }

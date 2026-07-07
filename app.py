@@ -4,6 +4,7 @@ from scoring import (
     completed_skill_names,
     earned_points,
     mission_complete,
+    mission_ready,
     mission_skills,
     skill_complete,
 )
@@ -611,6 +612,7 @@ render_missions(
     MISSIONS,
     AWARD_ICON,
     mission_complete,
+    mission_ready,
     mission_skills,
     skill_complete,
     resource_url,

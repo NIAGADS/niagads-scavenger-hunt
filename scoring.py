@@ -1,7 +1,7 @@
 import streamlit as st
 
 
-def mission_complete(mission):
+def mission_ready(mission):
     answers = st.session_state.answers.get(mission["id"], {})
     return all(
         str(answers.get(field["key"], "")).strip()
@@ -12,7 +12,13 @@ def mission_complete(mission):
     )
 
 
+def mission_complete(mission):
+    return mission["id"] in st.session_state.completed_missions
+
+
 def skill_complete(mission, skill):
+    if not mission_complete(mission):
+        return False
     answers = st.session_state.answers.get(mission["id"], {})
     return all(str(answers.get(field_key, "")).strip() for field_key in skill["fields"])
 
