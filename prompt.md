@@ -19,7 +19,7 @@ The app should feel like a professional workshop challenge, not a roleplay scave
 - ADVP: <https://advp.niagads.org/>
 - GenomicsDB: <https://www.niagads.org/genomics>
 - FILER: <https://tf.lisanwanglab.org/FILER/>
-- VarIXam: <https://varixam.niagads.org/>
+- VariXam: <https://varixam.niagads.org/>
 - TopGenes: <https://topgenes.niagads.org/>
 - xQTL Browser: <https://xqtl.niagads.org/>
 - API: <https://api.niagads.org/>
@@ -114,14 +114,14 @@ Current direction:
 
 ## Content Constraints
 
-- VarIXam only provides lists of ADSP variants in a gene footprint.
-- Do not describe VarIXam as variant interpretation.
-- Frame VarIXam as variant inventory.
+- VariXam only provides lists of ADSP variants in a gene footprint.
+- Do not describe VariXam as variant interpretation.
+- Frame VariXam as variant inventory.
 - Do not imply that an ADSP Variant flag indicates AD-risk association. The label means the variant is present in ADSP samples and passed ADSP quality control checks, but participants should discover that from the GenomicsDB variant record when answering the bonus prompt.
 
 ## Remaining Activities To Revisit
 
-ADVP, VarIXam, TopGenes, interpretation, and API still need future review so their language and workflows match the updated activity design standard. ADVP in particular should be revised later to clarify how its curated association evidence differs from GenomicsDB summary-statistics exploration.
+ADVP, VariXam, TopGenes, interpretation, and API still need future review so their language and workflows match the updated activity design standard. ADVP in particular should be revised later to clarify how its curated association evidence differs from GenomicsDB summary-statistics exploration.
 
 ## Files
 

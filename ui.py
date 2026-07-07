@@ -819,6 +819,7 @@ def render_missions(
             st.button(
                 button_label,
                 key=f"complete_{mission['id']}",
+                type="primary" if ready and not complete else "secondary",
                 disabled=complete or not ready,
                 on_click=mark_mission_complete,
                 args=(mission["id"],),

@@ -11,7 +11,7 @@ They complete guided activities using NIAGADS and related open resources:
 - [ADVP](https://advp.niagads.org/)
 - [GenomicsDB](https://www.niagads.org/genomics)
 - [FILER](https://tf.lisanwanglab.org/FILER/)
-- [VarIXam](https://varixam.niagads.org/)
+- [VariXam](https://varixam.niagads.org/)
 - [TopGenes](https://topgenes.niagads.org/)
 - [xQTL Browser](https://xqtl.niagads.org/)
 - [NIAGADS API](https://api.niagads.org/)

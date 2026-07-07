@@ -102,7 +102,7 @@ RESOURCES = {
     "ADVP": "https://advp.niagads.org/",
     "GenomicsDB": "https://www.niagads.org/genomics",
     "FILER": "https://tf.lisanwanglab.org/FILER/",
-    "VarIXam": "https://varixam.niagads.org/",
+    "VariXam": "https://varixam.niagads.org/",
     "TopGenes": "https://topgenes.niagads.org/",
     "xQTL Browser": "https://xqtl.niagads.org/",
     "API": "https://api.niagads.org/",
@@ -157,7 +157,7 @@ MISSIONS = [
         "title": "Inventory ADSP variants",
         "skill": "Variant inventory",
         "points": 4,
-        "resources": ["VarIXam"],
+        "resources": ["VariXam"],
         "purpose": (
             "VariXam is an ADSP variant inventory browser. It helps researchers find WGS/WES variants called in "
             "ADSP releases within a gene or genomic region, using GRCh38 coordinates and PASS-filtered released "
