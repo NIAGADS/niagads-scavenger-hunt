@@ -121,7 +121,7 @@ MISSIONS = [
             "researchers move from genetic association signals to prioritized targets for functional validation, "
             "mechanistic follow-up, and therapeutic discovery."
         ),
-        "getting_started": "Search for your assigned gene, then select View all Results.",
+        "getting_started": "Search for your assigned gene, then select `View all Results`.",
         "task": "Use TopGenes to review how the assigned gene appears in curated reported locus records.",
         "fields": [
             {
@@ -175,7 +175,7 @@ MISSIONS = [
             },
             {
                 "key": "R5 multiallelic variant coordinate",
-                "label": "Sort by the Multiallelic column and then filter/search for variants called in the most recent ADSP release (R5). Report the chromosome and position of one multi-allelic variant.",
+                "label": "Sort by the `Multiallelic` column and then filter/search for variants called in the most recent ADSP release (R5). Report the chromosome and position of one multi-allelic variant.",
                 "type": "text",
             },
             {
@@ -198,7 +198,7 @@ MISSIONS = [
             "browse reported AD genetic associations from the literature, including associated genes, loci and "
             "variants, contextualized by populations, phenotypes, and supporting studies."
         ),
-        "getting_started": "Select Genes from the top-level navigation and then search for your assigned gene.",
+        "getting_started": "Select `Genes` from the top-level navigation and then search for your assigned gene.",
         "task": "Use ADVP to review curated AD association evidence for the assigned gene.",
         "fields": [
             {
@@ -213,7 +213,7 @@ MISSIONS = [
             },
             {
                 "key": "Example association SNP",
-                "label": "Click on the number in the Association records column to view all curated associations for your gene. Record one SNP from the table.",
+                "label": "Click on the number in the `Association records` column to view all curated associations for your gene. Record one SNP from the table.",
                 "type": "text",
             },
             {
@@ -477,7 +477,7 @@ MISSIONS = [
             "in consistent formats."
         ),
         "getting_started": (
-            "Select Search from the top-level navigation. Select hg38 for the Genome Build and then submit your "
+            "Select `Search` from the top-level navigation. Select `hg38` for the Genome Build and then submit your "
             "gene region from the GenomicsDB section."
         ),
         "task": "Use FILER to review functional annotations overlapping the region carried forward from GenomicsDB.",
@@ -499,7 +499,7 @@ MISSIONS = [
             },
             {
                 "key": "Highest overlap genomic feature type",
-                "label": "Open the genomic feature type overlap summary. What type of genomic feature has the highest number of overlaps in your region?",
+                "label": "Open the `genomic feature type overlap` summary. What type of genomic feature has the highest number of overlaps in your region?",
                 "type": "text",
             },
             {

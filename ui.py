@@ -91,6 +91,18 @@ def render_styles():
         .skill-chip {border: 1px solid; }
         .skill-earned {background: #fff3d6; border-color: var(--niagads-gold-deep); color: #6d4714;}
         .skill-pending {background: #f3f6f8; border-color: var(--niagads-line); color: var(--niagads-muted);}
+        [data-testid="stMarkdownContainer"] code,
+        .stWidgetLabel code {
+            background: #e7eff6;
+            border: 1px solid #bfd1df;
+            border-radius: 999px;
+            color: var(--niagads-navy-deep);
+            font-family: inherit;
+            font-size: 0.86em;
+            font-weight: 700;
+            padding: 0.12rem 0.45rem;
+            white-space: nowrap;
+        }
         .summary-skill-strip {
             background: #f3f6f8;
             border: 1px solid var(--niagads-line);
@@ -594,7 +606,7 @@ def render_missions(
             st.markdown(f"**Purpose:** {mission['purpose']}")
         if mission.get("getting_started"):
             st.markdown(f"**Getting started:** {mission['getting_started']}")
-        st.write(mission["task"])
+        st.markdown(mission["task"])
 
         if mission["resources"]:
             link_cols = st.columns(max(len(mission["resources"]), 1))
