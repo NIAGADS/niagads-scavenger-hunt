@@ -142,7 +142,8 @@ MISSIONS = [
             },
             {
                 "key": "Strongest support tier",
-                "label": "What is the strongest support tier shown for this gene? Tier 1 = strongest support; Tier 7 = weakest support.",
+                "label": "What is the strongest support tier shown for this gene?",
+                "hint": "Tier 1 = strongest support; Tier 7 = weakest support.",
                 "type": "select",
                 "more_info": {
                     "button_label": "About GVC Tiers",
@@ -246,7 +247,7 @@ MISSIONS = [
             },
             {
                 "key": "Example association phenotype",
-                "label": "Are there associated phenotypes? If so, please list at least one.",
+                "label": "What is the phenotypic context (e.g., population, disease) for the genetic association?",
                 "type": "text",
             },
             {
