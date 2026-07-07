@@ -11,7 +11,7 @@ from scoring import (
 
 
 def build_summary(missions):
-    required = [mission for mission in missions if not mission["bonus"]]
+    required = [mission for mission in missions if not mission.get("bonus", None)]
     return {
         "team_name": st.session_state.team_name,
         "email": st.session_state.email,

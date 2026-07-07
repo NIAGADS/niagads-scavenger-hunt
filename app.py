@@ -193,22 +193,21 @@ MISSIONS = [
         "fields": [
             {
                 "key": "Total ADSP variant records",
-                "label": "Record the total number of ADSP variant records found in the footprint of your assigned gene.",
+                "label": "What is the total number of ADSP variant records found in the footprint of your assigned gene?",
                 "type": "text",
             },
             {
                 "key": "R5 multiallelic variant coordinate",
-                "label": "Sort by the <code>Multiallelic</code> column and then filter/search for variants called in the most recent ADSP release (R5). Report the chromosome and position of one multi-allelic variant.",
+                "label": "Sort by the <code>Multiallelic</code> column and then filter/search for variants called in the most recent ADSP release (58k sequences). Report either the Ref SNP (rs) ID or chr:position of one multi-allelic variant.",
                 "type": "text",
+                "hint": "Search for <code>R5</code>",
             },
             {
                 "key": "Alternative alleles",
-                "label": "What are the alternative alleles for that variant?",
+                "label": "Enter the variant alleles in <code>REF>ALT</code> format for this multiallelic variant.  Separate alternate alleles with <code>/</code> (for example, A>C/T).",
                 "type": "text",
             },
         ],
-        "hint": "Use the table controls to sort by Multiallelic and search/filter for R5.",
-        "bonus": False,
     },
     {
         "id": "advp",
@@ -639,7 +638,7 @@ if not st.session_state.hunt_started:
     st.stop()
 
 
-required_missions = [mission for mission in MISSIONS if not mission["bonus"]]
+required_missions = [mission for mission in MISSIONS if not mission.get("bonus", None)]
 completed_required = sum(mission_complete(mission) for mission in required_missions)
 progress = completed_required / len(required_missions)
 score = sum(earned_points(mission) for mission in MISSIONS)

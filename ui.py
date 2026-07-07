@@ -824,11 +824,13 @@ def render_missions(
     for mission in missions:
         complete = mission_complete(mission)
         status_text = (
-            "Bonus" if mission["bonus"] else ("Complete" if complete else "Incomplete")
+            "Bonus"
+            if mission.get("bonus", None)
+            else ("Complete" if complete else "Incomplete")
         )
         pill_class = (
             "status-bonus"
-            if mission["bonus"]
+            if mission.get("bonus", None)
             else ("status-complete" if complete else "status-incomplete")
         )
         resource_text = ", ".join(mission["resources"])
@@ -853,10 +855,10 @@ def render_missions(
                 )
                 label = (
                     f"+{mission['points']} bonus pts"
-                    if mission["bonus"]
+                    if mission.get("bonus", None)
                     else f"{mission['points']} pts"
                 )
-                if bonus_total and not mission["bonus"]:
+                if bonus_total and not mission.get("bonus", None):
                     label = f"{label} + {bonus_total} bonus"
                 st.metric("Value", label)
 
