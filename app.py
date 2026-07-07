@@ -116,7 +116,7 @@ MISSIONS = [
         "id": "topgenes",
         "title": "Check gene prioritization",
         "skill": "Therapeutic Target Prioritization",
-        "points": 4,
+        "points": 3,
         "resources": ["GVC Top Genes"],
         "resource_notes": [
             {
@@ -181,7 +181,7 @@ MISSIONS = [
         "id": "varixam",
         "title": "Inventory ADSP variants",
         "skill": "ADSP Variant Inspector",
-        "points": 4,
+        "points": 3,
         "resources": ["VariXam"],
         "purpose": (
             "VariXam is an ADSP variant browser. It helps researchers find WGS/WES variants called in "
@@ -212,7 +212,7 @@ MISSIONS = [
     {
         "id": "advp",
         "title": "Review AD association evidence",
-        "skill": "AD Genetic Association Curator",
+        "skill": "AD Genetic Association Finder",
         "points": 4,
         "resources": ["ADVP"],
         "purpose": (
@@ -452,7 +452,7 @@ MISSIONS = [
         "id": "xqtl",
         "title": "Connect genetic variation to molecular function",
         "skill": "xQTL evidence",
-        "points": 5,
+        "points": 6,
         "resources": ["xQTL Browser"],
         "resource_notes": [
             {
@@ -503,7 +503,7 @@ MISSIONS = [
         "id": "filer",
         "title": "Exploring Regulatory and Functional Context",
         "skill": "Functional annotation",
-        "points": 5,
+        "points": 6,
         "resources": ["FILER"],
         "resource_notes": [
             {
