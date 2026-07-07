@@ -16,9 +16,9 @@ Search for your assigned gene, the select `View all Results`
 * What is the strongest support tier shown for this gene? Remember: Tier 1 = strongest support; Tier 7 = weakest support.
 * Record one supporting study and one nearby gene listed in the table.
 
-### additional info
+### Additional Essential Info
 
-* methods: <https://adsp.niagads.org/wp-content/uploads/2022/05/SingleVariantTest-V42.pdf>
+Methods, understanding the "tiers"  <https://adsp.niagads.org/wp-content/uploads/2022/05/SingleVariantTest-V42.pdf>
 
 ## ADVP
 
