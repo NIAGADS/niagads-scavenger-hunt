@@ -381,12 +381,12 @@ MISSIONS = [
             },
             {
                 "key": "ADSP variant record label",
-                "label": "Bonus: If the variant is ADSP-flagged, what does the ADSP Variant label indicate?",
+                "label": "Bonus: What is an <code>ADSP Variant</code>?",
                 "type": "textarea",
                 "required": False,
                 "bonus_points": 1,
                 "hint": (
-                    "Open the linked variant record and look for the ADSP Variant label in the overview."
+                    "Open the linked variant record and mouse over the <code>ADSP Variant badge</code>."
                 ),
             },
             {"type": "section", "label": "Genome Browser"},

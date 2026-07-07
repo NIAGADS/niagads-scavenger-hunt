@@ -295,9 +295,52 @@ def render_styles():
         .field-label {
             color: var(--niagads-ink);
             font-size: 0.95rem;
-            font-weight: 600;
+            font-weight: 400;
             line-height: 1.35;
             margin: 0.45rem 0 0.25rem 0;
+        }
+        .bonus-badge {
+            background: #ff6b35;
+            border: 1px solid #d94e1f;
+            border-radius: 999px;
+            color: #ffffff;
+            display: inline-block;
+            font-size: 0.92em;
+            font-weight: 800;
+            margin-right: 0.25rem;
+            padding: 0.1rem 0.45rem;
+        }
+        .hint-details {
+            display: inline-block;
+            margin-left: 0.35rem;
+        }
+        .hint-details summary {
+            background: var(--niagads-gold);
+            border: 1px solid var(--niagads-gold-deep);
+            border-radius: 999px;
+            color: var(--niagads-ink);
+            cursor: pointer;
+            display: inline-block;
+            font-size: 0.86em;
+            font-weight: 700;
+            line-height: 1;
+            padding: 0.32rem 0.7rem;
+            user-select: none;
+        }
+        .hint-details summary::marker {
+            content: "";
+        }
+        .hint-details summary:hover {
+            background: #ffd37a;
+            border-color: var(--niagads-blue);
+        }
+        .hint-content {
+            background: #fff9e8;
+            border-left: 4px solid var(--niagads-gold-deep);
+            color: #70501a;
+            display: block;
+            margin-top: 0.45rem;
+            padding: 0.55rem 0.7rem;
         }
         .mission-title-row {
             align-items: center;
@@ -392,6 +435,13 @@ def display_value(value, fallback="Not recorded yet"):
 
 def content_html(text):
     return str(text)
+
+
+def field_label_html(label):
+    label = content_html(label)
+    if label.startswith("Bonus: "):
+        return f"<span class='bonus-badge'>Bonus</span>{label.removeprefix('Bonus: ')}"
+    return label
 
 
 def pathway_node(label, source, value, complete=False):
@@ -531,7 +581,10 @@ def render_evidence_pathway(summary):
             or first_answer(
                 summary,
                 "xqtl",
-                ["xQTL type with highest associations", "Most significant association variant"],
+                [
+                    "xQTL type with highest associations",
+                    "Most significant association variant",
+                ],
             ),
         ),
         (
@@ -662,7 +715,9 @@ def render_missions(
                 st.html(
                     f"<div class='mission-title-row'><div class='mission-title'>{escape(display_title)}</div><span class='status-pill {pill_class}'>{status_text}</span></div>"
                 )
-                render_activity_skills(mission, award_icon, mission_skills, skill_complete)
+                render_activity_skills(
+                    mission, award_icon, mission_skills, skill_complete
+                )
             with header_cols[1]:
                 bonus_total = sum(
                     field.get("bonus_points", 0) for field in mission["fields"]
@@ -697,7 +752,7 @@ def render_missions(
                 )
                 st.html(
                     f"<div class='resource-action-row'><div>{buttons_html}</div><div>{start_html}</div></div>",
-            )
+                )
             render_mission_fields(mission)
             ready = mission_ready(mission)
             complete = mission_complete(mission)
@@ -721,25 +776,16 @@ def render_mission_fields(mission):
         current = mission_answers.get(field["key"], "")
         bonus_points = field.get("bonus_points", 0)
         widget_label = (
-            f"{field['label']} (+{bonus_points} bonus point)"
+            f"{field['label']}"
             if bonus_points == 1
-            else (
-                f"{field['label']} (+{bonus_points} bonus points)"
-                if bonus_points
-                else field["label"]
-            )
+            else (f"{field['label']}" if bonus_points else field["label"])
         )
         label_visibility = "visible"
-        rendered_label = content_html(widget_label)
+        rendered_label = field_label_html(widget_label)
         if "hint" in field:
-            st.html(f"<div class='field-label'>{rendered_label}</div>")
-            hint_key = f"{mission['id']}::{field['key']}"
-            if st.button(
-                "Show bonus hint", key=f"field_hint_{mission['id']}_{field['key']}"
-            ):
-                st.session_state.field_hints_used.add(hint_key)
-            if hint_key in st.session_state.field_hints_used:
-                st.warning(f"Hint: {field['hint']}")
+            st.html(
+                f"<div class='field-label'>{rendered_label}<details class='hint-details'><summary>Hint</summary><div class='hint-content'>{escape(field['hint'])}</div></details></div>"
+            )
             label_visibility = "collapsed"
         elif "<" in widget_label and ">" in widget_label:
             st.html(f"<div class='field-label'>{rendered_label}</div>")
