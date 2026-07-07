@@ -115,7 +115,7 @@ MISSIONS = [
     {
         "id": "topgenes",
         "title": "Check gene prioritization",
-        "skill": "Gene Prioritization",
+        "skill": "Therapeutic Target Prioritization",
         "points": 4,
         "resources": ["GVC Top Genes"],
         "resource_notes": [
@@ -180,7 +180,7 @@ MISSIONS = [
     {
         "id": "varixam",
         "title": "Inventory ADSP variants",
-        "skill": "Variant inventory",
+        "skill": "ADSP Variant Inspector",
         "points": 4,
         "resources": ["VariXam"],
         "purpose": (
@@ -198,9 +198,9 @@ MISSIONS = [
             },
             {
                 "key": "R5 multiallelic variant coordinate",
-                "label": "Sort by the <code>Multiallelic</code> column and then filter/search for variants called in the most recent ADSP release (58k sequences). Report either the Ref SNP (rs) ID or chr:position of one multi-allelic variant.",
+                "label": "Use sort and search options to identifiy multi-allelic variants called in the most recent ADSP release (58k sequences). Report either the Ref SNP (rs) ID or chr:position of one multi-allelic variant.",
                 "type": "text",
-                "hint": "Search for <code>R5</code>",
+                "hint": "Sort by the <code>Multiallelic</code> column so that <code>Yes</code> values are visible and then search for <code>R5</code>.",
             },
             {
                 "key": "Alternative alleles",
@@ -212,7 +212,7 @@ MISSIONS = [
     {
         "id": "advp",
         "title": "Review AD association evidence",
-        "skill": "Association review",
+        "skill": "AD Genetic Association Curator",
         "points": 4,
         "resources": ["ADVP"],
         "purpose": (
@@ -230,27 +230,28 @@ MISSIONS = [
             },
             {
                 "key": "Distinct publication count",
-                "label": "Curated from how many distinct publications?",
+                "label": "How many different publications were manually reviewed to extract those associations?",
                 "type": "text",
             },
             {
                 "key": "Example association SNP",
-                "label": "Click on the number in the <code>Association records</code> column to view all curated associations for your gene. Record one SNP from the table.",
+                "label": "Browse the list of curated variants associated with your assigned genes.  Report one that catches your interest.",
                 "type": "text",
+                "hint": "Click on the number in the <code>Association records</code> column from your previous search result to view all curated associations for your gene. ",
             },
             {
-                "key": "Example association PubMed ID",
-                "label": "From the same curated association table, record one supporting PubMed ID.",
+                "key": "Example association p-value or effect size",
+                "label": "What is the significance of this association (p-value)?",
                 "type": "text",
             },
             {
                 "key": "Example association phenotype",
-                "label": "From the same curated association table, record one phenotype.",
+                "label": "Are there associated phenotypes? If so, please list at least one.",
                 "type": "text",
             },
             {
-                "key": "Example association p-value or effect size",
-                "label": "From the same curated association table, record one reported p-value or effect size.",
+                "key": "Example association PubMed ID",
+                "label": "What is the source (associated <code>PubMed ID</code>) for this observation?",
                 "type": "text",
             },
         ],

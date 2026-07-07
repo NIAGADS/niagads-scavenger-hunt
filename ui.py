@@ -412,28 +412,45 @@ def render_styles():
             padding: 0.1rem 0.45rem;
         }
         .hint-details {
-            display: inline-block;
-            margin-left: 0.35rem;
+            display: block;
+            margin: 0;
         }
         .hint-details summary {
-            background: var(--niagads-gold);
-            border: 1px solid var(--niagads-gold-deep);
-            border-radius: 999px;
             color: var(--niagads-ink);
             cursor: pointer;
-            display: inline-block;
-            font-size: 0.86em;
-            font-weight: 700;
-            line-height: 1;
-            padding: 0.32rem 0.7rem;
+            display: flex;
+            align-items: baseline;
+            gap: 0.7rem;
+            line-height: 1.35;
             user-select: none;
         }
         .hint-details summary::marker {
             content: "";
         }
-        .hint-details summary:hover {
+        .inline-hint-button {
+            background: var(--niagads-gold);
+            border: 1px solid var(--niagads-gold-deep);
+            border-radius: 0.5rem;
+            color: var(--niagads-ink);
+            display: inline-block;
+            flex: 0 0 auto;
+            font-size: 0.86em;
+            font-weight: 700;
+            line-height: 1;
+            padding: 0.32rem 0.7rem;
+        }
+        .inline-hint-button::before {
+            content: "Show hint";
+        }
+        .hint-details[open] .inline-hint-button::before {
+            content: "Hide hint";
+        }
+        .hint-details summary:hover .inline-hint-button {
             background: #ffd37a;
             border-color: var(--niagads-blue);
+        }
+        .hint-question {
+            flex: 1 1 auto;
         }
         .hint-content {
             background: #fff9e8;
@@ -926,7 +943,7 @@ def render_mission_fields(mission):
         rendered_label = field_label_html(widget_label)
         if "hint" in field:
             st.html(
-                f"<div class='field-label'>{rendered_label}<details class='hint-details'><summary>Hint</summary><div class='hint-content'>{escape(field['hint'])}</div></details></div>"
+                f"<div class='field-label'><details class='hint-details'><summary><span class='inline-hint-button'></span><span class='hint-question'>{rendered_label}</span></summary><div class='hint-content'>{content_html(field['hint'])}</div></details></div>"
             )
             label_visibility = "collapsed"
         elif ("<" in widget_label and ">" in widget_label) or field.get("more_info"):
