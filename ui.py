@@ -155,6 +155,17 @@ def render_styles():
             border-color: var(--niagads-blue);
             color: var(--niagads-ink);
         }
+        .stButton > button[kind="secondary"]:not(:disabled) {
+            background: #eaf3fb;
+            border-color: #8fb8d6;
+            color: #1f4f73;
+            font-weight: 800;
+        }
+        .stButton > button[kind="secondary"]:not(:disabled):hover {
+            background: #d9ebf7;
+            border-color: #5f8fb8;
+            color: #1d405c;
+        }
         .mission-description {
             color: #3c4b58;
             line-height: 1.45;
