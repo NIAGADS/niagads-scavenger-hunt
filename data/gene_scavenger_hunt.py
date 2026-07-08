@@ -77,7 +77,7 @@ RESOURCES = {
     "VariXam": "https://varixam.niagads.org/",
     "GVC Top Genes": "https://topgenes.niagads.org/",
     "xQTL Browser": "https://xqtl.niagads.org/",
-    "API": "https://api.niagads.org/",
+    "NIAGADS Open Access API": "https://api.niagads.org/",
 }
 
 AWARD_ICON = "🏆"
@@ -598,15 +598,25 @@ MISSIONS = [
     },
     {
         "id": "api_bonus",
-        "title": "Plan future automation",
-        "skill": "API planning",
+        "title": "Design an API integration",
+        "skill": "Integration Contributor",
         "points": 0,
-        "resources": ["API"],
+        "resources": ["NIAGADS Open Access API"],
+        "resource_notes": [
+            {
+                "label": "NIAGADS Open Access API",
+                "message": "This resource is currently being updated.  Limited endpoints available to explore now, but please check back in early Fall 2026 for expanded data and new features.",
+            }
+        ],
         "fields": [
-            {"key": "api-1", "label": "Step to automate", "type": "text"},
+            {
+                "key": "api-1",
+                "label": "Where could programmatic NIAGADS access fit into an external toolkit, analysis workflow, or data portal?",
+                "type": "text",
+            },
             {
                 "key": "api-2",
-                "label": "Bonus: Why automation would help",
+                "label": "Bonus: What NIAGADS data or lookup would that integration need, and how would it help users?",
                 "type": "textarea",
                 "required": False,
                 "bonus_points": 4,
@@ -614,6 +624,3 @@ MISSIONS = [
         ],
     },
 ]
-
-
-
