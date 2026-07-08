@@ -136,12 +136,12 @@ MISSIONS = [
         "task": "Use GVC Top Genes to review how the assigned gene appears in curated reported locus records.",
         "fields": [
             {
-                "key": "Reported locus records returned",
+                "key": "topgenes-1",
                 "label": "How many reported locus records are returned for this gene?",
                 "type": "text",
             },
             {
-                "key": "Strongest support tier",
+                "key": "topgenes-2",
                 "label": "What is the strongest support tier shown for this gene?",
                 "hint": "Tier 1 = strongest support; Tier 7 = weakest support. More information about <a href='app/static/gvc-tiers.png' target='_blank'>GVC Confidence Tiers</a> (opens in new tab).",
                 "type": "select",
@@ -157,12 +157,12 @@ MISSIONS = [
                 ],
             },
             {
-                "key": "Supporting study",
+                "key": "topgenes-3",
                 "label": "Record one supporting study listed in the table.",
                 "type": "text",
             },
             {
-                "key": "Agora",
+                "key": "topgenes-4",
                 "label": "Is this a gene also an Agora (AD Knowledge Portal) nominated target?",
                 "type": "select",
                 "options": ["", "yes", "no"],
@@ -186,18 +186,18 @@ MISSIONS = [
         "task": "Use VariXam to inspect ADSP variant records in the footprint of your assigned gene.",
         "fields": [
             {
-                "key": "Total ADSP variant records",
+                "key": "varixam-1",
                 "label": "What is the total number of ADSP variant records found in the footprint of your assigned gene?",
                 "type": "text",
             },
             {
-                "key": "R5 multiallelic variant coordinate",
+                "key": "varixam-2",
                 "label": "Use sort and search options to identifiy multi-allelic variants called in the most recent ADSP release (58k sequences). Report either the Ref SNP (rs) ID or chr:position of one multi-allelic variant.",
                 "type": "text",
                 "hint": "Sort by the <code>Multiallelic</code> column so that <code>Yes</code> values are visible and then search for <code>R5</code>.",
             },
             {
-                "key": "Alternative alleles",
+                "key": "varixam-3",
                 "label": "Enter the variant alleles in <code>REF>ALT</code> format for this multiallelic variant.  Separate alternate alleles with <code>/</code> (for example, A>C/T).",
                 "type": "text",
             },
@@ -218,33 +218,33 @@ MISSIONS = [
         "task": "Use ADVP to review curated AD association evidence for the assigned gene.",
         "fields": [
             {
-                "key": "Curated association count",
+                "key": "advp-1",
                 "label": "How many curated associations are there for your gene in ADVP?",
                 "type": "text",
             },
             {
-                "key": "Distinct publication count",
+                "key": "advp-2",
                 "label": "How many different publications were manually reviewed to extract those associations?",
                 "type": "text",
             },
             {
-                "key": "Example association SNP",
+                "key": "advp-3",
                 "label": "Browse the list of curated variants associated with your assigned genes.  Report one that catches your interest.",
                 "type": "text",
                 "hint": "Click on the number in the <code>Association records</code> column from your previous search result to view all curated associations for your gene. ",
             },
             {
-                "key": "Example association p-value or effect size",
+                "key": "advp-4",
                 "label": "What is the significance of this association (p-value)?",
                 "type": "text",
             },
             {
-                "key": "Example association phenotype",
+                "key": "advp-5",
                 "label": "What is the phenotypic context (e.g., population, disease) for the genetic association?",
                 "type": "text",
             },
             {
-                "key": "Example association PubMed ID",
+                "key": "advp-6",
                 "label": "What is the source (associated <code>PubMed ID</code>) for this observation?",
                 "type": "text",
             },
@@ -260,37 +260,37 @@ MISSIONS = [
             {
                 "skill": "AD Genetic Association Evidence Summarizer",
                 "fields": [
-                    "Gene phenotypes",
-                    "Gene relative position",
-                    "Variant consequence",
+                    "genomicsdb-gene-annotations-2",
+                    "genomicsdb-gene-annotations-3",
+                    "genomicsdb-gene-annotations-6",
                 ],
             },
             {
                 "skill": "Record Linker",
                 "fields": [
-                    "Gene location",
-                    "GWAS table used",
-                    "Selected variant",
-                    "Dataset or track name",
-                    "Dataset record title",
-                    "Variant record ID",
+                    "genomicsdb-gene-annotations-1",
+                    "genomicsdb-gene-annotations-4",
+                    "genomicsdb-gene-annotations-5",
+                    "genomicsdb-gene-annotations-7",
+                    "genomicsdb-dataset-summary-1",
+                    "genomicsdb-variant-record-1",
                 ],
             },
             {
                 "skill": "Signal Mapper",
                 "fields": [
-                    "Dataset top region",
-                    "Dataset top result",
-                    "Locus zoom variant",
-                    "Locus zoom reason",
+                    "genomicsdb-dataset-summary-2",
+                    "genomicsdb-dataset-summary-3",
+                    "genomicsdb-dataset-summary-4",
+                    "genomicsdb-dataset-summary-5",
                 ],
             },
             {
                 "skill": "Genome Browser",
                 "fields": [
-                    "Genome browser dataset track",
-                    "Genome browser observation",
-                    "Region to carry forward",
+                    "genomicsdb-genome-browser-1",
+                    "genomicsdb-genome-browser-2",
+                    "genomicsdb-carry-forward-1",
                 ],
             },
         ],
@@ -316,26 +316,26 @@ MISSIONS = [
             "activity."
         ),
         "fields": [
-            {"type": "section", "label": "Gene Annotations"},
+            {"type": "section", "key": "genomicsdb-gene-annotations", "label": "Gene Annotations"},
             {
-                "key": "Gene location",
+                "key": "genomicsdb-gene-annotations-1",
                 "label": "What is the footprint (genomic span) of this gene?",
                 "type": "text",
             },
             {
-                "key": "Gene phenotypes",
+                "key": "genomicsdb-gene-annotations-2",
                 "label": "Which phenotype (specific disease, neuropathology, or biomarker) has the most number of trait associated variants proximal to this gene?",
                 "hint": "Mouse over the interactive bar charts in the report header that provide a quick summary of significant AD/ADRD associations relative to the gene span.",
                 "type": "text",
             },
             {
-                "key": "Gene relative position",
+                "key": "genomicsdb-gene-annotations-3",
                 "label": "Where are the majority of the informative variants located relative to the gene?",
                 "type": "select",
                 "options": ["", "upstream", "downstream", "in gene"],
             },
             {
-                "key": "GWAS table used",
+                "key": "genomicsdb-gene-annotations-4",
                 "label": "The GenomicsDB separates curated summary statistics datasets into AD and ADRD/AD Biomarker collections.  Which table will you browse?",
                 "type": "select",
                 "options": [
@@ -345,79 +345,81 @@ MISSIONS = [
                 ],
             },
             {
-                "key": "Selected variant",
+                "key": "genomicsdb-gene-annotations-5",
                 "label": "Report one variant (Ref SNP ID or positional identifier) listed in the selected table that catches your interest.",
                 "type": "text",
             },
             {
-                "key": "Variant consequence",
+                "key": "genomicsdb-gene-annotations-6",
                 "label": "What is the predicted functional consequence of the variant?",
                 "hint": "Add the <code>Consequence</code> column to the table.",
                 "type": "text",
             },
             {
-                "key": "Dataset or track name",
+                "key": "genomicsdb-gene-annotations-7",
                 "label": "In which track (dataset) was this association reported?",
                 "type": "text",
                 "carry_forward": True,
             },
             {
                 "type": "section",
+                "key": "genomicsdb-dataset-summary",
                 "label": "Dataset Summary",
-                "next_step": "Click on the track name for the genetic association you explored.",
+                "next_step": "Click on the track name (link to dataset) you selected above to explore the dataset summary.",
             },
             {
-                "key": "Dataset record title",
-                "label": "After opening the dataset link, what is the dataset record title?",
+                "key": "genomicsdb-dataset-summary-1",
+                "label": "What is the accession number for this dataset?",
                 "type": "text",
             },
             {
-                "key": "Dataset top region",
+                "key": "genomicsdb-dataset-summary-2",
                 "label": "From the dataset record, identify another strong association region outside the assigned gene if possible.",
                 "type": "text",
             },
             {
-                "key": "Dataset top result",
+                "key": "genomicsdb-dataset-summary-3",
                 "label": "What top variant, p-value, or nearest result supports that region?",
                 "type": "text",
             },
             {
-                "key": "Locus zoom variant",
+                "key": "genomicsdb-dataset-summary-4",
                 "label": "After toggling locus zoom view on the dataset Manhattan plot, which variant did you select?",
                 "type": "text",
             },
             {
-                "key": "Locus zoom reason",
+                "key": "genomicsdb-dataset-summary-5",
                 "label": "Why did you choose that variant or peak to inspect next?",
                 "type": "textarea",
             },
             {
                 "type": "section",
+                "key": "genomicsdb-variant-record",
                 "label": "Variant Record",
                 "next_step": "Use locus zoom from the dataset record, then open one variant from the Manhattan plot.",
             },
             {
-                "key": "Variant record ID",
+                "key": "genomicsdb-variant-record-1",
                 "label": "After clicking the selected variant, what variant ID appears in the header?",
                 "type": "text",
             },
             {
-                "key": "Variant RefSNP",
+                "key": "genomicsdb-variant-record-2",
                 "label": "What RefSNP ID is shown, if any?",
                 "type": "text",
             },
             {
-                "key": "Variant alleles",
+                "key": "genomicsdb-variant-record-3",
                 "label": "What alleles are shown in the variant record header?",
                 "type": "text",
             },
             {
-                "key": "Most severe variant consequence",
+                "key": "genomicsdb-variant-record-4",
                 "label": "What consequence or impacted gene/transcript is listed in the header?",
                 "type": "text",
             },
             {
-                "key": "ADSP variant record label",
+                "key": "genomicsdb-variant-record-5",
                 "label": "Bonus: What is an <code>ADSP Variant</code>?",
                 "type": "textarea",
                 "required": False,
@@ -428,26 +430,28 @@ MISSIONS = [
             },
             {
                 "type": "section",
+                "key": "genomicsdb-genome-browser",
                 "label": "Genome Browser",
                 "next_step": "From the dataset or variant context, choose <code>View on Genome Browser</code> and inspect the loaded track.",
             },
             {
-                "key": "Genome browser dataset track",
+                "key": "genomicsdb-genome-browser-1",
                 "label": "Click View on Genome Browser. Which dataset track did you load?",
                 "type": "text",
             },
             {
-                "key": "Genome browser observation",
+                "key": "genomicsdb-genome-browser-2",
                 "label": "After exploring the loaded track, what region or pattern looks useful to inspect in FILER?",
                 "type": "textarea",
             },
             {
                 "type": "section",
+                "key": "genomicsdb-carry-forward",
                 "label": "Carry Forward",
                 "next_step": "Choose the final region or pattern you want to reuse in the FILER activity.",
             },
             {
-                "key": "Region to carry forward",
+                "key": "genomicsdb-carry-forward-1",
                 "label": "What final region will you carry forward to the functional annotation activity?",
                 "type": "text",
             },
@@ -482,32 +486,33 @@ MISSIONS = [
         "task": "Use the xQTL Browser to review molecular association evidence connected to your assigned gene.",
         "fields": [
             {
-                "key": "Total target variants",
+                "key": "xqtl-1",
                 "label": "What is the total number of variants that target your assigned gene?",
                 "type": "text",
             },
             {
-                "key": "xQTL type with highest associations",
+                "key": "xqtl-2",
                 "label": "Which xQTL type has the highest number of associations?",
                 "type": "text",
             },
             {
                 "type": "section",
+                "key": "xqtl-associations-tab",
                 "label": "Associations Tab",
                 "next_step": "Open the Associations tab, then expand the Cis/TAD association summary by xQTL type.",
             },
             {
-                "key": "Local or broader context",
+                "key": "xqtl-associations-tab-1",
                 "label": "Are the xQTL associations for this gene mostly found within the local gene region, or are there also associations linked through the broader 3D genome/TAD context?",
                 "type": "textarea",
             },
             {
-                "key": "Most significant association variant",
+                "key": "xqtl-associations-tab-2",
                 "label": "Which variant has the most significant association with this target gene?",
                 "type": "text",
             },
             {
-                "key": "Most significant association xQTL type",
+                "key": "xqtl-associations-tab-3",
                 "label": "For what xQTL type?",
                 "type": "text",
             },
@@ -540,27 +545,27 @@ MISSIONS = [
         "task": "Use FILER to review functional annotations overlapping the region carried forward from GenomicsDB.",
         "fields": [
             {
-                "key": "Region searched in FILER",
+                "key": "filer-1",
                 "label": "What gene region from the GenomicsDB section did you submit to FILER?",
                 "type": "text",
             },
             {
-                "key": "Overlapping functional annotations",
+                "key": "filer-2",
                 "label": "How many overlapping functional annotations (database intervals) were found for your gene region?",
                 "type": "text",
             },
             {
-                "key": "Total search time",
+                "key": "filer-3",
                 "label": "What was the total search time?",
                 "type": "text",
             },
             {
-                "key": "Highest overlap genomic feature type",
+                "key": "filer-4",
                 "label": "Open the <code>genomic feature type overlap</code> summary. What type of genomic feature has the highest number of overlaps in your region?",
                 "type": "text",
             },
             {
-                "key": "Functional annotation interpretation bonus",
+                "key": "filer-5",
                 "label": "Bonus: What does that suggest about the types of regulatory or functional annotations available for this region? What caveats should you keep in mind?",
                 "type": "textarea",
                 "required": False,
@@ -568,22 +573,22 @@ MISSIONS = [
                 "hint": "Consider what overlap counts can and cannot tell you about disease mechanism.",
             },
             {
-                "key": "Darkest heatmap data source",
+                "key": "filer-6",
                 "label": "In the overlap heatmap, find the darkest cell and hover over it. Which data source does it represent?",
                 "type": "text",
             },
             {
-                "key": "Darkest heatmap tissue category",
+                "key": "filer-7",
                 "label": "For that same darkest heatmap cell, which tissue category does it represent?",
                 "type": "text",
             },
             {
-                "key": "Darkest heatmap overlap count",
+                "key": "filer-8",
                 "label": "For that same darkest heatmap cell, how many overlaps are reported?",
                 "type": "text",
             },
             {
-                "key": "Strongest heatmap tissue categories",
+                "key": "filer-9",
                 "label": "Across the heatmap, which tissue categories show the strongest concentration of overlaps for your gene region? Are any of them relevant to AD biology?",
                 "type": "textarea",
             },
@@ -600,17 +605,17 @@ MISSIONS = [
         "task": "Write a short synthesis of what the collected evidence suggests.",
         "fields": [
             {
-                "key": "One-sentence interpretation",
+                "key": "interpretation-1",
                 "label": "One-sentence interpretation",
                 "type": "textarea",
             },
             {
-                "key": "Most useful resource",
+                "key": "interpretation-2",
                 "label": "Most useful resource",
                 "type": "text",
             },
             {
-                "key": "One limitation or unanswered question",
+                "key": "interpretation-3",
                 "label": "One limitation or unanswered question",
                 "type": "textarea",
             },
@@ -626,9 +631,9 @@ MISSIONS = [
         "resources": ["API"],
         "task": "Identify one step in the workshop challenge that should eventually be automated through the NIAGADS API.",
         "fields": [
-            {"key": "Step to automate", "label": "Step to automate", "type": "text"},
+            {"key": "api-1", "label": "Step to automate", "type": "text"},
             {
-                "key": "Why automation would help",
+                "key": "api-2",
                 "label": "Why automation would help",
                 "type": "textarea",
             },
