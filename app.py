@@ -258,7 +258,7 @@ MISSIONS = [
         "skill": "Record Linker",
         "sub_skills": [
             {
-                "skill": "AD Genetic Association Evidence Summarizer",
+                "skill": "AD Genetics Reporter",
                 "fields": [
                     "genomicsdb-gene-annotations-2",
                     "genomicsdb-gene-annotations-3",
@@ -294,6 +294,7 @@ MISSIONS = [
                 "fields": [
                     "genomicsdb-genome-browser-1",
                     "genomicsdb-genome-browser-2",
+                    "genomicsdb-genome-browser-3",
                 ],
             },
         ],
