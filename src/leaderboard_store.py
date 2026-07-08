@@ -11,6 +11,7 @@ LEADERBOARD_HEADERS = [
     "team_name",
     "email",
     "assigned_gene",
+    "rank_score",
     "score",
     "required_activities_completed",
     "required_activities_total",
@@ -72,7 +73,13 @@ def ensure_headers(worksheet):
 
 def normalize_entry(row):
     entry = {header: row.get(header, "") for header in LEADERBOARD_HEADERS}
-    for key in ["score", "required_activities_completed", "required_activities_total", "skills_completed_count"]:
+    for key in [
+        "rank_score",
+        "score",
+        "required_activities_completed",
+        "required_activities_total",
+        "skills_completed_count",
+    ]:
         try:
             entry[key] = int(entry.get(key, 0))
         except (TypeError, ValueError):
@@ -81,6 +88,8 @@ def normalize_entry(row):
         entry["skills_completed"] = json.loads(entry.get("skills_completed", "[]") or "[]")
     except json.JSONDecodeError:
         entry["skills_completed"] = []
+    if not entry["rank_score"]:
+        entry["rank_score"] = leaderboard_rank_score(entry)
     return entry
 
 
@@ -97,6 +106,7 @@ def entry_to_row(entry):
         entry.get("team_name", ""),
         entry.get("email", ""),
         entry.get("assigned_gene", ""),
+        entry.get("rank_score", 0),
         entry.get("score", 0),
         entry.get("required_activities_completed", 0),
         entry.get("required_activities_total", 0),
@@ -110,6 +120,8 @@ def leaderboard_entry(summary, entry_id, existing_entry=None):
     now = datetime.now(timezone.utc).isoformat()
     required_done = summary["required_activities_completed"]
     required_total = summary["required_activities_total"]
+    badges_earned = len(summary["skills_completed"])
+    score = summary["score"]
     return {
         "id": entry_id,
         "submitted_at_utc": (existing_entry or {}).get("submitted_at_utc", now),
@@ -117,12 +129,13 @@ def leaderboard_entry(summary, entry_id, existing_entry=None):
         "team_name": summary["team_name"],
         "email": summary["email"],
         "assigned_gene": summary["assigned_gene"],
-        "score": summary["score"],
+        "rank_score": score + badges_earned,
+        "score": score,
         "required_activities_completed": required_done,
         "required_activities_total": required_total,
         "progress": f"{required_done}/{required_total}",
         "skills_completed": summary["skills_completed"],
-        "skills_completed_count": len(summary["skills_completed"]),
+        "skills_completed_count": badges_earned,
     }
 
 
@@ -144,11 +157,17 @@ def sorted_leaderboard(entries):
     return sorted(
         entries,
         key=lambda entry: (
-            entry.get("score", 0),
+            leaderboard_rank_score(entry),
             entry.get("required_activities_completed", 0),
-            entry.get("skills_completed_count", 0),
+            entry.get("score", 0),
         ),
         reverse=True,
+    )
+
+
+def leaderboard_rank_score(entry):
+    return entry.get("rank_score", 0) or (
+        entry.get("score", 0) + entry.get("skills_completed_count", 0)
     )
 
 
@@ -159,9 +178,10 @@ def leaderboard_rows(entries, include_email=False):
             "Rank": rank,
             "Team name": entry.get("team_name", ""),
             "Gene": entry.get("assigned_gene", ""),
+            "Rank score": leaderboard_rank_score(entry),
             "Score": entry.get("score", 0),
+            "Badges": entry.get("skills_completed_count", 0),
             "Progress": entry.get("progress", ""),
-            "Skills": entry.get("skills_completed_count", 0),
             "Updated": entry.get("updated_at_utc", ""),
         }
         if include_email:

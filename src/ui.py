@@ -539,7 +539,7 @@ def render_landing_page(video_path):
 def render_leaderboard_view():
     st.title("Workshop Leaderboard")
     st.caption(
-        "Scores are sorted by points, required activity progress, and completed skills."
+        "Rank score is points plus badges earned. Ties are sorted by required activity progress, then points."
     )
 
     if not leaderboard_configured():
@@ -1130,9 +1130,7 @@ def render_summary_and_submit(summary, score):
     submit_cols = st.columns([1, 1])
     with submit_cols[0]:
         if leaderboard_configured():
-            if st.button(
-                "Submit / update leaderboard", type="primary", use_container_width=True
-            ):
+            if st.button("Submit to Leaderboard"):
                 submit_to_leaderboard(summary, st.session_state.leaderboard_entry_id)
                 st.session_state.leaderboard_submitted = True
                 st.success("Leaderboard updated.")
@@ -1140,10 +1138,3 @@ def render_summary_and_submit(summary, score):
             st.warning("Leaderboard submission is not configured yet.")
     with submit_cols[1]:
         st.metric("Current score", f"{score} pts")
-
-    if st.session_state.leaderboard_submitted:
-        st.success(
-            "This team has submitted during the current session. Submit again to update the score."
-        )
-
-    st.link_button("🏆 Open leaderboard", "?view=leaderboard")
