@@ -16,6 +16,19 @@ def mission_ready(mission):
     )
 
 
+def mission_started(mission):
+    answers = st.session_state.answers.get(mission["id"], {})
+    return any(
+        str(answers.get(field["key"], "")).strip()
+        for field in mission["fields"]
+        if (
+            field.get("required", True)
+            and field.get("type") != "section"
+            and not field.get("bonus_points")
+        )
+    )
+
+
 def mission_complete(mission):
     return mission["id"] in st.session_state.completed_missions
 

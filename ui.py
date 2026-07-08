@@ -10,7 +10,7 @@ from leaderboard_store import (
     load_leaderboard,
     submit_to_leaderboard,
 )
-from scoring import current_points
+from scoring import current_points, mission_started
 
 
 def render_styles():
@@ -919,13 +919,14 @@ def render_missions(
 
             render_mission_fields(mission)
             ready = mission_ready(mission)
+            started = mission_started(mission)
             complete = mission_complete(mission)
             button_label = "Section complete" if complete else "Mark section complete"
             st.button(
                 button_label,
                 key=f"complete_{mission['id']}",
                 type="primary" if ready and not complete else "secondary",
-                disabled=complete or not ready,
+                disabled=complete or not started,
                 on_click=mark_mission_complete,
                 args=(mission,),
             )
