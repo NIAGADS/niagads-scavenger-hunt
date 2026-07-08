@@ -307,7 +307,7 @@ MISSIONS = [
             "genes, variants, genomic regions, annotations, and related evidence on GRCh38. It helps researchers "
             "search, browse, and analyze Alzheimer’s disease genetic data in one integrated resource."
         ),
-        "getting_started": "Search for the assigned gene, then open the gene record.",
+        "getting_started": "Search for the assigned gene.",
         "task": (
             "Search for the assigned gene in GenomicsDB, then use the gene record to review significant NIAGADS "
             "GWAS summary-statistics results in the gene footprint. Follow one table result to its dataset record, "
@@ -316,7 +316,7 @@ MISSIONS = [
             "activity."
         ),
         "fields": [
-            {"type": "section", "label": "Gene Annotation Record"},
+            {"type": "section", "label": "Gene Annotations"},
             {
                 "key": "Gene location",
                 "label": "What is the footprint (genomic span) of this gene?",
@@ -324,7 +324,7 @@ MISSIONS = [
             },
             {
                 "key": "Gene phenotypes",
-                "label": "Which phenotype (disease, neuropathology, or biomarker) has the most number of trait associated variants proximal to this gene",
+                "label": "Which phenotype (specific disease, neuropathology, or biomarker) has the most number of trait associated variants proximal to this gene?",
                 "hint": "Mouse over the interactive bar charts in the report header that provide a quick summary of significant AD/ADRD associations relative to the gene span.",
                 "type": "text",
             },
@@ -336,7 +336,7 @@ MISSIONS = [
             },
             {
                 "key": "GWAS table used",
-                "label": "The GenomicsDB separates curated summary statistics datasets by into AD and ADRD collections.  Choose one to continue on.",
+                "label": "The GenomicsDB separates curated summary statistics datasets into AD and ADRD/AD Biomarker collections.  Which table will you browse?",
                 "type": "select",
                 "options": [
                     "",
@@ -357,19 +357,14 @@ MISSIONS = [
             },
             {
                 "key": "Dataset or track name",
-                "label": "What linked dataset or track contains this summary-statistics result?",
+                "label": "In which track (dataset) was this association reported?",
                 "type": "text",
-            },
-            {
-                "key": "ADSP variant",
-                "label": "Is the selected variant marked in the ADSP Variant column?",
-                "type": "select",
-                "options": ["", "yes", "no", "not shown"],
+                "carry_forward": True,
             },
             {
                 "type": "section",
-                "label": "Dataset Record",
-                "next_step": "Open the linked dataset or track from the selected table result.",
+                "label": "Dataset Summary",
+                "next_step": "Click on the track name for the genetic association you explored.",
             },
             {
                 "key": "Dataset record title",
