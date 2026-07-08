@@ -208,6 +208,7 @@ MISSIONS = [
             {
                 "key": "advp-5",
                 "label": "What is the phenotypic context (e.g., population, disease) for the genetic association?",
+                "hint": "Click <code>Show/Hide Columns</code> to display more detailed phenotypic information.",
                 "type": "text",
             },
             {
@@ -285,8 +286,9 @@ MISSIONS = [
             },
             {
                 "key": "genomicsdb-gene-annotations-1",
-                "label": "What is the footprint (genomic span) of this gene?",
+                "label": "What is the genomic location (chrN:start-end) of this gene?",
                 "type": "text",
+                "carry_forward": True,
             },
             {
                 "key": "genomicsdb-gene-annotations-2",
@@ -358,7 +360,7 @@ MISSIONS = [
             },
             {
                 "key": "genomicsdb-dataset-summary-5",
-                "label": "Which <code>ADSP variant</code> is reported to have the most significant genetic association (smallest p-value)?",
+                "label": "Report one <code>ADSP variant</code> that is reported to have a significant genetic association in this dataset.",
                 "type": "text",
                 "carry_forward": True,
                 "hint": "ADSP variants have a red check in the <code>ADSP Variant?</code> column.",
@@ -379,7 +381,7 @@ MISSIONS = [
             },
             {
                 "key": "genomicsdb-variant-record-1",
-                "label": "What RefSNP ID is shown, if any?",
+                "label": "Is this variant associated with a Ref SNP record? If so, what is its Ref SNP ID?",
                 "type": "text",
             },
             {
@@ -421,7 +423,7 @@ MISSIONS = [
             },
             {
                 "key": "genomicsdb-genome-browser-1",
-                "label": "Genome Browser tracks are interactive! What can you learn about the highlighed variant?",
+                "label": "Genome Browser tracks are interactive! What is one new thing you can learn about the highlighed variant?",
                 "hint": "Zoom in and then click on the highlighted square in the <code>ADSP 36K R4 Varaints</code> track. </br></br>"
                 "<strong>Future Feature</strong>: The upcoming release will have updated ADSP reference tracks based on the newest data release (R5) with variants called from ~58k genomes.",
                 "type": "text",
@@ -443,7 +445,7 @@ MISSIONS = [
             {
                 "key": "genomicsdb-genome-browser-3",
                 "label": "Search for the track you explored earlier and click the <code>Display Track</code> to load.  Report about a significant variant other than the one selected.",
-                "hint": "Genome browser tracks are interactive!  Click on a point - what information is provided?",
+                "hint": "Genome browser tracks are interactive!  Click on a point - what information is provided?  You may have to Zoom back out again!",
                 "type": "text",
             },
         ],
@@ -483,24 +485,25 @@ MISSIONS = [
                 "type": "section",
                 "key": "xqtl-associations-tab",
                 "label": "Associations Browser",
-                "next_step": "Select the <code>Associations</code> Tab from the page navigation and then expand the section labeled: <code>Cis/TAD association summary by xQTL type</code>.",
+                "next_step": "Select the <code>Associations</code> tab from the local record page navigation.",
             },
             {
                 "key": "xqtl-associations-tab-1",
                 "label": "Are the xQTL associations for this gene mostly found within the local gene region, or are there also associations linked through the broader 3D genome/TAD context?",
+                "hint": "Expand the section labeled: <code>Cis/TAD association summary by xQTL type</code>.",
                 "type": "select",
                 "options": ["", "local gene region", "broader genomic context"],
             },
             {
                 "key": "xqtl-associations-tab-2",
                 "label": "Which variant has the most significant association with this target gene?",
+                "hint": "Expand the section labeled: <code>Top associations per xQTL type</code>.",
                 "type": "text",
             },
             {
                 "key": "xqtl-associations-tab-3",
-                "label": "For which xQTL type?",
-                "type": "select",
-                "options": ["", "mQTL", "pQTL", "haQTL", "eQTL", "snuc-eQTL"],
+                "label": "In which context?",
+                "type": "text",
             },
         ],
     },
@@ -524,7 +527,7 @@ MISSIONS = [
         ),
         "getting_started": (
             "Select <code>Search</code> from the top-level navigation. Select <code>hg38</code> for the Genome Build and then enter the "
-            "gene region (<em>carry forward from GenomicsDB: Gene Annotations section</em>)."
+            "gene region - you recorded in the GenomicsDB Gene Annotation section."
         ),
         "fields": [
             {
@@ -587,7 +590,16 @@ MISSIONS = [
             {
                 "key": "interpretation-2",
                 "label": "Most useful resource",
-                "type": "text",
+                "type": "select",
+                "options": [
+                    "",
+                    "GVC Top Genes",
+                    "ADVP",
+                    "GenomicsDB",
+                    "VariXam",
+                    "xQTL Browser",
+                    "FILER",
+                ],
             },
             {
                 "key": "interpretation-3",
