@@ -63,9 +63,7 @@ def initialize_state(assignment_pool):
         "answers": {},
         "completed_missions": set(),
         "mission_completed_at": {},
-        "mission_points_awarded": {},
-        "hints_used": set(),
-        "field_hints_used": set(),
+        "mission_base_points_awarded": {},
     }
     for key, value in defaults.items():
         if key not in st.session_state:

@@ -1,6 +1,8 @@
+import base64
 import random
 import time
 from html import escape
+from pathlib import Path
 
 import streamlit as st
 
@@ -10,7 +12,14 @@ from leaderboard_store import (
     load_leaderboard,
     submit_to_leaderboard,
 )
-from scoring import current_points, mission_started
+from scoring import mission_started
+
+
+@st.cache_data(show_spinner=False)
+def video_data_uri(video_path):
+    video_bytes = Path(video_path).read_bytes()
+    encoded = base64.b64encode(video_bytes).decode("ascii")
+    return f"data:video/mp4;base64,{encoded}"
 
 
 def render_styles():
@@ -143,6 +152,12 @@ def render_styles():
             }
         }
         .landing-video-spacer {margin-top: 0.55rem;}
+        .landing-video {
+            background: #000000;
+            border-radius: 8px;
+            display: block;
+            width: 100%;
+        }
         .landing-action-spacer {margin-top: 0.55rem;}
         .stButton > button[kind="primary"] {
             background: var(--niagads-gold);
@@ -203,7 +218,6 @@ def render_styles():
         .status-pill, .skill-chip {display: inline-block; border-radius: 999px; padding: 0.18rem 0.55rem; margin: 0.12rem; font-size: 0.85rem;}
         .status-complete {background: #e7f6ec; color: #1f6b3a;}
         .status-incomplete {background: #edf1f4; color: #425466;}
-        .status-bonus {background: #eeeaff; color: #3e2ba4;}
         .skill-chip {border: 1px solid; }
         .skill-earned {background: #fff3d6; border-color: var(--niagads-gold-deep); color: #6d4714;}
         .skill-pending {background: #f3f6f8; border-color: var(--niagads-line); color: var(--niagads-muted);}
@@ -516,7 +530,13 @@ def render_landing_page(video_path):
             """,
         )
         st.html("<div class='landing-video-spacer'></div>")
-        st.video(video_path)
+        st.html(
+            f"""
+            <video class="landing-video" autoplay muted playsinline controls>
+                <source src="{video_data_uri(video_path)}" type="video/mp4">
+            </video>
+            """,
+        )
         st.html("<div class='landing-action-spacer'></div>")
         if st.button("Begin the Hunt", type="primary"):
             st.session_state.hunt_started = True
@@ -526,7 +546,7 @@ def render_landing_page(video_path):
 def render_leaderboard_view():
     st.title("Workshop Leaderboard")
     st.caption(
-        "Scores are sorted by points, required activity progress, completed skills, and fewer hints used."
+        "Scores are sorted by points, required activity progress, and completed skills."
     )
 
     if not leaderboard_configured():
@@ -831,7 +851,7 @@ def render_page_header(
             <div class="app-title">AD Gene Challenge</div>
             <div class="app-subtitle">
                 Build a gene evidence summary for <strong>{escape(st.session_state.assigned_gene)}</strong>.
-                Complete the required activities in about 20 minutes; the API activity is optional bonus credit.
+                Complete the required activities in about 20 minutes; optional prompts add bonus credit.
             </div>
         </div>
         """,
@@ -866,16 +886,8 @@ def render_missions(
 
     for mission in missions:
         complete = mission_complete(mission)
-        status_text = (
-            "Bonus"
-            if mission.get("bonus", None)
-            else ("Complete" if complete else "Incomplete")
-        )
-        pill_class = (
-            "status-bonus"
-            if mission.get("bonus", None)
-            else ("status-complete" if complete else "status-incomplete")
-        )
+        status_text = "Complete" if complete else "Incomplete"
+        pill_class = "status-complete" if complete else "status-incomplete"
         resource_text = ", ".join(mission["resources"])
         display_title = (
             f"{mission['title']}: {resource_text}"
@@ -896,13 +908,13 @@ def render_missions(
                 bonus_total = sum(
                     field.get("bonus_points", 0) for field in mission["fields"]
                 )
-                label = (
-                    f"+{mission['points']} bonus pts"
-                    if mission.get("bonus", None)
-                    else f"{mission['points']} pts"
-                )
-                if bonus_total and not mission.get("bonus", None):
-                    label = f"{label} + {bonus_total} bonus"
+                label = f"{mission['points']} pts"
+                if bonus_total:
+                    label = (
+                        f"+{bonus_total} bonus pts"
+                        if mission["points"] == 0
+                        else f"{label} + {bonus_total} bonus"
+                    )
                 st.metric("Value", label)
 
             if mission.get("purpose"):
@@ -965,11 +977,7 @@ def render_mission_fields(mission):
         key = f"answer_{mission['id']}_{field['key']}"
         current = mission_answers.get(field["key"], "")
         bonus_points = field.get("bonus_points", 0)
-        widget_label = (
-            f"{field['label']}"
-            if bonus_points == 1
-            else (f"{field['label']}" if bonus_points else field["label"])
-        )
+        widget_label = field["label"]
         label_visibility = "visible"
         rendered_label = field_label_html(
             widget_label, carry_forward=field.get("carry_forward", False)
@@ -1023,7 +1031,7 @@ def mark_mission_complete(mission):
     mission_id = mission["id"]
     st.session_state.completed_missions.add(mission_id)
     st.session_state.mission_completed_at[mission_id] = time.time()
-    st.session_state.mission_points_awarded[mission_id] = current_points(mission)
+    st.session_state.mission_base_points_awarded[mission_id] = mission["points"]
 
 
 def render_summary_and_submit(summary, score):

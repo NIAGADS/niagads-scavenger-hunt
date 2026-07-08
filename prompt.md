@@ -6,7 +6,7 @@ The app should feel like a professional workshop challenge, not a roleplay scave
 
 - Use "workshop challenge", "activity", "skill", and "gene evidence summary" language.
 - Avoid "detective", "dossier", "mission control", "codename", and similar roleplay terms.
-- Keep points, progress, hints, completion states, and badge-style visual chips.
+- Keep points, progress, inline hints, completion states, and badge-style visual chips.
 - Badge chips use a trophy icon and distinguish earned vs pending by color.
 - Use a compact sidebar labeled "Workshop Progress" with team, team label, assigned gene, timer, score, progress, and completed skills.
 - On initial page load for a new Streamlit session, assign a random gene and generate a random team label.
@@ -43,12 +43,12 @@ Each resource activity should teach a realistic discovery path through that reso
 
 ## Game Mechanics
 
-- Each activity has a skill label, point value, resource link, task, answer fields, hint, and fallback.
+- Each activity has a skill label, point value, resource link, and answer fields.
 - An activity is complete when all required fields are filled.
 - Optional fields do not block completion.
-- Hints subtract 1 point once per activity.
-- Field-specific bonus hints may exist and should not use the regular hint penalty unless explicitly requested.
-- The API activity remains optional bonus credit.
+- Hints guide participants without changing the score.
+- Bonus questions may award inline `bonus_points`.
+- The API activity remains optional bonus credit through an inline bonus prompt.
 - The final preview and downloads should be a gene evidence summary in JSON and CSV.
 
 ## Current GenomicsDB Activity Model

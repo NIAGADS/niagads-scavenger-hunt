@@ -11,7 +11,7 @@ from scoring import (
 
 
 def build_summary(missions):
-    required = [mission for mission in missions if not mission.get("bonus", None)]
+    required = [mission for mission in missions if mission["points"]]
     return {
         "team_name": st.session_state.team_name,
         "email": st.session_state.email,
@@ -23,14 +23,12 @@ def build_summary(missions):
         ),
         "required_activities_total": len(required),
         "skills_completed": completed_skill_names(missions),
-        "hints_used": sorted(st.session_state.hints_used),
         "activities": [
             {
                 "id": mission["id"],
                 "title": mission["title"],
                 "skill": mission["skill"],
                 "skills": [skill["skill"] for skill in mission_skills(mission)],
-                "bonus": mission.get("bonus", 0),
                 "complete": mission_complete(mission),
                 "points_awarded": earned_points(mission),
                 "answers": st.session_state.answers.get(mission["id"], {}),

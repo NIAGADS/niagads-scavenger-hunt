@@ -133,7 +133,6 @@ MISSIONS = [
             "mechanistic follow-up, and therapeutic discovery."
         ),
         "getting_started": "Search for your assigned gene, then select <code>View all Results</code>.",
-        "task": "Use GVC Top Genes to review how the assigned gene appears in curated reported locus records.",
         "fields": [
             {
                 "key": "topgenes-1",
@@ -168,8 +167,6 @@ MISSIONS = [
                 "options": ["", "yes", "no"],
             },
         ],
-        "hint": "Use View all Results to see the table that contains reported locus records, support tiers, studies, and nearby genes.",
-        "bonus": False,
     },
     {
         "id": "varixam",
@@ -183,7 +180,6 @@ MISSIONS = [
             "variant calls."
         ),
         "getting_started": "Search for your assigned gene.",
-        "task": "Use VariXam to inspect ADSP variant records in the footprint of your assigned gene.",
         "fields": [
             {
                 "key": "varixam-1",
@@ -215,7 +211,6 @@ MISSIONS = [
             "variants, contextualized by populations, phenotypes, and supporting studies."
         ),
         "getting_started": "Select <code>Genes</code> from the top-level navigation and then search for your assigned gene.",
-        "task": "Use ADVP to review curated AD association evidence for the assigned gene.",
         "fields": [
             {
                 "key": "advp-1",
@@ -249,8 +244,6 @@ MISSIONS = [
                 "type": "text",
             },
         ],
-        "hint": "Start in the Genes view, then use the Association records link for your gene.",
-        "bonus": False,
     },
     {
         "id": "genomicsdb",
@@ -312,13 +305,6 @@ MISSIONS = [
             "search, browse, and analyze Alzheimer’s disease genetic data in one integrated resource."
         ),
         "getting_started": "Search for the assigned gene.",
-        "task": (
-            "Search for the assigned gene in GenomicsDB, then use the gene record to review significant NIAGADS "
-            "GWAS summary-statistics results in the gene footprint. Follow one table result to its dataset record, "
-            "use locus zoom to select a variant from the Manhattan plot, inspect that variant record, then load the "
-            "same dataset in the genome browser and choose a region to carry forward into the functional annotation "
-            "activity."
-        ),
         "fields": [
             {
                 "type": "section",
@@ -489,13 +475,6 @@ MISSIONS = [
                 "type": "text",
             },
         ],
-        "hint": (
-            "Search for the gene, open the gene record, then go to Trait associations → NIAGADS GWAS. Choose one "
-            "significant summary-statistics variant with a linked dataset or track. Open the dataset record, use "
-            "locus zoom to select a variant from the Manhattan plot, then use View on Genome Browser to load the "
-            "same dataset track and choose a region for the functional annotation activity."
-        ),
-        "bonus": False,
     },
     {
         "id": "xqtl",
@@ -516,7 +495,6 @@ MISSIONS = [
             "mechanisms in AD-relevant brain datasets."
         ),
         "getting_started": "Search for your assigned gene.",
-        "task": "Use the xQTL Browser to review molecular association evidence connected to your assigned gene.",
         "fields": [
             {
                 "key": "xqtl-1",
@@ -553,8 +531,6 @@ MISSIONS = [
                 "options": ["", "mQTL", "pQTL", "haQTL", "eQTL", "snuc-eQTL"],
             },
         ],
-        "hint": "Click on the Associations tab, then expand the Cis/TAD association summary by xQTL type section.",
-        "bonus": False,
     },
     {
         "id": "filer",
@@ -578,7 +554,6 @@ MISSIONS = [
             "Select <code>Search</code> from the top-level navigation. Select <code>hg38</code> for the Genome Build and then enter the "
             "gene region (<em>carry forward from GenomicsDB: Gene Annotations section</em>)."
         ),
-        "task": "Use FILER to review functional annotations overlapping the region carried forward from GenomicsDB.",
         "fields": [
             {
                 "key": "filer-1",
@@ -624,8 +599,6 @@ MISSIONS = [
                 "type": "textarea",
             },
         ],
-        "hint": "Use the carried-forward GenomicsDB region, then inspect the feature type summary and heatmap.",
-        "bonus": False,
     },
     {
         "id": "interpretation",
@@ -633,7 +606,6 @@ MISSIONS = [
         "skill": "Evidence summary",
         "points": 4,
         "resources": [],
-        "task": "Write a short synthesis of what the collected evidence suggests.",
         "fields": [
             {
                 "key": "interpretation-1",
@@ -651,26 +623,23 @@ MISSIONS = [
                 "type": "textarea",
             },
         ],
-        "hint": "Good answers combine association, genomic context, variant inventory, and functional/prioritization evidence.",
-        "bonus": False,
     },
     {
         "id": "api_bonus",
         "title": "Plan future automation",
         "skill": "API planning",
-        "points": 4,
+        "points": 0,
         "resources": ["API"],
-        "task": "Identify one step in the workshop challenge that should eventually be automated through the NIAGADS API.",
         "fields": [
             {"key": "api-1", "label": "Step to automate", "type": "text"},
             {
                 "key": "api-2",
-                "label": "Why automation would help",
+                "label": "Bonus: Why automation would help",
                 "type": "textarea",
+                "required": False,
+                "bonus_points": 4,
             },
         ],
-        "hint": "Think repeated lookup, coordinate retrieval, variant inventory, evidence aggregation, or report generation.",
-        "bonus": True,
     },
 ]
 
@@ -691,7 +660,7 @@ if not st.session_state.hunt_started:
     st.stop()
 
 
-required_missions = [mission for mission in MISSIONS if not mission.get("bonus", None)]
+required_missions = [mission for mission in MISSIONS if mission["points"]]
 completed_required = sum(mission_complete(mission) for mission in required_missions)
 progress = completed_required / len(required_missions)
 score = sum(earned_points(mission) for mission in MISSIONS)

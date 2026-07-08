@@ -17,7 +17,6 @@ LEADERBOARD_HEADERS = [
     "progress",
     "skills_completed",
     "skills_completed_count",
-    "hints_used_count",
 ]
 
 
@@ -73,7 +72,7 @@ def ensure_headers(worksheet):
 
 def normalize_entry(row):
     entry = {header: row.get(header, "") for header in LEADERBOARD_HEADERS}
-    for key in ["score", "required_activities_completed", "required_activities_total", "skills_completed_count", "hints_used_count"]:
+    for key in ["score", "required_activities_completed", "required_activities_total", "skills_completed_count"]:
         try:
             entry[key] = int(entry.get(key, 0))
         except (TypeError, ValueError):
@@ -104,7 +103,6 @@ def entry_to_row(entry):
         entry.get("progress", ""),
         json.dumps(entry.get("skills_completed", [])),
         entry.get("skills_completed_count", 0),
-        entry.get("hints_used_count", 0),
     ]
 
 
@@ -125,7 +123,6 @@ def leaderboard_entry(summary, entry_id, existing_entry=None):
         "progress": f"{required_done}/{required_total}",
         "skills_completed": summary["skills_completed"],
         "skills_completed_count": len(summary["skills_completed"]),
-        "hints_used_count": len(summary["hints_used"]),
     }
 
 
@@ -150,7 +147,6 @@ def sorted_leaderboard(entries):
             entry.get("score", 0),
             entry.get("required_activities_completed", 0),
             entry.get("skills_completed_count", 0),
-            -entry.get("hints_used_count", 0),
         ),
         reverse=True,
     )
@@ -166,7 +162,6 @@ def leaderboard_rows(entries, include_email=False):
             "Score": entry.get("score", 0),
             "Progress": entry.get("progress", ""),
             "Skills": entry.get("skills_completed_count", 0),
-            "Hints": entry.get("hints_used_count", 0),
             "Updated": entry.get("updated_at_utc", ""),
         }
         if include_email:

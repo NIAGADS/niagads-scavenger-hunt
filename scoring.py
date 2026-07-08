@@ -74,25 +74,28 @@ def completed_skill_names(missions):
 def earned_points(mission):
     if timer_expired_before_completion(mission["id"]):
         return 0
-    if mission["id"] in st.session_state.mission_points_awarded:
-        return st.session_state.mission_points_awarded[mission["id"]]
+    if mission["id"] in st.session_state.mission_base_points_awarded:
+        return (
+            st.session_state.mission_base_points_awarded[mission["id"]]
+            + bonus_points(mission)
+        )
     return current_points(mission)
 
 
-def current_points(mission):
+def bonus_points(mission):
     answers = st.session_state.answers.get(mission["id"], {})
-    bonus_points = sum(
+    return sum(
         field.get("bonus_points", 0)
         for field in mission["fields"]
         if field.get("bonus_points") and str(answers.get(field["key"], "")).strip()
     )
+
+
+def current_points(mission):
+    earned_bonus_points = bonus_points(mission)
     if not mission_complete(mission):
-        return bonus_points
-    base_points = max(
-        mission["points"] - (1 if mission["id"] in st.session_state.hints_used else 0),
-        0,
-    )
-    return base_points + bonus_points
+        return earned_bonus_points
+    return mission["points"] + earned_bonus_points
 
 
 def timer_expired_before_completion(mission_id):
