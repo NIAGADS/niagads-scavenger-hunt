@@ -835,17 +835,31 @@ def render_api_bonus_summary(summary):
     )
 
 
+def render_leaderboard_submit(summary):
+    st.caption("Leaderboard")
+    if leaderboard_configured():
+        if st.button("Submit score", use_container_width=True):
+            submit_to_leaderboard(summary, st.session_state.leaderboard_entry_id)
+            st.session_state.leaderboard_submitted = True
+            st.success("Updated.")
+    else:
+        st.button("Submit score", disabled=True, use_container_width=True)
+        st.caption("Not configured")
+
+
 def render_evidence_pathway(summary):
     steps = evidence_trail_steps(summary)
 
     progress_text = f"{summary['required_activities_completed']}/{summary['required_activities_total']}"
 
     st.header("Challenge Takeaways")
-    snapshot_cols = st.columns(4)
+    snapshot_cols = st.columns([1, 1.9, 1, 1.25, 1.2])
     snapshot_cols[0].metric("Gene", summary["assigned_gene"])
     snapshot_cols[1].metric("Team name", summary["team_name"] or "Not set")
     snapshot_cols[2].metric("Score", f"{summary['score']} pts")
     snapshot_cols[3].metric("Required progress", progress_text)
+    with snapshot_cols[4]:
+        render_leaderboard_submit(summary)
 
     assigned_gene = summary["assigned_gene"] or "the assigned gene"
     st.subheader("Evidence Trail Summary")
@@ -1167,24 +1181,6 @@ def mark_mission_complete(mission):
     st.session_state.mission_base_points_awarded[mission_id] = mission["points"]
 
 
-def render_summary_and_submit(summary, score):
+def render_summary_and_submit(summary):
     st.divider()
     render_evidence_pathway(summary)
-
-    st.divider()
-    st.header("Submit Results")
-    st.caption(
-        "Submit or update your score when you are ready. The leaderboard is shown on a separate page."
-    )
-
-    submit_cols = st.columns([1, 1])
-    with submit_cols[0]:
-        if leaderboard_configured():
-            if st.button("Submit to Leaderboard"):
-                submit_to_leaderboard(summary, st.session_state.leaderboard_entry_id)
-                st.session_state.leaderboard_submitted = True
-                st.success("Leaderboard updated.")
-        else:
-            st.warning("Leaderboard submission is not configured yet.")
-    with submit_cols[1]:
-        st.metric("Current score", f"{score} pts")

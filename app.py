@@ -79,4 +79,4 @@ render_missions(
 )
 
 summary = build_summary(MISSIONS)
-render_summary_and_submit(summary, score)
+render_summary_and_submit(summary)
