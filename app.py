@@ -526,18 +526,20 @@ MISSIONS = [
             {
                 "key": "xqtl-2",
                 "label": "Which xQTL type has the highest number of associations?",
-                "type": "text",
+                "type": "select",
+                "options": ["", "mQTL", "pQTL", "haQTL", "eQTL", "snuc-eQTL"],
             },
             {
                 "type": "section",
                 "key": "xqtl-associations-tab",
-                "label": "Associations Tab",
-                "next_step": "Open the Associations tab, then expand the Cis/TAD association summary by xQTL type.",
+                "label": "Associations Browser",
+                "next_step": "Select the <code>Associations</code> Tab from the page navigation and then expand the section labeled: <code>Cis/TAD association summary by xQTL type</code>.",
             },
             {
                 "key": "xqtl-associations-tab-1",
                 "label": "Are the xQTL associations for this gene mostly found within the local gene region, or are there also associations linked through the broader 3D genome/TAD context?",
-                "type": "textarea",
+                "type": "select",
+                "options": ["", "local gene region", "broader genomic context"],
             },
             {
                 "key": "xqtl-associations-tab-2",
@@ -546,8 +548,9 @@ MISSIONS = [
             },
             {
                 "key": "xqtl-associations-tab-3",
-                "label": "For what xQTL type?",
-                "type": "text",
+                "label": "For which xQTL type?",
+                "type": "select",
+                "options": ["", "mQTL", "pQTL", "haQTL", "eQTL", "snuc-eQTL"],
             },
         ],
         "hint": "Click on the Associations tab, then expand the Cis/TAD association summary by xQTL type section.",
@@ -572,29 +575,24 @@ MISSIONS = [
             "in consistent formats."
         ),
         "getting_started": (
-            "Select <code>Search</code> from the top-level navigation. Select <code>hg38</code> for the Genome Build and then submit your "
-            "gene region from the GenomicsDB section."
+            "Select <code>Search</code> from the top-level navigation. Select <code>hg38</code> for the Genome Build and then enter the "
+            "gene region (<em>carry forward from GenomicsDB: Gene Annotations section</em>)."
         ),
         "task": "Use FILER to review functional annotations overlapping the region carried forward from GenomicsDB.",
         "fields": [
             {
                 "key": "filer-1",
-                "label": "What gene region from the GenomicsDB section did you submit to FILER?",
-                "type": "text",
-            },
-            {
-                "key": "filer-2",
                 "label": "How many overlapping functional annotations (database intervals) were found for your gene region?",
                 "type": "text",
             },
             {
-                "key": "filer-3",
+                "key": "filer-2",
                 "label": "What was the total search time?",
                 "type": "text",
             },
             {
-                "key": "filer-4",
-                "label": "Open the <code>genomic feature type overlap</code> summary. What type of genomic feature has the highest number of overlaps in your region?",
+                "key": "filer-3",
+                "label": "Open the <code>Genomic Feature Type Overlap</code> summary. What type of genomic feature has the highest number of overlaps in your region?",
                 "type": "text",
             },
             {
