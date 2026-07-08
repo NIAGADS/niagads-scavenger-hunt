@@ -23,7 +23,7 @@ They complete guided activities using NIAGADS and related open resources:
 - Team name and random team label generator
 - Optional team leader contact email
 - Random assigned gene button plus manual gene override
-- Visible 20-minute countdown timer
+- Visible 25-minute countdown timer
 - Workshop Progress sidebar with timer, gene, score, progress, and completed skills
 - Activity sections with resource buttons, required answer fields, and inline hints
 - Directed GenomicsDB activity that moves from a gene record to summary statistics, dataset record, variant record, genome browser, and follow-up region
@@ -172,7 +172,7 @@ Notes:
 
 ## Workshop facilitation notes
 
-- Suggested duration: 20 minutes of activity time plus 5–10 minutes for discussion.
+- Suggested duration: 25 minutes of activity time plus 5–10 minutes for discussion.
 - The GenomicsDB activity is designed as the main within-site navigation exercise.
 - Optional bonus prompts add points and are not required for completion.
 - Hints guide participants without changing the score.

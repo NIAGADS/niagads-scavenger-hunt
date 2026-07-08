@@ -2,7 +2,7 @@ import time
 
 import streamlit as st
 
-TIME_LIMIT_SECONDS = 20 * 60
+TIME_LIMIT_SECONDS = 25 * 60
 
 
 def mission_ready(mission):

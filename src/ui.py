@@ -240,14 +240,6 @@ def render_styles():
             padding: 0.12rem 0.45rem;
             white-space: nowrap;
         }
-        .summary-skill-strip {
-            background: #f3f6f8;
-            border: 1px solid var(--niagads-line);
-            border-radius: 8px;
-            color: var(--niagads-ink);
-            margin: 0.5rem 0 1rem 0;
-            padding: 0.65rem 0.8rem;
-        }
         .path-grid {
             display: grid;
             gap: 0.7rem;
@@ -622,7 +614,7 @@ def content_html(text):
 def field_label_html(label, carry_forward=False):
     label = content_html(label)
     if carry_forward:
-        label = f"<span class='carry-forward-badge'>Carry forward</span>{label}"
+        label = f"<span class='carry-forward-badge'>Link forward</span>{label}"
     if label.startswith("Bonus: "):
         return f"<span class='bonus-badge'>Bonus</span>{label.removeprefix('Bonus: ')}"
     return label
@@ -642,66 +634,72 @@ def pathway_node(label, source, value, complete=False):
 
 
 def render_evidence_pathway(summary):
-    advp_signal = first_answer(
-        summary, "advp", ["Curated association count", "Example association SNP"]
+    prioritization = first_answer(
+        summary, "topgenes", ["topgenes-2", "topgenes-3", "topgenes-4"]
     )
-    gwas_signal = first_answer(
-        summary, "genomicsdb", ["Selected variant", "Variant p-value"]
+    variant_inventory = first_answer(
+        summary, "varixam", ["varixam-1", "varixam-2", "varixam-3"]
     )
-    dataset_signal = first_answer(
+    curated_association = first_answer(summary, "advp", ["advp-3", "advp-4", "advp-5"])
+    genomicsdb_record = first_answer(
         summary,
         "genomicsdb",
-        ["Locus zoom variant", "Dataset top region", "Dataset top result"],
+        [
+            "genomicsdb-gene-annotations-7",
+            "genomicsdb-dataset-summary-1",
+            "genomicsdb-dataset-summary-5",
+            "genomicsdb-variant-record-1",
+        ],
     )
-    variant_signal = first_answer(
+    browser_observation = first_answer(
         summary,
         "genomicsdb",
-        ["Variant consequence", "Variant record ID", "Variant RefSNP"],
-    )
-    browser_region = first_answer(
-        summary, "genomicsdb", ["Region to carry forward", "Genome browser observation"]
+        [
+            "genomicsdb-genome-browser-1",
+            "genomicsdb-genome-browser-2",
+            "genomicsdb-genome-browser-3",
+        ],
     )
     filer_signal = first_answer(
         summary,
         "filer",
         [
-            "Highest overlap genomic feature type",
-            "Darkest heatmap data source",
-            "Strongest heatmap tissue categories",
+            "filer-3",
+            "filer-6",
+            "filer-7",
+            "filer-9",
         ],
     )
     xqtl_signal = first_answer(
         summary,
         "xqtl",
         [
-            "xQTL type with highest associations",
-            "Most significant association variant",
-            "Local or broader context",
+            "xqtl-2",
+            "xqtl-associations-tab-1",
+            "xqtl-associations-tab-2",
+            "xqtl-associations-tab-3",
         ],
     )
-    functional_signal = filer_signal or xqtl_signal
+    functional_context = filer_signal or xqtl_signal
     interpretation = first_answer(
         summary,
         "interpretation",
-        ["One-sentence interpretation", "One limitation or unanswered question"],
+        ["interpretation-1", "interpretation-2", "interpretation-3"],
+    )
+    api_integration = first_answer(
+        summary,
+        "api_bonus",
+        ["api-1", "api-2"],
     )
 
     progress_text = f"{summary['required_activities_completed']}/{summary['required_activities_total']}"
-    skills_text = (
-        ", ".join(summary["skills_completed"])
-        if summary["skills_completed"]
-        else "No skills completed yet"
-    )
 
-    st.header("Evidence Pathway")
+    st.header("Challenge Takeaways")
     snapshot_cols = st.columns(4)
     snapshot_cols[0].metric("Gene", summary["assigned_gene"])
     snapshot_cols[1].metric("Team name", summary["team_name"] or "Not set")
     snapshot_cols[2].metric("Score", f"{summary['score']} pts")
     snapshot_cols[3].metric("Required progress", progress_text)
-    st.html(
-        f"<div class='summary-skill-strip'>{display_value(skills_text)}</div>",
-    )
 
     nodes = [
         pathway_node(
@@ -710,25 +708,50 @@ def render_evidence_pathway(summary):
             summary["assigned_gene"],
             bool(summary["assigned_gene"]),
         ),
-        pathway_node("Association evidence", "ADVP", advp_signal, bool(advp_signal)),
-        pathway_node("GWAS table signal", "GenomicsDB", gwas_signal, bool(gwas_signal)),
         pathway_node(
-            "Dataset / locus zoom", "GenomicsDB", dataset_signal, bool(dataset_signal)
+            "Gene prioritization",
+            "GVC Top Genes",
+            prioritization,
+            bool(prioritization),
         ),
         pathway_node(
-            "Variant record", "GenomicsDB", variant_signal, bool(variant_signal)
+            "ADSP variant inventory",
+            "VariXam",
+            variant_inventory,
+            bool(variant_inventory),
         ),
         pathway_node(
-            "Browser region", "GenomicsDB", browser_region, bool(browser_region)
+            "Curated association",
+            "ADVP",
+            curated_association,
+            bool(curated_association),
         ),
         pathway_node(
-            "Functional annotation",
+            "Linked GenomicsDB record",
+            "GenomicsDB",
+            genomicsdb_record,
+            bool(genomicsdb_record),
+        ),
+        pathway_node(
+            "Genome browser observation",
+            "GenomicsDB",
+            browser_observation,
+            bool(browser_observation),
+        ),
+        pathway_node(
+            "Functional context",
             "FILER / xQTL",
-            functional_signal,
-            bool(functional_signal),
+            functional_context,
+            bool(functional_context),
         ),
         pathway_node(
             "Interpretation", "Synthesis", interpretation, bool(interpretation)
+        ),
+        pathway_node(
+            "Programmatic integration",
+            "NIAGADS API",
+            api_integration,
+            bool(api_integration),
         ),
     ]
     st.html(f"<div class='path-grid'>{''.join(nodes)}</div>")
@@ -736,46 +759,47 @@ def render_evidence_pathway(summary):
     st.subheader("Carry-Forward Focus")
     focus_items = [
         (
+            "Gene span",
+            answer_value(summary, "genomicsdb", "genomicsdb-gene-annotations-1"),
+        ),
+        (
             "Dataset / track",
-            answer_value(summary, "genomicsdb", "Dataset or track name"),
+            answer_value(summary, "genomicsdb", "genomicsdb-gene-annotations-7"),
         ),
         (
-            "Locus zoom variant",
-            answer_value(summary, "genomicsdb", "Locus zoom variant"),
+            "Selected ADSP variant",
+            answer_value(summary, "genomicsdb", "genomicsdb-dataset-summary-5"),
         ),
         (
-            "Variant context",
+            "Variant record / identifier",
             first_answer(
                 summary,
                 "genomicsdb",
-                ["Variant consequence", "Variant alleles", "Variant RefSNP"],
-            ),
+                ["genomicsdb-variant-record-1", "genomicsdb-variant-record-2"],
+            )
+            or answer_value(summary, "varixam", "varixam-2"),
         ),
         (
-            "Genome browser region",
-            answer_value(summary, "genomicsdb", "Region to carry forward"),
-        ),
-        (
-            "Functional evidence",
+            "Genome browser observation",
             first_answer(
                 summary,
-                "filer",
-                ["Highest overlap genomic feature type", "Darkest heatmap data source"],
-            )
-            or first_answer(
-                summary,
-                "xqtl",
+                "genomicsdb",
                 [
-                    "xQTL type with highest associations",
-                    "Most significant association variant",
+                    "genomicsdb-genome-browser-1",
+                    "genomicsdb-genome-browser-3",
                 ],
             ),
         ),
+        ("Functional context", functional_context),
         (
-            "Limitation / question",
-            answer_value(
-                summary, "interpretation", "One limitation or unanswered question"
+            "Interpretation / limitation",
+            first_answer(
+                summary, "interpretation", ["interpretation-1", "interpretation-3"]
             ),
+        ),
+        (
+            "API integration idea",
+            answer_value(summary, "api_bonus", "api-1"),
         ),
     ]
     focus_html = "".join(
@@ -820,7 +844,7 @@ def render_sidebar(
 
         if st.session_state.timer_started_at is None:
             if st.button(
-                "Start 20-minute timer", type="primary", use_container_width=True
+                "Start 25-minute timer", type="primary", use_container_width=True
             ):
                 st.session_state.timer_started_at = time.time()
                 st.rerun()
@@ -841,7 +865,7 @@ def render_sidebar(
 
 def render_live_timer(started_at):
     started_at_ms = int(started_at * 1000)
-    duration_seconds = 20 * 60
+    duration_seconds = 25 * 60
     components.html(
         f"""
         <style>
@@ -910,7 +934,7 @@ def render_page_header(
             <div class="app-title">AD Gene Challenge</div>
             <div class="app-subtitle">
                 Build a gene evidence summary for <strong>{escape(st.session_state.assigned_gene)}</strong>.
-                Complete the required activities in about 20 minutes; optional prompts add bonus credit.
+                Complete the required activities in about 25 minutes; optional prompts add bonus credit.
             </div>
         </div>
         """,
@@ -1096,10 +1120,6 @@ def mark_mission_complete(mission):
 def render_summary_and_submit(summary, score):
     st.divider()
     render_evidence_pathway(summary)
-    st.divider()
-    st.header("Gene Evidence Summary Preview")
-    st.caption("This preview updates as you fill in activity fields.")
-    st.json(summary, expanded=False)
 
     st.divider()
     st.header("Submit Results")
