@@ -240,74 +240,84 @@ def render_styles():
             padding: 0.12rem 0.45rem;
             white-space: nowrap;
         }
-        .path-grid {
-            display: grid;
-            gap: 0.7rem;
-            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-            margin: 0.6rem 0 1.25rem 0;
-        }
-        .path-node {
-            border: 1px solid var(--niagads-line);
-            border-left: 6px solid #8c959f;
-            border-radius: 8px;
+        .evidence-trail {
             background: #ffffff;
-            min-height: 8.4rem;
-            padding: 0.75rem;
+            border: 1px solid var(--niagads-line);
+            border-radius: 8px;
+            margin: 0.7rem 0 1.25rem 0;
+            padding: 0.35rem 1rem;
         }
-        .path-node-complete {border-left-color: var(--niagads-blue);}
-        .path-node-pending {background: #f3f6f8;}
-        .path-source {
-            color: var(--niagads-muted);
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
+        .evidence-step {
+            border-bottom: 1px solid #edf1f4;
+            display: flex;
+            gap: 0.85rem;
+            padding: 0.95rem 0;
         }
-        .path-label {
+        .evidence-step:last-child {
+            border-bottom: none;
+        }
+        .evidence-step-number {
+            align-items: center;
+            background: #eaf3fb;
+            border: 1px solid #8fb8d6;
+            border-radius: 999px;
+            color: #1f4f73;
+            display: flex;
+            flex: 0 0 2rem;
+            font-weight: 800;
+            height: 2rem;
+            justify-content: center;
+            line-height: 1;
+            margin-top: 0.05rem;
+            width: 2rem;
+        }
+        .evidence-step-content {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        .evidence-resource {
             color: var(--niagads-ink);
             font-size: 1rem;
-            font-weight: 700;
-            margin-top: 0.2rem;
+            font-weight: 800;
+            line-height: 1.2;
         }
-        .path-value {
-            color: #3c4b58;
-            font-size: 0.9rem;
-            line-height: 1.3;
-            margin-top: 0.45rem;
-            overflow-wrap: anywhere;
-        }
-        .path-status {
+        .evidence-type {
             color: var(--niagads-muted);
             font-size: 0.75rem;
-            margin-top: 0.6rem;
-        }
-        .focus-panel {
-            background: #fff5dd;
-            border: 1px solid var(--niagads-gold-deep);
-            border-radius: 8px;
-            display: grid;
-            gap: 0.65rem;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            margin: 0.5rem 0 1.25rem 0;
-            padding: 0.85rem;
-        }
-        .focus-item {
-            background: rgba(255, 255, 255, 0.72);
-            border: 1px solid rgba(243, 170, 52, 0.34);
-            border-radius: 6px;
-            padding: 0.65rem;
-        }
-        .focus-label {
-            color: #70501a;
-            font-size: 0.78rem;
-            font-weight: 700;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            margin-top: 0.18rem;
             text-transform: uppercase;
         }
-        .focus-value {
-            color: var(--niagads-ink);
+        .evidence-finding,
+        .evidence-learning {
+            color: #3c4b58;
             font-size: 0.92rem;
-            margin-top: 0.25rem;
+            line-height: 1.35;
+            margin-top: 0.42rem;
             overflow-wrap: anywhere;
+        }
+        .evidence-label {
+            color: var(--niagads-ink);
+            font-weight: 800;
+        }
+        .api-bonus-summary {
+            background: #fff9e8;
+            border: 1px solid var(--niagads-gold-deep);
+            border-left: 6px solid var(--niagads-gold-deep);
+            border-radius: 8px;
+            color: var(--niagads-ink);
+            line-height: 1.35;
+            margin: 0.5rem 0 1.25rem 0;
+            padding: 0.75rem 0.85rem;
+        }
+        .api-bonus-title {
+            color: #70501a;
+            font-size: 0.92rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.35rem;
+            text-transform: uppercase;
         }
         .stButton > button,
         .stLinkButton > a {
@@ -592,15 +602,9 @@ def activity_answers(summary, activity_id):
 
 def answer_value(summary, activity_id, key):
     value = activity_answers(summary, activity_id).get(key, "")
+    if value is None:
+        return ""
     return str(value).strip()
-
-
-def first_answer(summary, activity_id, keys):
-    for key in keys:
-        value = answer_value(summary, activity_id, key)
-        if value:
-            return value
-    return ""
 
 
 def display_value(value, fallback="Not recorded yet"):
@@ -620,77 +624,219 @@ def field_label_html(label, carry_forward=False):
     return label
 
 
-def pathway_node(label, source, value, complete=False):
-    status_class = "path-node-complete" if complete else "path-node-pending"
-    status_text = "Complete" if complete else "Pending"
+NOT_COMPLETED = "Not completed"
+
+
+def completed_value(value):
+    return str(value).strip() or NOT_COMPLETED
+
+
+def format_varixam_finding(summary):
+    count = answer_value(summary, "varixam", "varixam-1")
+    if not count:
+        return NOT_COMPLETED
+    return f"{count} ADSP variant records in the gene footprint"
+
+
+def format_advp_finding(summary):
+    variant = answer_value(summary, "advp", "advp-3")
+    pvalue = answer_value(summary, "advp", "advp-4")
+    phenotype = answer_value(summary, "advp", "advp-5")
+    parts = []
+    if variant:
+        parts.append(variant)
+    if pvalue:
+        parts.append(f"p-value: {pvalue}")
+    if phenotype:
+        parts.append(f"phenotype/context: {phenotype}")
+    return "; ".join(parts) or NOT_COMPLETED
+
+
+def format_genomicsdb_finding(summary):
+    phenotype = answer_value(
+        summary, "genomicsdb", "genomicsdb-gene-annotations-2"
+    )
+    adsp_variant = answer_value(
+        summary, "genomicsdb", "genomicsdb-dataset-summary-5"
+    )
+    ld_evidence = answer_value(
+        summary, "genomicsdb", "genomicsdb-dataset-summary-6"
+    )
+    consequence = answer_value(
+        summary, "genomicsdb", "genomicsdb-gene-annotations-6"
+    )
+    biomarker_association = answer_value(
+        summary, "genomicsdb", "genomicsdb-variant-record-4"
+    )
+    biomarker_source = answer_value(
+        summary, "genomicsdb", "genomicsdb-variant-record-5"
+    )
+
+    parts = []
+    if phenotype:
+        parts.append(f"Gene context: {phenotype}")
+    if adsp_variant:
+        parts.append(f"Dataset insight: ADSP significant variant {adsp_variant}")
+    if ld_evidence:
+        parts.append(f"LD evidence: {ld_evidence}")
+    if consequence:
+        parts.append(f"Linked variant insight: consequence {consequence}")
+    if biomarker_association:
+        biomarker_text = f"AD biomarker/neuropathology associations: {biomarker_association}"
+        if biomarker_source:
+            biomarker_text = f"{biomarker_text} via {biomarker_source}"
+        parts.append(biomarker_text)
+
+    return "; ".join(parts) or NOT_COMPLETED
+
+
+def format_topgenes_finding(summary):
+    gvc_tier = answer_value(summary, "topgenes", "topgenes-2")
+    agora_target = answer_value(summary, "topgenes", "topgenes-4").lower()
+    if not gvc_tier and not agora_target:
+        return NOT_COMPLETED
+
+    if agora_target == "no":
+        comparison = "GVC-only prioritization signal"
+    elif agora_target == "yes":
+        comparison = "Prioritized here and also nominated in the comparison resource"
+    else:
+        comparison = "Comparison resource status not completed"
+
+    if gvc_tier:
+        return f"{gvc_tier}; {comparison}"
+    return comparison
+
+
+def format_xqtl_finding(summary):
+    xqtl_type = answer_value(summary, "xqtl", "xqtl-2")
+    top_variant = answer_value(summary, "xqtl", "xqtl-associations-tab-2")
+    context = answer_value(summary, "xqtl", "xqtl-associations-tab-3")
+    if top_variant and context:
+        return f"{top_variant} in {context}"
+    if top_variant:
+        return top_variant
+    if xqtl_type:
+        return xqtl_type
+    return NOT_COMPLETED
+
+
+def format_filer_finding(summary):
+    feature_type = answer_value(summary, "filer", "filer-3")
+    heatmap_source = answer_value(summary, "filer", "filer-6")
+    heatmap_tissue = answer_value(summary, "filer", "filer-7")
+    heatmap_count = answer_value(summary, "filer", "filer-8")
+    tissue_summary = answer_value(summary, "filer", "filer-9")
+    if feature_type:
+        return f"Top overlapping feature type: {feature_type}"
+    if heatmap_source and heatmap_tissue and heatmap_count:
+        return f"{heatmap_count} overlaps from {heatmap_source} in {heatmap_tissue}"
+    if tissue_summary:
+        return tissue_summary
+    return NOT_COMPLETED
+
+
+def evidence_trail_steps(summary):
+    return [
+        {
+            "resource": "Assigned Gene",
+            "evidence_type": "Workshop starting point",
+            "finding": completed_value(summary["assigned_gene"]),
+            "learning_point": "The same gene is followed across prioritization, variant, association, GWAS, and functional genomics resources.",
+        },
+        {
+            "resource": "GVC Top Genes",
+            "evidence_type": "Gene prioritization",
+            "finding": format_topgenes_finding(summary),
+            "learning_point": "Shows whether the assigned gene has GVC-prioritized support that appears unique to this resource path or is also reflected elsewhere.",
+        },
+        {
+            "resource": "VariXam",
+            "evidence_type": "ADSP variant inventory",
+            "finding": format_varixam_finding(summary),
+            "learning_point": "Shows released ADSP WGS/WES variants observed in the assigned gene footprint.",
+        },
+        {
+            "resource": "ADVP",
+            "evidence_type": "Curated AD association evidence",
+            "finding": format_advp_finding(summary),
+            "learning_point": "Links the gene or locus to manually curated AD genetic association literature and its phenotype context.",
+        },
+        {
+            "resource": "GenomicsDB",
+            "evidence_type": "Gene, dataset, and linked variant evidence",
+            "finding": format_genomicsdb_finding(summary),
+            "learning_point": "Connects the gene report to a linked dataset and then to a linked variant record, moving from regional association context to variant-level interpretation.",
+        },
+        {
+            "resource": "Genome Browser",
+            "evidence_type": "Regional genomic context",
+            "finding": completed_value(
+                answer_value(summary, "genomicsdb", "genomicsdb-genome-browser-1")
+            ),
+            "learning_point": "Shows the selected variant in local genomic and annotation context.",
+        },
+        {
+            "resource": "xQTL Browser",
+            "evidence_type": "Molecular association context",
+            "finding": format_xqtl_finding(summary),
+            "learning_point": "Connects genetic variation to molecular readouts such as expression, splicing, methylation, histone acetylation, or protein abundance.",
+        },
+        {
+            "resource": "FILER",
+            "evidence_type": "Regulatory and functional annotation context",
+            "finding": format_filer_finding(summary),
+            "learning_point": "Shows what regulatory or functional annotations overlap the gene region and what biological contexts may be relevant.",
+        },
+        {
+            "resource": "Final Interpretation",
+            "evidence_type": "Synthesis",
+            "finding": completed_value(
+                answer_value(summary, "interpretation", "interpretation-1")
+            ),
+            "learning_point": "The value of the scavenger hunt is linking evidence across resources rather than relying on a single record or score.",
+        },
+    ]
+
+
+def evidence_step_html(index, step):
     return (
-        f"<div class='path-node {status_class}'>"
-        f"<div class='path-source'>{escape(source)}</div>"
-        f"<div class='path-label'>{escape(label)}</div>"
-        f"<div class='path-value'>{display_value(value)}</div>"
-        f"<div class='path-status'>{status_text}</div>"
-        f"</div>"
+        "<div class='evidence-step'>"
+        f"<div class='evidence-step-number'>{index}</div>"
+        "<div class='evidence-step-content'>"
+        f"<div class='evidence-resource'>{escape(step['resource'])}</div>"
+        f"<div class='evidence-type'>{escape(step['evidence_type'])}</div>"
+        f"<div class='evidence-finding'><span class='evidence-label'>Finding:</span> {display_value(step['finding'], NOT_COMPLETED)}</div>"
+        f"<div class='evidence-learning'><span class='evidence-label'>Learning point:</span> {escape(step['learning_point'])}</div>"
+        "</div></div>"
+    )
+
+
+def render_api_bonus_summary(summary):
+    api_idea = answer_value(summary, "api_bonus", "api-1")
+    api_need = answer_value(summary, "api_bonus", "api-2")
+    if not api_idea and not api_need:
+        return
+
+    rows = []
+    if api_idea:
+        rows.append(
+            f"<div><span class='evidence-label'>Idea:</span> {display_value(api_idea, NOT_COMPLETED)}</div>"
+        )
+    if api_need:
+        rows.append(
+            f"<div><span class='evidence-label'>Needed data or lookup:</span> {display_value(api_need, NOT_COMPLETED)}</div>"
+        )
+    st.html(
+        "<div class='api-bonus-summary'>"
+        "<div class='api-bonus-title'>Bonus API Integration Idea</div>"
+        + "".join(rows)
+        + "</div>"
     )
 
 
 def render_evidence_pathway(summary):
-    prioritization = first_answer(
-        summary, "topgenes", ["topgenes-2", "topgenes-3", "topgenes-4"]
-    )
-    variant_inventory = first_answer(
-        summary, "varixam", ["varixam-1", "varixam-2", "varixam-3"]
-    )
-    curated_association = first_answer(summary, "advp", ["advp-3", "advp-4", "advp-5"])
-    genomicsdb_record = first_answer(
-        summary,
-        "genomicsdb",
-        [
-            "genomicsdb-gene-annotations-7",
-            "genomicsdb-dataset-summary-1",
-            "genomicsdb-dataset-summary-5",
-            "genomicsdb-variant-record-1",
-        ],
-    )
-    browser_observation = first_answer(
-        summary,
-        "genomicsdb",
-        [
-            "genomicsdb-genome-browser-1",
-            "genomicsdb-genome-browser-2",
-            "genomicsdb-genome-browser-3",
-        ],
-    )
-    filer_signal = first_answer(
-        summary,
-        "filer",
-        [
-            "filer-3",
-            "filer-6",
-            "filer-7",
-            "filer-9",
-        ],
-    )
-    xqtl_signal = first_answer(
-        summary,
-        "xqtl",
-        [
-            "xqtl-2",
-            "xqtl-associations-tab-1",
-            "xqtl-associations-tab-2",
-            "xqtl-associations-tab-3",
-        ],
-    )
-    functional_context = filer_signal or xqtl_signal
-    interpretation = first_answer(
-        summary,
-        "interpretation",
-        ["interpretation-1", "interpretation-2", "interpretation-3"],
-    )
-    api_integration = first_answer(
-        summary,
-        "api_bonus",
-        ["api-1", "api-2"],
-    )
+    steps = evidence_trail_steps(summary)
 
     progress_text = f"{summary['required_activities_completed']}/{summary['required_activities_total']}"
 
@@ -701,112 +847,16 @@ def render_evidence_pathway(summary):
     snapshot_cols[2].metric("Score", f"{summary['score']} pts")
     snapshot_cols[3].metric("Required progress", progress_text)
 
-    nodes = [
-        pathway_node(
-            "Assigned gene",
-            "Workshop setup",
-            summary["assigned_gene"],
-            bool(summary["assigned_gene"]),
-        ),
-        pathway_node(
-            "Gene prioritization",
-            "GVC Top Genes",
-            prioritization,
-            bool(prioritization),
-        ),
-        pathway_node(
-            "ADSP variant inventory",
-            "VariXam",
-            variant_inventory,
-            bool(variant_inventory),
-        ),
-        pathway_node(
-            "Curated association",
-            "ADVP",
-            curated_association,
-            bool(curated_association),
-        ),
-        pathway_node(
-            "Linked GenomicsDB record",
-            "GenomicsDB",
-            genomicsdb_record,
-            bool(genomicsdb_record),
-        ),
-        pathway_node(
-            "Genome browser observation",
-            "GenomicsDB",
-            browser_observation,
-            bool(browser_observation),
-        ),
-        pathway_node(
-            "Functional context",
-            "FILER / xQTL",
-            functional_context,
-            bool(functional_context),
-        ),
-        pathway_node(
-            "Interpretation", "Synthesis", interpretation, bool(interpretation)
-        ),
-        pathway_node(
-            "Programmatic integration",
-            "NIAGADS API",
-            api_integration,
-            bool(api_integration),
-        ),
-    ]
-    st.html(f"<div class='path-grid'>{''.join(nodes)}</div>")
-
-    st.subheader("Carry-Forward Focus")
-    focus_items = [
-        (
-            "Gene span",
-            answer_value(summary, "genomicsdb", "genomicsdb-gene-annotations-1"),
-        ),
-        (
-            "Dataset / track",
-            answer_value(summary, "genomicsdb", "genomicsdb-gene-annotations-7"),
-        ),
-        (
-            "Selected ADSP variant",
-            answer_value(summary, "genomicsdb", "genomicsdb-dataset-summary-5"),
-        ),
-        (
-            "Variant record / identifier",
-            first_answer(
-                summary,
-                "genomicsdb",
-                ["genomicsdb-variant-record-1", "genomicsdb-variant-record-2"],
-            )
-            or answer_value(summary, "varixam", "varixam-2"),
-        ),
-        (
-            "Genome browser observation",
-            first_answer(
-                summary,
-                "genomicsdb",
-                [
-                    "genomicsdb-genome-browser-1",
-                    "genomicsdb-genome-browser-3",
-                ],
-            ),
-        ),
-        ("Functional context", functional_context),
-        (
-            "Interpretation / limitation",
-            first_answer(
-                summary, "interpretation", ["interpretation-1", "interpretation-3"]
-            ),
-        ),
-        (
-            "API integration idea",
-            answer_value(summary, "api_bonus", "api-1"),
-        ),
-    ]
-    focus_html = "".join(
-        f"<div class='focus-item'><div class='focus-label'>{escape(label)}</div><div class='focus-value'>{display_value(value)}</div></div>"
-        for label, value in focus_items
+    assigned_gene = summary["assigned_gene"] or "the assigned gene"
+    st.subheader("Evidence Trail Summary")
+    st.caption(
+        f"How this scavenger hunt connected {assigned_gene} across NIAGADS resources."
     )
-    st.html(f"<div class='focus-panel'>{focus_html}</div>")
+    trail_html = "".join(
+        evidence_step_html(index, step) for index, step in enumerate(steps, start=1)
+    )
+    st.html(f"<div class='evidence-trail'>{trail_html}</div>")
+    render_api_bonus_summary(summary)
 
 
 def render_sidebar(
