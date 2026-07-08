@@ -5,6 +5,7 @@ from html import escape
 from pathlib import Path
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 from leaderboard_store import (
     leaderboard_configured,
@@ -824,10 +825,7 @@ def render_sidebar(
                 st.session_state.timer_started_at = time.time()
                 st.rerun()
         else:
-            elapsed = int(time.time() - st.session_state.timer_started_at)
-            remaining = max(20 * 60 - elapsed, 0)
-            st.metric("Time remaining", f"{remaining // 60:02d}:{remaining % 60:02d}")
-            st.caption(f"Elapsed: {elapsed // 60:02d}:{elapsed % 60:02d}")
+            render_live_timer(st.session_state.timer_started_at)
 
         st.metric("Current score", f"{score} pts")
         st.progress(
@@ -839,6 +837,67 @@ def render_sidebar(
         st.link_button(
             "🏆 View leaderboard", "?view=leaderboard", use_container_width=True
         )
+
+
+def render_live_timer(started_at):
+    started_at_ms = int(started_at * 1000)
+    duration_seconds = 20 * 60
+    components.html(
+        f"""
+        <style>
+            html, body {{
+                background: transparent;
+                color: #eef3f7;
+                font-family: "Source Sans Pro", sans-serif;
+                margin: 0;
+                padding: 0;
+            }}
+            .timer-label {{
+                font-size: 0.88rem;
+                font-weight: 600;
+                margin: 0 0 0.2rem 0;
+            }}
+            .timer-value {{
+                font-size: 1.85rem;
+                font-weight: 700;
+                line-height: 1.15;
+                margin: 0;
+            }}
+            .timer-elapsed {{
+                color: #eef3f7;
+                font-size: 0.88rem;
+                margin-top: 0.1rem;
+                opacity: 0.85;
+            }}
+        </style>
+        <div class="timer-label">Time remaining</div>
+        <div id="timer-value" class="timer-value">--:--</div>
+        <div id="timer-elapsed" class="timer-elapsed">Elapsed: 00:00</div>
+        <script>
+            const startedAt = {started_at_ms};
+            const durationSeconds = {duration_seconds};
+            const valueEl = document.getElementById("timer-value");
+            const elapsedEl = document.getElementById("timer-elapsed");
+
+            function formatSeconds(totalSeconds) {{
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                return `${{String(minutes).padStart(2, "0")}}:${{String(seconds).padStart(2, "0")}}`;
+            }}
+
+            function updateTimer() {{
+                const elapsed = Math.max(Math.floor((Date.now() - startedAt) / 1000), 0);
+                const remaining = Math.max(durationSeconds - elapsed, 0);
+                valueEl.textContent = formatSeconds(remaining);
+                elapsedEl.textContent = `Elapsed: ${{formatSeconds(elapsed)}}`;
+            }}
+
+            updateTimer();
+            window.setInterval(updateTimer, 1000);
+        </script>
+        """,
+        height=86,
+    )
 
 
 def render_page_header(
