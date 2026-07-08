@@ -126,6 +126,8 @@ ADVP, VariXam, TopGenes, interpretation, and API still need future review so the
 ## Files
 
 - `app.py`
+- `data/scavenger_hunt.py`
+- `src/`
 - `requirements.txt`
 - `README.md`
 - `prompt.md`

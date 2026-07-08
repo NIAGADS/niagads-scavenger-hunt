@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 import streamlit as st
 
-from scoring import (
+from src.scoring import (
     completed_skill_names,
     earned_points,
     mission_complete,

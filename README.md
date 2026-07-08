@@ -32,6 +32,12 @@ They complete guided activities using NIAGADS and related open resources:
 - Final Gene Evidence Summary preview
 - Leaderboard view backed by Google Sheets
 
+## Project layout
+
+- `app.py`: Streamlit entrypoint.
+- `data/scavenger_hunt.py`: hunt-specific assigned genes, resource links, missions, and display constants.
+- `src/`: reusable scoring, state, summary, UI, and leaderboard code.
+
 ## Run locally
 
 ```bash

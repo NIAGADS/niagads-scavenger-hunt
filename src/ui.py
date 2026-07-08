@@ -7,13 +7,13 @@ from pathlib import Path
 import streamlit as st
 import streamlit.components.v1 as components
 
-from leaderboard_store import (
+from src.leaderboard_store import (
     leaderboard_configured,
     leaderboard_rows,
     load_leaderboard,
     submit_to_leaderboard,
 )
-from scoring import mission_started
+from src.scoring import mission_started
 
 
 @st.cache_data(show_spinner=False)
