@@ -413,6 +413,17 @@ def render_styles():
             margin-right: 0.25rem;
             padding: 0.1rem 0.45rem;
         }
+        .carry-forward-badge {
+            background: #2f8f4e;
+            border: 1px solid #1f6b3a;
+            border-radius: 999px;
+            color: #ffffff;
+            display: inline-block;
+            font-size: 0.92em;
+            font-weight: 800;
+            margin-right: 0.25rem;
+            padding: 0.1rem 0.45rem;
+        }
         .hint-details {
             display: block;
             margin: 0;
@@ -576,8 +587,10 @@ def content_html(text):
     return str(text)
 
 
-def field_label_html(label):
+def field_label_html(label, carry_forward=False):
     label = content_html(label)
+    if carry_forward:
+        label = f"<span class='carry-forward-badge'>Carry forward</span>{label}"
     if label.startswith("Bonus: "):
         return f"<span class='bonus-badge'>Bonus</span>{label.removeprefix('Bonus: ')}"
     return label
@@ -946,13 +959,17 @@ def render_mission_fields(mission):
             else (f"{field['label']}" if bonus_points else field["label"])
         )
         label_visibility = "visible"
-        rendered_label = field_label_html(widget_label)
+        rendered_label = field_label_html(
+            widget_label, carry_forward=field.get("carry_forward", False)
+        )
         if "hint" in field:
             st.html(
                 f"<div class='field-label'><details class='hint-details'><summary><span class='inline-hint-button'></span><span class='hint-question'>{rendered_label}</span></summary><div class='hint-content'>{content_html(field['hint'])}</div></details></div>"
             )
             label_visibility = "collapsed"
-        elif "<" in widget_label and ">" in widget_label:
+        elif ("<" in widget_label and ">" in widget_label) or field.get(
+            "carry_forward"
+        ):
             st.html(f"<div class='field-label'>{rendered_label}</div>")
             label_visibility = "collapsed"
         if field["type"] == "textarea":
