@@ -425,14 +425,14 @@ def render_styles():
             padding: 0.1rem 0.45rem;
         }
         .carry-forward-badge {
-            background: #2f8f4e;
+            background: #0c772f;
             border: 1px solid #1f6b3a;
-            border-radius: 999px;
+            border-radius: 0.5rem;
             color: #ffffff;
             display: inline-block;
             font-size: 0.92em;
             font-weight: 800;
-            margin-right: 0.25rem;
+            margin-right: 0.5rem;
             padding: 0.1rem 0.45rem;
         }
         .hint-details {
@@ -1012,6 +1012,7 @@ def render_mission_fields(mission):
                 on_change=start_timer_if_needed,
                 label_visibility=label_visibility,
             )
+
 
 def start_timer_if_needed():
     if st.session_state.timer_started_at is None:

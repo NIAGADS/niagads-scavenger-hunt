@@ -263,26 +263,30 @@ MISSIONS = [
                     "genomicsdb-gene-annotations-2",
                     "genomicsdb-gene-annotations-3",
                     "genomicsdb-gene-annotations-6",
+                    "genomicsdb-gene-annotations-4",
+                    "genomicsdb-gene-annotations-5",
+                    "genomicsdb-gene-annotations-7",
                 ],
             },
             {
                 "skill": "Record Linker",
                 "fields": [
                     "genomicsdb-gene-annotations-1",
-                    "genomicsdb-gene-annotations-4",
-                    "genomicsdb-gene-annotations-5",
-                    "genomicsdb-gene-annotations-7",
                     "genomicsdb-dataset-summary-1",
+                    "genomicsdb-dataset-summary-2",
                     "genomicsdb-variant-record-1",
+                    "genomicsdb-variant-record-2",
                 ],
             },
             {
-                "skill": "Signal Mapper",
+                "skill": "Data Miner",
                 "fields": [
-                    "genomicsdb-dataset-summary-2",
                     "genomicsdb-dataset-summary-3",
                     "genomicsdb-dataset-summary-4",
                     "genomicsdb-dataset-summary-5",
+                    "genomicsdb-dataset-summary-6",
+                    "genomicsdb-variant-record-4",
+                    "genomicsdb-variant-record-5",
                 ],
             },
             {
@@ -290,7 +294,6 @@ MISSIONS = [
                 "fields": [
                     "genomicsdb-genome-browser-1",
                     "genomicsdb-genome-browser-2",
-                    "genomicsdb-carry-forward-1",
                 ],
             },
         ],
@@ -316,7 +319,11 @@ MISSIONS = [
             "activity."
         ),
         "fields": [
-            {"type": "section", "key": "genomicsdb-gene-annotations", "label": "Gene Annotations"},
+            {
+                "type": "section",
+                "key": "genomicsdb-gene-annotations",
+                "label": "Gene Annotations",
+            },
             {
                 "key": "genomicsdb-gene-annotations-1",
                 "label": "What is the footprint (genomic span) of this gene?",
@@ -365,7 +372,7 @@ MISSIONS = [
                 "type": "section",
                 "key": "genomicsdb-dataset-summary",
                 "label": "Dataset Summary",
-                "next_step": "Click on the track name (link to dataset) you selected above to explore the dataset summary.",
+                "next_step": "Click on the <code>track</code> name you selected to carry forward to open a brief report for this GWAS summary statistics dataset.",
             },
             {
                 "key": "genomicsdb-dataset-summary-1",
@@ -374,85 +381,110 @@ MISSIONS = [
             },
             {
                 "key": "genomicsdb-dataset-summary-2",
-                "label": "From the dataset record, identify another strong association region outside the assigned gene if possible.",
-                "type": "text",
+                "label": "Is it a NIAGADS or EMBL-EBI GWAS Catalog Accession?",
+                "type": "select",
+                "options": ["", "NIAGADS", "GWAS Catalog"],
             },
             {
                 "key": "genomicsdb-dataset-summary-3",
-                "label": "What top variant, p-value, or nearest result supports that region?",
+                "label": "On what chromosome is the most significant GWAS signal?",
+                "hint": "Answer at glance using the Manhattan plot.",
                 "type": "text",
             },
             {
                 "key": "genomicsdb-dataset-summary-4",
-                "label": "After toggling locus zoom view on the dataset Manhattan plot, which variant did you select?",
+                "label": "List one or more potentially impacted genes associated with peaks other than the one identified for the previous quesiton.",
+                "hint": "The Manhattan plot is interactive!",
                 "type": "text",
             },
             {
                 "key": "genomicsdb-dataset-summary-5",
-                "label": "Why did you choose that variant or peak to inspect next?",
-                "type": "textarea",
+                "label": "Which <code>ADSP variant</code> is reported to have the most significant genetic association (smallest p-value)?",
+                "type": "text",
+                "carry_forward": True,
+                "hint": "ADSP variants have a red check in the <code>ADSP Variant?</code> column.",
+            },
+            {
+                "key": "genomicsdb-dataset-summary-6",
+                "label": "Are any nearby significant variants in LD with the variant you selected in ADSP samples (European/NHW)?",
+                "hint": "Toggle the <code>LocusZoom</code> view from the <code>Top Variants</code> table toolbar and then check a row in the table to center the LocusZoom view on that variant. </br> </br>"
+                "<strong>Future Feature</strong>: The upcoming release will have ADSP-population based linkage for more ethnic groups (populations). </br>"
+                "These panels (<a href='https://dss.niagads.org/open-access-data-portal/#NG00067'>R5 58K Reference Panel</a>) are <code>Open Access</code> and available for download through the <code>NIAGADS DSS Open Access Portal</code> (filter for fileset <code>fsa000165</code>).",
+                "type": "text",
             },
             {
                 "type": "section",
                 "key": "genomicsdb-variant-record",
-                "label": "Variant Record",
-                "next_step": "Use locus zoom from the dataset record, then open one variant from the Manhattan plot.",
+                "label": "Variant Annotations",
+                "next_step": "Click on the <code>variant</code> you selected to carry forward to open a variant annotation report.",
             },
             {
                 "key": "genomicsdb-variant-record-1",
-                "label": "After clicking the selected variant, what variant ID appears in the header?",
-                "type": "text",
-            },
-            {
-                "key": "genomicsdb-variant-record-2",
                 "label": "What RefSNP ID is shown, if any?",
                 "type": "text",
             },
             {
+                "key": "genomicsdb-variant-record-2",
+                "label": "Is this variant multi-allelic or co-located with any other variants? If so, how many? Enter <strong>0</strong> for none.",
+                "type": "text",
+            },
+            {
                 "key": "genomicsdb-variant-record-3",
-                "label": "What alleles are shown in the variant record header?",
-                "type": "text",
-            },
-            {
-                "key": "genomicsdb-variant-record-4",
-                "label": "What consequence or impacted gene/transcript is listed in the header?",
-                "type": "text",
-            },
-            {
-                "key": "genomicsdb-variant-record-5",
                 "label": "Bonus: What is an <code>ADSP Variant</code>?",
                 "type": "textarea",
                 "required": False,
                 "bonus_points": 1,
-                "hint": (
-                    "Open the linked variant record and mouse over the <code>ADSP Variant badge</code>."
-                ),
+                "hint": "Mouse over the <code>ADSP Variant</code> badge in the report header.",
+            },
+            {
+                "key": "genomicsdb-variant-record-4",
+                "label": "Does this variant have any reported significant associations with AD-related neuropathologies or biomarkers?",
+                "type": "select",
+                "options": ["", "yes", "no"],
+            },
+            {
+                "key": "genomicsdb-variant-record-5",
+                "label": "How did you figure that out?",
+                "type": "select",
+                "options": [
+                    "",
+                    "Overview Summary Graphic",
+                    "NIAGADS GWAS: AD-related neuropathologies and biomarkers",
+                    "GWAS Catalog: Other Traits",
+                ],
             },
             {
                 "type": "section",
                 "key": "genomicsdb-genome-browser",
                 "label": "Genome Browser",
-                "next_step": "From the dataset or variant context, choose <code>View on Genome Browser</code> and inspect the loaded track.",
+                "next_step": "Click the <code>View on Genome Browser</code> button in the variant report navigation menu on the page left.</br></br>"
+                "In a new tab, the <code>NIAGADS Genome Browser</code> will open with the current variant highlighted.",
             },
             {
                 "key": "genomicsdb-genome-browser-1",
-                "label": "Click View on Genome Browser. Which dataset track did you load?",
+                "label": "Genome Browser tracks are interactive! What can you learn about the highlighed variant?",
+                "hint": "Zoom in and then click on the highlighted square in the <code>ADSP 36K R4 Varaints</code> track. </br></br>"
+                "<strong>Future Feature</strong>: The upcoming release will have updated ADSP reference tracks based on the newest data release (R5) with variants called from ~58k genomes.",
                 "type": "text",
             },
             {
                 "key": "genomicsdb-genome-browser-2",
-                "label": "After exploring the loaded track, what region or pattern looks useful to inspect in FILER?",
-                "type": "textarea",
+                "label": "What does the color coding on the ADSP variant track tell us?",
+                "hint": "Click on the track label to display the legend or on the gear to the right to select an alternative color scale and report what you discover.",
+                "type": "select",
+                "options": [
+                    "",
+                    "Variant Type",
+                    "Consequence Severity",
+                    "CADD Score",
+                    "Consequence Type",
+                    "Coding Variant Flag",
+                ],
             },
             {
-                "type": "section",
-                "key": "genomicsdb-carry-forward",
-                "label": "Carry Forward",
-                "next_step": "Choose the final region or pattern you want to reuse in the FILER activity.",
-            },
-            {
-                "key": "genomicsdb-carry-forward-1",
-                "label": "What final region will you carry forward to the functional annotation activity?",
+                "key": "genomicsdb-genome-browser-3",
+                "label": "Search for the track you explored earlier and click the <code>Display Track</code> to load.  Report about a significant variant other than the one selected.",
+                "hint": "Genome browser tracks are interactive!  Click on a point - what information is provided?",
                 "type": "text",
             },
         ],
