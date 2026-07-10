@@ -525,8 +525,13 @@ MISSIONS = [
         ),
         "getting_started": (
             "Select <code>Search</code> from the top-level navigation. Select <code>hg38</code> for the Genome Build and then enter the "
-            "gene region - you recorded in the GenomicsDB Gene Annotation section."
+            "gene region"
         ),
+        "carry_forward_display": {
+            "label": "Gene region from GenomicsDB",
+            "mission_id": "genomicsdb",
+            "field_key": "genomicsdb-gene-annotations-1",
+        },
         "fields": [
             {
                 "key": "filer-1",
@@ -553,18 +558,9 @@ MISSIONS = [
             },
             {
                 "key": "filer-6",
-                "label": "In the overlap heatmap, find the darkest cell and hover over it. Which data source does it represent?",
+                "label": "Which tissue category has the most overlaps? How many?",
                 "type": "text",
-            },
-            {
-                "key": "filer-7",
-                "label": "For that same darkest heatmap cell, which tissue category does it represent?",
-                "type": "text",
-            },
-            {
-                "key": "filer-8",
-                "label": "For that same darkest heatmap cell, how many overlaps are reported?",
-                "type": "text",
+                "hint": "Hover over cells in the overlap heatmap.  Which is the darkest cell?",
             },
             {
                 "key": "filer-9",
@@ -613,6 +609,8 @@ MISSIONS = [
         "skill": "Integration Contributor",
         "points": 0,
         "resources": ["NIAGADS Open Access API"],
+        "purpose": "The NIAGADS Open Access API provides programmatic access to NIAGADS genetics, variant, annotation, and resource metadata. It helps developers and researchers integrate NIAGADS data into external tools, workflows, dashboards, and analysis pipelines.",
+        "getting_started": "No need to visit this resource for the hunt unless interested!",
         "resource_notes": [
             {
                 "label": "NIAGADS Open Access API",

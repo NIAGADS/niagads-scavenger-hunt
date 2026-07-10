@@ -108,10 +108,9 @@ def render_styles():
         }
         .app-subtitle {
             color: #dce4eb;
-            font-size: 1.02rem;
+            font-size: 1.15rem;
             line-height: 1.45;
             margin-top: 0.8rem;
-            max-width: 48rem;
         }
         .landing-intro {
             margin: 0.5rem 0 0.75rem 0;
@@ -615,6 +614,17 @@ def content_html(text):
     return str(text)
 
 
+def carry_forward_display_html(config):
+    answers = st.session_state.answers.get(config["mission_id"], {})
+    value = str(answers.get(config["field_key"], "") or "").strip()
+
+    return (
+        "<div class='hint-content'>"
+        f"<strong>Gene Region recorded from GenomicsDB Gene Annotation:</strong> {display_value(value)}"
+        "</div>"
+    )
+
+
 def field_label_html(label, carry_forward=False):
     label = content_html(label)
     if carry_forward:
@@ -653,18 +663,10 @@ def format_advp_finding(summary):
 
 
 def format_genomicsdb_finding(summary):
-    phenotype = answer_value(
-        summary, "genomicsdb", "genomicsdb-gene-annotations-2"
-    )
-    adsp_variant = answer_value(
-        summary, "genomicsdb", "genomicsdb-dataset-summary-5"
-    )
-    ld_evidence = answer_value(
-        summary, "genomicsdb", "genomicsdb-dataset-summary-6"
-    )
-    consequence = answer_value(
-        summary, "genomicsdb", "genomicsdb-gene-annotations-6"
-    )
+    phenotype = answer_value(summary, "genomicsdb", "genomicsdb-gene-annotations-2")
+    adsp_variant = answer_value(summary, "genomicsdb", "genomicsdb-dataset-summary-5")
+    ld_evidence = answer_value(summary, "genomicsdb", "genomicsdb-dataset-summary-6")
+    consequence = answer_value(summary, "genomicsdb", "genomicsdb-gene-annotations-6")
     biomarker_association = answer_value(
         summary, "genomicsdb", "genomicsdb-variant-record-4"
     )
@@ -682,7 +684,9 @@ def format_genomicsdb_finding(summary):
     if consequence:
         parts.append(f"Linked variant insight: consequence {consequence}")
     if biomarker_association:
-        biomarker_text = f"AD biomarker/neuropathology associations: {biomarker_association}"
+        biomarker_text = (
+            f"AD biomarker/neuropathology associations: {biomarker_association}"
+        )
         if biomarker_source:
             biomarker_text = f"{biomarker_text} via {biomarker_source}"
         parts.append(biomarker_text)
@@ -723,17 +727,17 @@ def format_xqtl_finding(summary):
 
 def format_filer_finding(summary):
     feature_type = answer_value(summary, "filer", "filer-3")
-    heatmap_source = answer_value(summary, "filer", "filer-6")
-    heatmap_tissue = answer_value(summary, "filer", "filer-7")
-    heatmap_count = answer_value(summary, "filer", "filer-8")
+    heatmap_peak = answer_value(summary, "filer", "filer-6")
     tissue_summary = answer_value(summary, "filer", "filer-9")
+
+    parts = []
     if feature_type:
-        return f"Top overlapping feature type: {feature_type}"
-    if heatmap_source and heatmap_tissue and heatmap_count:
-        return f"{heatmap_count} overlaps from {heatmap_source} in {heatmap_tissue}"
+        parts.append(f"Top overlapping feature type: {feature_type}")
+    if heatmap_peak:
+        parts.append(f"Strongest tissue overlap: {heatmap_peak}")
     if tissue_summary:
-        return tissue_summary
-    return NOT_COMPLETED
+        parts.append(f"Tissue pattern: {tissue_summary}")
+    return "; ".join(parts) or NOT_COMPLETED
 
 
 def evidence_trail_steps(summary):
@@ -1030,17 +1034,29 @@ def render_page_header(
     completed_required, required_count, score, completed_skills, award_icon
 ):
     st.html(
-        f"""
+        """
         <div class="app-hero">
             <div class="app-kicker">NIAGADS Open Access</div>
             <div class="app-title">AD Gene Challenge</div>
             <div class="app-subtitle">
-                Build a gene evidence summary for <strong>{escape(st.session_state.assigned_gene)}</strong>.
-                Submit work anytime; finishing the required activities within 25 minutes adds speed points.
+                You’ll be assigned one gene to track across NIAGADS resources. The goal is to build an evidence trail for your gene across genetic associations, variants, GWAS results, genome browser context, and functional genomics evidence.
+            <div class="app-subtitle">
+                Submit each section as completed to add points to your score.
+            </div>
+            <div class="app-subtitle">
+                Finish before time runs out to earn bonus points.
             </div>
         </div>
         """,
     )
+
+    st.html("""
+        <div class="hint-content">
+            <strong>Tip:</strong> Keep the scavenger hunt and resource pages side by side.
+            On Windows, right-click a resource link to open it in a <code>new window</code> or <code>Split View</code>, if your browser allows.
+            On Mac, Control-click or two-finger click the link to do the same.
+        </div>
+        """)
 
     st.html(
         """
@@ -1121,8 +1137,13 @@ def render_missions(
                     if mission.get("getting_started")
                     else ""
                 )
+                carry_forward_html = (
+                    carry_forward_display_html(mission["carry_forward_display"])
+                    if mission.get("carry_forward_display")
+                    else ""
+                )
                 st.html(
-                    f"<div class='resource-action-row'><div>{buttons_html}</div><div>{start_html}</div></div>",
+                    f"<div class='resource-action-row'><div>{buttons_html}</div><div>{start_html}{carry_forward_html}</div></div>",
                 )
 
             render_mission_fields(mission)
@@ -1161,7 +1182,6 @@ def render_mission_fields(mission):
             continue
         key = f"answer_{mission['id']}_{field['key']}"
         current = mission_answers.get(field["key"], "")
-        bonus_points = field.get("bonus_points", 0)
         widget_label = field["label"]
         label_visibility = "visible"
         rendered_label = field_label_html(
