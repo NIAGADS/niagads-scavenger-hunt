@@ -578,6 +578,7 @@ MISSIONS = [
         "title": "Summarize the evidence",
         "skill": "Evidence summary",
         "points": 4,
+        "counts_toward_progress": False,
         "resources": [],
         "fields": [
             {

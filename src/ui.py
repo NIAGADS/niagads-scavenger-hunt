@@ -835,16 +835,35 @@ def render_api_bonus_summary(summary):
     )
 
 
-def render_leaderboard_submit(summary):
-    st.caption("Leaderboard")
+def submit_final_score(summary):
+    if st.session_state.timer_started_at is not None:
+        st.session_state.timer_stopped_at = (
+            st.session_state.timer_stopped_at or time.time()
+        )
+
+    st.session_state.final_score = summary["score"]
+    st.session_state.final_activity_score = summary["activity_score"]
+    st.session_state.final_time_bonus_points = summary["time_bonus_points"]
+    st.session_state.final_score_submitted = True
+
     if leaderboard_configured():
-        if st.button("Submit score", use_container_width=True):
-            submit_to_leaderboard(summary, st.session_state.leaderboard_entry_id)
-            st.session_state.leaderboard_submitted = True
-            st.success("Updated.")
+        submit_to_leaderboard(summary, st.session_state.leaderboard_entry_id)
+        st.session_state.leaderboard_submitted = True
+
+
+def render_final_score_submit(summary):
+    if st.session_state.final_score_submitted:
+        st.success("Final score submitted.")
+        st.button("Submit final score", disabled=True, use_container_width=True)
     else:
-        st.button("Submit score", disabled=True, use_container_width=True)
-        st.caption("Not configured")
+        st.button(
+            "Submit final score",
+            use_container_width=True,
+            on_click=submit_final_score,
+            args=(summary,),
+        )
+        if not leaderboard_configured():
+            st.caption("Leaderboard not configured; final score will be saved locally.")
 
 
 def render_evidence_pathway(summary):
@@ -853,7 +872,7 @@ def render_evidence_pathway(summary):
     progress_text = f"{summary['required_activities_completed']}/{summary['required_activities_total']}"
 
     st.header("Challenge Takeaways")
-    snapshot_cols = st.columns([1, 1.9, 1, 1.25, 1.2])
+    snapshot_cols = st.columns([1, 1.9, 1, 1, 1.25])
     snapshot_cols[0].metric("Gene", summary["assigned_gene"])
     snapshot_cols[1].metric("Team name", summary["team_name"] or "Not set")
     score_delta = (
@@ -862,9 +881,8 @@ def render_evidence_pathway(summary):
         else None
     )
     snapshot_cols[2].metric("Score", f"{summary['score']} pts", delta=score_delta)
-    snapshot_cols[3].metric("Required progress", progress_text)
-    with snapshot_cols[4]:
-        render_leaderboard_submit(summary)
+    snapshot_cols[3].metric("Time bonus", f"{summary['time_bonus_points']} pts")
+    snapshot_cols[4].metric("Required progress", progress_text)
 
     assigned_gene = summary["assigned_gene"] or "the assigned gene"
     st.subheader("Evidence Trail Summary")
@@ -918,7 +936,10 @@ def render_sidebar(
                 st.session_state.timer_started_at = time.time()
                 st.rerun()
         else:
-            render_live_timer(st.session_state.timer_started_at)
+            render_live_timer(
+                st.session_state.timer_started_at,
+                st.session_state.timer_stopped_at,
+            )
 
         st.metric("Current score", f"{score} pts")
         st.progress(
@@ -932,8 +953,9 @@ def render_sidebar(
         )
 
 
-def render_live_timer(started_at):
+def render_live_timer(started_at, stopped_at=None):
     started_at_ms = int(started_at * 1000)
+    stopped_at_ms = int(stopped_at * 1000) if stopped_at is not None else "null"
     duration_seconds = 25 * 60
     components.html(
         f"""
@@ -968,6 +990,7 @@ def render_live_timer(started_at):
         <div id="timer-elapsed" class="timer-elapsed">Elapsed: 00:00</div>
         <script>
             const startedAt = {started_at_ms};
+            const stoppedAt = {stopped_at_ms};
             const durationSeconds = {duration_seconds};
             const valueEl = document.getElementById("timer-value");
             const elapsedEl = document.getElementById("timer-elapsed");
@@ -979,14 +1002,17 @@ def render_live_timer(started_at):
             }}
 
             function updateTimer() {{
-                const elapsed = Math.max(Math.floor((Date.now() - startedAt) / 1000), 0);
+                const now = stoppedAt === null ? Date.now() : stoppedAt;
+                const elapsed = Math.max(Math.floor((now - startedAt) / 1000), 0);
                 const remaining = Math.max(durationSeconds - elapsed, 0);
                 valueEl.textContent = formatSeconds(remaining);
                 elapsedEl.textContent = `Elapsed: ${{formatSeconds(elapsed)}}`;
             }}
 
             updateTimer();
-            window.setInterval(updateTimer, 1000);
+            if (stoppedAt === null) {{
+                window.setInterval(updateTimer, 1000);
+            }}
         </script>
         """,
         height=86,
@@ -1175,7 +1201,10 @@ def render_mission_fields(mission):
 
 
 def start_timer_if_needed():
-    if st.session_state.timer_started_at is None:
+    if (
+        st.session_state.timer_started_at is None
+        and not st.session_state.final_score_submitted
+    ):
         st.session_state.timer_started_at = time.time()
 
 
@@ -1187,5 +1216,7 @@ def mark_mission_complete(mission):
 
 
 def render_summary_and_submit(summary):
+    st.divider()
+    render_final_score_submit(summary)
     st.divider()
     render_evidence_pathway(summary)

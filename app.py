@@ -12,6 +12,7 @@ from src.scoring import (
     mission_complete,
     mission_ready,
     mission_skills,
+    required_progress_counts,
     skill_complete,
     total_score,
 )
@@ -50,9 +51,8 @@ if not st.session_state.hunt_started:
     st.stop()
 
 
-required_missions = [mission for mission in MISSIONS if mission["points"]]
-completed_required = sum(mission_complete(mission) for mission in required_missions)
-progress = completed_required / len(required_missions)
+completed_required, required_count = required_progress_counts(MISSIONS)
+progress = completed_required / required_count
 score = total_score(MISSIONS)
 completed_skills = completed_skill_names(MISSIONS)
 
@@ -60,13 +60,13 @@ render_sidebar(
     score,
     progress,
     completed_required,
-    len(required_missions),
+    required_count,
     completed_skills,
     ASSIGNMENT_POOL,
     AWARD_ICON,
 )
 render_page_header(
-    completed_required, len(required_missions), score, completed_skills, AWARD_ICON
+    completed_required, required_count, score, completed_skills, AWARD_ICON
 )
 render_missions(
     MISSIONS,
