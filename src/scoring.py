@@ -163,14 +163,14 @@ def time_bonus_points(missions):
     if started_at is None:
         return 0
 
-    finished_times = [progress_section_finished_at(section) for section in sections]
-    if any(finished_at is None for finished_at in finished_times):
-        return 0
-
-    finished_at = max(finished_times)
     stopped_at = st.session_state.get("timer_stopped_at")
-    if stopped_at is not None and finished_at > stopped_at:
-        return 0
+    if stopped_at is None:
+        finished_times = [progress_section_finished_at(section) for section in sections]
+        if any(finished_at is None for finished_at in finished_times):
+            return 0
+        finished_at = max(finished_times)
+    else:
+        finished_at = stopped_at
 
     elapsed = finished_at - started_at
     if elapsed > TIME_LIMIT_SECONDS:

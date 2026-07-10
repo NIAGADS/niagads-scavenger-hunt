@@ -13,7 +13,7 @@ from src.leaderboard_store import (
     load_leaderboard,
     submit_to_leaderboard,
 )
-from src.scoring import mission_started
+from src.scoring import activity_score, mission_started, time_bonus_points
 
 
 @st.cache_data(show_spinner=False)
@@ -835,23 +835,30 @@ def render_api_bonus_summary(summary):
     )
 
 
-def submit_final_score(summary):
+def submit_final_score(summary, missions):
     if st.session_state.timer_started_at is not None:
         st.session_state.timer_stopped_at = (
             st.session_state.timer_stopped_at or time.time()
         )
 
-    st.session_state.final_score = summary["score"]
-    st.session_state.final_activity_score = summary["activity_score"]
-    st.session_state.final_time_bonus_points = summary["time_bonus_points"]
+    final_summary = dict(summary)
+    final_activity_score = activity_score(missions)
+    final_time_bonus = time_bonus_points(missions)
+    final_summary["activity_score"] = final_activity_score
+    final_summary["time_bonus_points"] = final_time_bonus
+    final_summary["score"] = final_activity_score + final_time_bonus
+
+    st.session_state.final_score = final_summary["score"]
+    st.session_state.final_activity_score = final_activity_score
+    st.session_state.final_time_bonus_points = final_time_bonus
     st.session_state.final_score_submitted = True
 
     if leaderboard_configured():
-        submit_to_leaderboard(summary, st.session_state.leaderboard_entry_id)
+        submit_to_leaderboard(final_summary, st.session_state.leaderboard_entry_id)
         st.session_state.leaderboard_submitted = True
 
 
-def render_final_score_submit(summary):
+def render_final_score_submit(summary, missions):
     if st.session_state.final_score_submitted:
         st.success("Final score submitted.")
         st.button("Submit final score", disabled=True, use_container_width=True)
@@ -860,7 +867,7 @@ def render_final_score_submit(summary):
             "Submit final score",
             use_container_width=True,
             on_click=submit_final_score,
-            args=(summary,),
+            args=(summary, missions),
         )
         if not leaderboard_configured():
             st.caption("Leaderboard not configured; final score will be saved locally.")
@@ -1215,8 +1222,8 @@ def mark_mission_complete(mission):
     st.session_state.mission_base_points_awarded[mission_id] = mission["points"]
 
 
-def render_summary_and_submit(summary):
+def render_summary_and_submit(summary, missions):
     st.divider()
-    render_final_score_submit(summary)
+    render_final_score_submit(summary, missions)
     st.divider()
     render_evidence_pathway(summary)
