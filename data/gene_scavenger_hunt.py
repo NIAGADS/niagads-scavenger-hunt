@@ -367,8 +367,8 @@ MISSIONS = [
                 "key": "genomicsdb-dataset-summary-6",
                 "label": "Are any nearby significant variants in LD with the variant you selected in ADSP samples (European/NHW)?",
                 "hint": "Toggle the <code>LocusZoom</code> view from the <code>Top Variants</code> table toolbar and then check a row in the table to center the LocusZoom view on that variant. </br> </br>"
-                "<strong>Future Feature</strong>: The upcoming release will have ADSP-population based linkage for more ethnic groups (populations). </br>"
-                "These panels (<a href='https://dss.niagads.org/open-access-data-portal/#NG00067'>R5 58K Reference Panel</a>) are <code>Open Access</code> and available for download through the <code>NIAGADS DSS Open Access Portal</code> (filter for fileset <code>fsa000165</code>).",
+                "<strong>Future Feature</strong>: The upcoming release will have ADSP-population based linkage for more ethnic groups (populations). </br></br>"
+                "The <code>R5 58K Reference Panel</code> are <code>Open Access</code> and available for download through the <a href='https://dss.niagads.org/open-access-data-portal/#NG00067' target='blank'>NIAGADS DSS Open Access Portal</a> (filter for fileset <code>fsa000165</code>).",
                 "type": "text",
             },
             {
