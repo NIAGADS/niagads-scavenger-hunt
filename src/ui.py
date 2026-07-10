@@ -549,7 +549,7 @@ def render_landing_page(video_path):
 def render_leaderboard_view():
     st.title("Workshop Leaderboard")
     st.caption(
-        "Rank score is points plus badges earned. Ties are sorted by required activity progress, then points."
+        "Score includes activity, bonus, and speed points. Rank score is score plus badges earned."
     )
 
     if not leaderboard_configured():
@@ -856,7 +856,12 @@ def render_evidence_pathway(summary):
     snapshot_cols = st.columns([1, 1.9, 1, 1.25, 1.2])
     snapshot_cols[0].metric("Gene", summary["assigned_gene"])
     snapshot_cols[1].metric("Team name", summary["team_name"] or "Not set")
-    snapshot_cols[2].metric("Score", f"{summary['score']} pts")
+    score_delta = (
+        f"+{summary['time_bonus_points']} time bonus"
+        if summary.get("time_bonus_points")
+        else None
+    )
+    snapshot_cols[2].metric("Score", f"{summary['score']} pts", delta=score_delta)
     snapshot_cols[3].metric("Required progress", progress_text)
     with snapshot_cols[4]:
         render_leaderboard_submit(summary)
@@ -998,7 +1003,7 @@ def render_page_header(
             <div class="app-title">AD Gene Challenge</div>
             <div class="app-subtitle">
                 Build a gene evidence summary for <strong>{escape(st.session_state.assigned_gene)}</strong>.
-                Complete the required activities in about 25 minutes; optional prompts add bonus credit.
+                Submit work anytime; finishing the required activities within 25 minutes adds speed points.
             </div>
         </div>
         """,

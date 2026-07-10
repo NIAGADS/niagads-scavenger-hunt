@@ -29,6 +29,7 @@ They complete guided activities using NIAGADS and related open resources:
 - Directed GenomicsDB activity that moves from a gene record to summary statistics, dataset record, variant record, genome browser, and follow-up region
 - Functional annotation activity that uses the region carried forward from GenomicsDB
 - Required activity progress plus inline bonus prompts
+- Speed bonus: 5 points for finishing required activities within 25 minutes, plus 1 point for each full 2-minute block remaining
 - Final Gene Evidence Summary preview
 - Leaderboard view backed by Google Sheets
 
@@ -173,6 +174,7 @@ Notes:
 ## Workshop facilitation notes
 
 - Suggested duration: 25 minutes of activity time plus 5–10 minutes for discussion.
+- Scores can be submitted after the timer runs out; the timer only controls the speed bonus.
 - The GenomicsDB activity is designed as the main within-site navigation exercise.
 - Optional bonus prompts add points and are not required for completion.
 - Hints guide participants without changing the score.

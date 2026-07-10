@@ -72,8 +72,6 @@ def completed_skill_names(missions):
 
 
 def earned_points(mission):
-    if timer_expired_before_completion(mission["id"]):
-        return 0
     if mission["id"] in st.session_state.mission_base_points_awarded:
         return (
             st.session_state.mission_base_points_awarded[mission["id"]]
@@ -98,11 +96,30 @@ def current_points(mission):
     return mission["points"] + earned_bonus_points
 
 
-def timer_expired_before_completion(mission_id):
+def total_score(missions):
+    return activity_score(missions) + time_bonus_points(missions)
+
+
+def activity_score(missions):
+    return sum(earned_points(mission) for mission in missions)
+
+
+def time_bonus_points(missions):
+    required = [mission for mission in missions if mission["points"]]
+    if not required or any(not mission_complete(mission) for mission in required):
+        return 0
+
     started_at = st.session_state.timer_started_at
     if started_at is None:
-        return False
-    completed_at = st.session_state.mission_completed_at.get(mission_id)
-    if completed_at is None:
-        completed_at = time.time()
-    return completed_at > started_at + TIME_LIMIT_SECONDS
+        return 0
+
+    finished_at = max(
+        st.session_state.mission_completed_at.get(mission["id"], time.time())
+        for mission in required
+    )
+    elapsed = finished_at - started_at
+    if elapsed > TIME_LIMIT_SECONDS:
+        return 0
+
+    remaining_seconds = max(TIME_LIMIT_SECONDS - elapsed, 0)
+    return 5 + int(remaining_seconds // (2 * 60))

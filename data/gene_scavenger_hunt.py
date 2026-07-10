@@ -352,7 +352,7 @@ MISSIONS = [
             },
             {
                 "key": "genomicsdb-dataset-summary-4",
-                "label": "List one or more potentially impacted genes associated with peaks other than the one identified for the previous quesiton.",
+                "label": "List one or more potentially impacted genes associated with peaks other than the one identified for the previous question.",
                 "hint": "The Manhattan plot is interactive!",
                 "type": "text",
             },

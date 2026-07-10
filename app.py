@@ -9,11 +9,11 @@ from data.gene_scavenger_hunt import (
 )
 from src.scoring import (
     completed_skill_names,
-    earned_points,
     mission_complete,
     mission_ready,
     mission_skills,
     skill_complete,
+    total_score,
 )
 from src.state import initialize_state
 from src.summary import build_summary
@@ -53,7 +53,7 @@ if not st.session_state.hunt_started:
 required_missions = [mission for mission in MISSIONS if mission["points"]]
 completed_required = sum(mission_complete(mission) for mission in required_missions)
 progress = completed_required / len(required_missions)
-score = sum(earned_points(mission) for mission in MISSIONS)
+score = total_score(MISSIONS)
 completed_skills = completed_skill_names(MISSIONS)
 
 render_sidebar(
