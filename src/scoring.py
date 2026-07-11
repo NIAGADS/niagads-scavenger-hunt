@@ -39,7 +39,13 @@ def skill_complete(mission, skill):
     if not mission_complete(mission):
         return False
     answers = st.session_state.answers.get(mission["id"], {})
-    return all(str(answers.get(field_key, "")).strip() for field_key in skill["fields"])
+    bonus_fields = {
+        field["key"] for field in mission["fields"] if field.get("bonus_points")
+    }
+    required_fields = [
+        field_key for field_key in skill["fields"] if field_key not in bonus_fields
+    ]
+    return all(str(answers.get(field_key, "")).strip() for field_key in required_fields)
 
 
 def skill_finished_at(mission, skill):

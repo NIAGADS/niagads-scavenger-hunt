@@ -665,7 +665,6 @@ def format_advp_finding(summary):
 def format_genomicsdb_finding(summary):
     phenotype = answer_value(summary, "genomicsdb", "genomicsdb-gene-annotations-2")
     adsp_variant = answer_value(summary, "genomicsdb", "genomicsdb-dataset-summary-5")
-    ld_evidence = answer_value(summary, "genomicsdb", "genomicsdb-dataset-summary-6")
     consequence = answer_value(summary, "genomicsdb", "genomicsdb-gene-annotations-6")
     biomarker_association = answer_value(
         summary, "genomicsdb", "genomicsdb-variant-record-4"
@@ -679,8 +678,6 @@ def format_genomicsdb_finding(summary):
         parts.append(f"Gene context: {phenotype}")
     if adsp_variant:
         parts.append(f"Dataset insight: ADSP significant variant {adsp_variant}")
-    if ld_evidence:
-        parts.append(f"LD evidence: {ld_evidence}")
     if consequence:
         parts.append(f"Linked variant insight: consequence {consequence}")
     if biomarker_association:
@@ -1044,7 +1041,7 @@ def render_page_header(
                 Submit each section as completed to add points to your score.
             </div>
             <div class="app-subtitle">
-                Finish before time runs out to earn bonus points.
+                Answer <div class="bonus-badge">Bonus</div> questions or finish before time runs out to earn extra points.
             </div>
         </div>
         """,

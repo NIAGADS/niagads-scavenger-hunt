@@ -227,7 +227,6 @@ MISSIONS = [
                     "genomicsdb-gene-annotations-2",
                     "genomicsdb-gene-annotations-3",
                     "genomicsdb-gene-annotations-6",
-                    "genomicsdb-gene-annotations-4",
                     "genomicsdb-gene-annotations-5",
                     "genomicsdb-gene-annotations-7",
                 ],
@@ -248,7 +247,6 @@ MISSIONS = [
                     "genomicsdb-dataset-summary-3",
                     "genomicsdb-dataset-summary-4",
                     "genomicsdb-dataset-summary-5",
-                    "genomicsdb-dataset-summary-6",
                     "genomicsdb-variant-record-4",
                     "genomicsdb-variant-record-5",
                 ],
@@ -257,7 +255,6 @@ MISSIONS = [
                 "skill": "Genome Browser",
                 "fields": [
                     "genomicsdb-genome-browser-1",
-                    "genomicsdb-genome-browser-2",
                     "genomicsdb-genome-browser-3",
                 ],
             },
@@ -301,18 +298,8 @@ MISSIONS = [
                 "options": ["", "upstream", "downstream", "in gene"],
             },
             {
-                "key": "genomicsdb-gene-annotations-4",
-                "label": "The GenomicsDB separates curated summary statistics datasets into AD and ADRD/AD Biomarker collections.  Which table will you browse?",
-                "type": "select",
-                "options": [
-                    "",
-                    "Alzheimer’s Disease",
-                    "AD-related neuropathologies and biomarkers",
-                ],
-            },
-            {
                 "key": "genomicsdb-gene-annotations-5",
-                "label": "Report one variant (Ref SNP ID or positional identifier) listed in the selected table that catches your interest.",
+                "label": "Report one variant (Ref SNP ID or positional identifier) listed in an NIAGADS GWAS (AD or ADRD) table that catches your interest.",
                 "type": "text",
             },
             {
@@ -365,11 +352,13 @@ MISSIONS = [
             },
             {
                 "key": "genomicsdb-dataset-summary-6",
-                "label": "Are any nearby significant variants in LD with the variant you selected in ADSP samples (European/NHW)?",
+                "label": "Bonus: Are any nearby significant variants in LD with the variant you selected in ADSP samples (European/NHW)?",
                 "hint": "Toggle the <code>LocusZoom</code> view from the <code>Top Variants</code> table toolbar and then check a row in the table to center the LocusZoom view on that variant. </br> </br>"
                 "<strong>Future Feature</strong>: The upcoming release will have ADSP-population based linkage for more ethnic groups (populations). </br></br>"
                 "The <code>R5 58K Reference Panel</code> are <code>Open Access</code> and available for download through the <a href='https://dss.niagads.org/open-access-data-portal/#NG00067' target='blank'>NIAGADS DSS Open Access Portal</a> (filter for fileset <code>fsa000165</code>).",
                 "type": "text",
+                "bonus_points": 2,
+                "required": False,
             },
             {
                 "type": "section",
@@ -428,9 +417,11 @@ MISSIONS = [
             },
             {
                 "key": "genomicsdb-genome-browser-2",
-                "label": "What does the color coding on the ADSP variant track tell us?",
+                "label": "Bonus: What does the color coding on the ADSP variant track tell us?",
                 "hint": "Click on the track label to display the legend or on the gear to the right to select an alternative color scale and report what you discover.",
                 "type": "select",
+                "bonus_points": 1,
+                "required": False,
                 "options": [
                     "",
                     "Variant Type",
